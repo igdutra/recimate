@@ -1,0 +1,20 @@
+{
+  "id": "petit-gateau",
+  "title": "Petit Gâteau",
+  "description": "Brazilian-style warm chocolate cake with a molten center, served with vanilla ice cream.",
+  "servings": 4,
+  "ingredients": [
+    { "id": "dark-chocolate", "name": "Dark chocolate", "quantity": "200 g" },
+    { "id": "butter", "name": "Unsalted butter", "quantity": "100 g" },
+    { "id": "eggs", "name": "Eggs", "quantity": "2" },
+    { "id": "vanilla-ice-cream", "name": "Vanilla ice cream", "quantity": "To serve" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Heat the oven to 220°C and butter four small ramekins." },
+    { "step": 2, "text": "Melt chocolate and butter together, then whisk in eggs, sugar, and flour." },
+    { "step": 3, "text": "Fill the ramekins and bake for 8 to 10 minutes, until the edges set and the centers stay soft." },
+    { "step": 4, "text": "Turn out while warm and serve immediately with vanilla ice cream." }
+  ],
+  "dietary_attributes": { "is_vegetarian": true },
+  "image_url": "https://static.itdg.com.br/images/640-400/9654b1eb43fdd1aec9e88267cb3f90a3/243868-original.jpg"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "lemon-herb-chicken",
+  "title": "Lemon Herb Chicken",
+  "description": "Roasted chicken with bright lemon and herbs.",
+  "servings": 4,
+  "ingredients": [
+    { "id": "chicken", "name": "Chicken thighs", "quantity": "8" },
+    { "id": "lemon", "name": "Lemon", "quantity": "1" },
+    { "id": "thyme", "name": "Fresh thyme", "quantity": "2 sprigs" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Heat the oven to 220°C." },
+    { "step": 2, "text": "Season chicken with lemon, oil, salt, and pepper." },
+    { "step": 3, "text": "Roast until browned and cooked through, about 30 minutes." }
+  ],
+  "dietary_attributes": { "is_vegetarian": false },
+  "image_url": "https://itsonly.recipes/images/recipeimages/lemon-herb-roasted-chicken.webp"
+}

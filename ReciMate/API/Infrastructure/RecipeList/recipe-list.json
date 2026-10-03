@@ -1,0 +1,74 @@
+[
+  {
+    "id": "petit-gateau",
+    "title": "Petit Gâteau",
+    "description": "Brazilian-style warm chocolate cake with a molten center, served with vanilla ice cream.",
+    "servings": 4,
+    "dietary_attributes": { "is_vegetarian": true },
+    "image_url": "https://static.itdg.com.br/images/640-400/9654b1eb43fdd1aec9e88267cb3f90a3/243868-original.jpg"
+  },
+  {
+    "id": "lemon-herb-chicken",
+    "title": "Lemon Herb Chicken",
+    "description": "Roasted chicken with bright lemon and herbs.",
+    "servings": 4,
+    "dietary_attributes": { "is_vegetarian": false },
+    "image_url": "https://itsonly.recipes/images/recipeimages/lemon-herb-roasted-chicken.webp"
+  },
+  {
+    "id": "creamy-tomato-pasta",
+    "title": "Creamy Tomato Pasta",
+    "description": "A quick pantry pasta with a silky tomato sauce.",
+    "servings": 2,
+    "dietary_attributes": { "is_vegetarian": true },
+    "image_url": "https://reserveamana.com/wp-content/uploads/Creamy-Tomato-Pasta-fb.jpg"
+  },
+  {
+    "id": "sheet-pan-salmon",
+    "title": "Sheet Pan Salmon",
+    "description": "Salmon, potatoes, and greens in one easy pan.",
+    "servings": 4,
+    "dietary_attributes": { "is_vegetarian": false },
+    "image_url": "https://realhealthyrecipes.com/uploads/images/2017-11-08/1544891717/815905505large.jpg"
+  },
+  {
+    "id": "chickpea-curry",
+    "title": "Chickpea Coconut Curry",
+    "description": "Comforting chickpeas in a gently spiced coconut sauce.",
+    "servings": 6,
+    "dietary_attributes": { "is_vegetarian": true },
+    "image_url": "https://i.pinimg.com/originals/ec/89/03/ec890374cc0c34a6abae73a747903c60.jpg"
+  },
+  {
+    "id": "beef-tacos",
+    "title": "Weeknight Beef Tacos",
+    "description": "Crisp tacos filled with warmly spiced beef.",
+    "servings": 4,
+    "dietary_attributes": { "is_vegetarian": false },
+    "image_url": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/taco_with_avocado_and_beef.jpg"
+  },
+  {
+    "id": "roasted-vegetable-couscous",
+    "title": "Roasted Vegetable Couscous",
+    "description": "Colorful roast vegetables over fluffy couscous.",
+    "servings": 3,
+    "dietary_attributes": { "is_vegetarian": true },
+    "image_url": "https://vegankitchenwizard.com/wp-content/uploads/2025/02/roasted_vegetable_couscous_preparation.jpg"
+  },
+  {
+    "id": "turkey-meatballs",
+    "title": "Turkey Meatballs",
+    "description": "Tender herb meatballs with a simple tomato finish.",
+    "servings": 5,
+    "dietary_attributes": { "is_vegetarian": false },
+    "image_url": "https://irepo.primecp.com/2015/12/249665/EDR-Sicilian-Turkey-Meatballs_ExtraLarge1000_ID-1346135.jpg?v=1346135"
+  },
+  {
+    "id": "mushroom-risotto",
+    "title": "Mushroom Risotto",
+    "description": "A slow-stirred, savory risotto for a relaxed evening.",
+    "servings": 2,
+    "dietary_attributes": { "is_vegetarian": true },
+    "image_url": "https://img.myeverydayrecipe.com/creamy-mushroom-risotto-recipe.webp"
+  }
+]

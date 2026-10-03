@@ -1,0 +1,18 @@
+{
+  "id": "creamy-tomato-pasta",
+  "title": "Creamy Tomato Pasta",
+  "description": "A quick pantry pasta with a silky tomato sauce.",
+  "servings": 2,
+  "ingredients": [
+    { "id": "pasta", "name": "Pasta", "quantity": "200 g" },
+    { "id": "tomatoes", "name": "Crushed tomatoes", "quantity": "1 can" },
+    { "id": "cream", "name": "Cooking cream", "quantity": "120 ml" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Cook pasta in salted water." },
+    { "step": "two", "text": "Simmer tomatoes and cream for five minutes." },
+    { "step": 3, "text": "Toss with pasta and season to taste." }
+  ],
+  "dietary_attributes": { "is_vegetarian": true },
+  "image_url": "https://reserveamana.com/wp-content/uploads/Creamy-Tomato-Pasta-fb.jpg"
+}
