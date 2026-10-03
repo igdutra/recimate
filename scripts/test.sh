@@ -1,6 +1,33 @@
 #!/usr/bin/env bash
 # Build the test products, then run tests, with live progress and a short result.
 #
+# WHY THIS SCRIPT EXISTS, AND WHY NOT `swift test`
+#
+# `swift test` is for Swift Package Manager packages (a Package.swift) and runs
+# on the Mac itself. ReciMate is an Xcode iOS app: there is no Package.swift,
+# the tests do `@testable import ReciMate` against the app target, and they need
+# the iOS Simulator. `xcodebuild` is the only command-line way to build and run
+# them, so we wrap it instead of replacing it.
+#
+# Plain `xcodebuild test` has problems for an AI agent (and for a human watching):
+#   - Output is thousands of lines. Reading it all burns context and hides the
+#     one line that matters. This script prints only result lines, plus PASS or
+#     FAILED and the failure, and keeps the raw output in logs.
+#   - Nothing shows for minutes, so it looks stuck. Phase lines and the
+#     `tail -F` hint below give live feedback.
+#   - A scope that matches no tests (a typo, or `example` instead of `example()`)
+#     exits 0 and looks like success. We count tests and fail on zero.
+#   - Xcode clones the simulator for every run, about 40s each time. We turn that
+#     off with -parallel-testing-enabled NO so tests run on the booted
+#     simulator, about 4s. With 2 tiny tests parallelism buys nothing; revisit
+#     it if the suite grows large.
+#   - `build-for-testing` then `test-without-building` is Apple's supported
+#     split. We still build every run, because test-without-building does not
+#     recompile. With no source changes the build is a quick no-op, and with
+#     changes it is exactly what is needed. We never clean: DerivedData stays
+#     warm so builds stay incremental.
+#   - The simulator is booted once and left running, not started for each run.
+#
 # Usage:
 #   scripts/test.sh                                  run the full suite
 #   scripts/test.sh ReciMateTests/<Suite>            run one suite

@@ -15,6 +15,7 @@ Project `ReciMate.xcodeproj`, scheme `ReciMate`, test target `ReciMateTests` (Sw
 - Run tests: `scripts/test.sh [scope]`. It builds the test products, runs the tests, and ends with `PASS` or `FAILED` plus the failure lines. Raw output goes to two logs: `build/build.log` (building) and `build/test.log` (running tests).
 - Scope: none = full suite. `ReciMateTests/<Suite>` = one suite. `ReciMateTests/<Suite>/<test>()` = one test; the parentheses are required, otherwise no tests match and the script reports `no tests ran`.
 - List tests: `xcodebuild test -enumerate-tests -project ReciMate.xcodeproj -scheme ReciMate -destination 'platform=iOS Simulator,name=iPhone 17'`
+- Derived data: default Xcode location, kept between runs so builds stay incremental.
 - Typecheck: covered by build
 - Lint:      none
 - Covers:    compiling the app and test target, and running the `ReciMateTests` unit tests on the simulator. No UI tests exist yet.
