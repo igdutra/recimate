@@ -1,7 +1,5 @@
 # macOS
 .DS_Store
-.AppleDouble
-.LSOverride
 
 # Xcode
 build/
@@ -24,17 +22,9 @@ playground.xcworkspace
 .swiftpm/
 Packages/
 Package.pins
-# Package.resolved
-
-# CocoaPods / Carthage
-Pods/
-Carthage/Build/
-
-# fastlane
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output
 
 # Secrets
 *.env
+
+# AI Reference folder - files here are not ready to be commited.
+references/
