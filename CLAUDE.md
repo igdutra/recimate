@@ -1,7 +1,7 @@
 # ReciMate iOS Recipe App
 
 This is a Swift/SwiftUI iOS application challenge to build a recipe browser with search and filtering.
-- **Stack**: Swift 6+, SwiftUI, iOS 16+
+- **Stack**: Swift 6+, SwiftUI, iOS 26+
 - **Data**: Local JSON mock API (no network calls)
 - **Key features**: Recipe list/grid, search, dietary/ingredient/servings filters
 - **Focus areas**: Architecture clarity, error handling assumptions, edge case documentation
