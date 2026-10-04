@@ -32,7 +32,7 @@ F Polish + README
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
 | C | Recipe Library | V1, V2, V3, E1 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded state done (004); states pending |
 | D | Search + Filtering | S1–S6, E3 (filter side) | | not started |
-| E | Recipe Details | E2 | | not started |
+| E | Recipe Details | E2 | 006 (loaded state) | loaded state planned (006); states pending |
 | F | Polish + README | R1–R6, P2 | | not started |
 
 The user flow the milestones build toward:
@@ -79,7 +79,20 @@ plus the search bar and filter UI that drive it:
 **E. Recipe Details.** The detail screen: title, description, servings,
 vegetarian indicator, ingredient quantities and numbered cooking instructions.
 Also the intentional failure (E2) shown through the view state and
-`ContentUnavailableView`, with a retry action.
+`ContentUnavailableView`, with a retry action. Delivered in steps:
+
+- Spec 006: the Details screen in its loaded state only (segmented
+  Ingredients / Steps layout, native back button, full-bleed hero).
+- Still to do: loading, error (E2, with Try Again), and the no-image hero.
+  Mandatory, not optional polish, so they live here and not in the backlog. Until
+  they land, a tap on a recipe with no detail file (6 of 9, plus
+  `creamy-tomato-pasta`) opens a blank screen. They use the same
+  `View+StateOverlay` pattern as the Library. What changes when it lands: both
+  screens drop their "blank unless loaded" branch for the overlay; Details'
+  error frame needs a retry action (`load()` re-run, which the view model
+  already allows after an error); the frame's "Back to Recipes" button is
+  redundant with the native back button and is dropped or kept as a decision
+  then; new tokens are the 80pt badge circle and the 32pt loading icon.
 
 **F. Polish + README.** Accessibility and visual pass (labels, Dynamic Type
 checks), final full test run, and the README sections R2–R6.
