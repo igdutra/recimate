@@ -103,6 +103,16 @@ handlers). Each needs a package or a reference-image workflow, so decide the
 tools when it is scheduled. Revisit when the state, search and filter views land,
 since more views make regressions more likely.
 
+## Navigation tests with ViewInspector
+
+The views call the `AppRouter` directly (injected by initializer at the
+composition root), so there is no view model seam to unit test navigation. Add
+ViewInspector tests that build a view with a real `AppRouter`, tap the card or
+the filter button, and assert `router.path` or `router.sheet`. Also unit test the
+router itself (push, pop, pop to root, present, dismiss). If the view tests prove
+awkward, fall back to injecting the router into the view models. Part of the
+wider view tests item above, so pick the package once for both.
+
 ## Formatting benchmark (kept as a check)
 
 Spec 004 chose "format each recipe once, in one mapper" from a benchmark, not
