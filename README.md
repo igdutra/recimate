@@ -19,3 +19,7 @@ The workflow follows Anthropic's guidance for the Claude 5 family. The core idea
 - [Spending Your Effort](https://claude.dev/blog/spending-your-effort/)
 
 Build and test commands for the agent live in [`CLAUDE.md`](CLAUDE.md).
+
+## Code organization
+
+Files are condensed for simplicity. A view's view data lives in the view's file, and the mapping from a domain type to view data is a static function on the view model, tested with it. Under `Presentation/Library/`, a card's small views sit together in `Components/RecipeCard/` and the chips in `Components/QuickFilterBar/`. Depending on the project, each of these types can deserve its own file (a bigger team, a larger view data type, a mapper shared by several screens); here, fewer files made the code easier to read.

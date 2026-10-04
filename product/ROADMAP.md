@@ -30,7 +30,7 @@ F Polish + README
 |---|-----------|--------|-------|--------|
 | A | Foundation + Data Contract | D1, D2 | 001 | done |
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
-| C | Recipe Library | V1, V2, V3, E1 | 003 (design prototype for C, D, E), 004 (loaded state) | in progress |
+| C | Recipe Library | V1, V2, V3, E1 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded state done (004); states pending |
 | D | Search + Filtering | S1–S6, E3 (filter side) | | not started |
 | E | Recipe Details | E2 | | not started |
 | F | Polish + README | R1–R6, P2 | | not started |

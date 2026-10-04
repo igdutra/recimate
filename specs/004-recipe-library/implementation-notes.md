@@ -1,0 +1,41 @@
+# 004 Recipe Library: implementation notes
+
+## Assumptions
+
+- Chip icon-to-label gap uses `Spacing.extraSmall` (4); the mock's 6 is off the scale.
+- `Typography.screenTitle` and `searchText` exist as the design lists them, but the title
+  and the search field are native, so no component reads them yet.
+- While a photo is loading, the card shows the bare placeholder tile (no icon); the icon
+  appears only for no URL or a failed load.
+- The search field is attached to the loaded content, so it is hidden together with the
+  grid before load and after an error (AC8).
+- Previews use a local PNG written to the temp directory (`PreviewSupport/PreviewImage.swift`,
+  DEBUG only), so none depend on the network.
+
+## Deviations
+
+- The "screen with the local client" preview lives in `ReciMateApp.swift`, not `Presentation/`: AC10 forbids naming `API/` types there.
+- `load()` also returns at once while a load is in flight (not only when loaded), to avoid a duplicate call from a re-run `.task`.
+- Xcode already generates `Color.ink` and `Color.mist` from the asset catalog, so `Colors.swift` declares only the two derived colors (a redeclaration failed to compile).
+- File layout condensed after review (differs from the spec's folder list): view data types live in their view's file, `RecipeCardViewDataMapper` and `ServingsLabelFormatter` became static functions on `RecipeLibraryViewModel` (`makeCard(from:)`, private `servingsLabel(forServingCount:)`) and their tests moved into `RecipeLibraryViewModelTests`; the chips row is its own `QuickFilterBar`; components sit in `Components/RecipeCard/` and `Components/QuickFilterBar/`. Reason: fewer files, easier to read. Every preview is preceded by `// MARK: - Preview`.
+- The chips container is named `QuickFilterBar` (not `FilterChipsView` or `...Row`): in SwiftUI "row" means a `List` item, "bar" fits a strip of controls (toolbar, tab bar), and "quick" matches the design's "quick chips" and keeps it apart from the Filters chip and sheet (milestone D). The whole group follows that name so a view, its view model and its view data share one root: `QuickFilterBarViewModel`, `QuickFilterBarViewData`, folder `Components/QuickFilterBar/`, property `quickFilterBar` on `RecipeLibraryViewModel`, `QuickFilterBarViewModelTests`. `FilterChipView` and `FilterChipViewData` stay as the single chip. No authoritative convention was found online; this is a judgment call.
+- `ViewState.idle` was dropped after review (the spec lists `idle`, `loading`, `loaded`, `error`, and AC7 reads `idle -> loading -> ...`). Now: three cases, the view model starts in `.loading`, and AC7 becomes `loading -> loaded` / `loading -> error` (tests: `staysLoadingUntilServiceReturnsThenLoaded`, `...ThrowsThenError`). A private `isLoadInFlight` flag replaces the old `isLoading` guard, which would otherwise block the first load.
+  - Where it came from: the four-case `idle / loading / failed / loaded` enum is the common pattern from Swift by Sundell's ["Handling loading states within SwiftUI views"](https://www.swiftbysundell.com/articles/handling-loading-states-in-swiftui/); the spec adapted it from the project owner's earlier code, which held `any Error`. In that article `idle` is how the view starts loading: it renders `Color.clear.onAppear(perform: viewModel.load)` and the view model moves to `loading`.
+  - Why dropped: here the trigger is `.task` on the screen, so nothing needs `idle` to start a load. Nothing read `.idle` (only the initial value and tests), the view drew the same blank for `idle` and `loading`, and the duplicate-load guard checked `isLoaded` and `isLoading`, not `idle`. Milestone C's loading UI has to show on the first frame anyway. Apple's own `AsyncImagePhase` also has one "nothing yet" case (`empty`), not separate idle and loading. Cost: one private Boolean in the view model.
+  - Revisit if a screen ever starts loading from a user action (a Search button, pull to refresh from empty): `idle` would then mean something.
+- AC11's grep flags `VStack(spacing: 0)` in `RecipeCardView` (photo flush against the body); 0 is not a design value, so no token was added.
+
+## Test decisions
+
+- **One double for `RecipeListService`: `RecipeListServiceSpy`.** Every load goes through it, and a single `makeSUT()` returns `(sut, spy)`. Tests that only need an end state use the `load(_:on:completingWith:)` and `load(_:on:failingWith:)` helpers; tests that look at the view model mid-load use `startLoad(of:on:)`. A closure-backed stub was tried first and removed once nothing used it. The test file is grouped with `// MARK: -` sections (initial state, happy path, failure modes, repeated loads, card mapping) and its helpers sit in a private extension.
+- **`ServiceSpy<Parameter, Resource>`** (`ReciMateTests/Helpers/`) is the generic spy behind it: one `AsyncThrowingStream` per request, `complete(with:at:)` and `fail(with:at:)` to finish a request, and a bounded wait with `Task.yield()` until the awaiting side has recorded the outcome. The pattern (a spy over `AsyncThrowingStream`, waiting with `Task.yield()`) comes from the Essential Developer course. Cancellation support is left out because cancellation handling is a backlog item; add it with that item.
+- **No `Mutex`, `nonisolated(unsafe)` or `assumeIsolated`.** The spies and suites are `@MainActor`. `RecipeListServiceSpy` marks `loadRecipes()` `@MainActor` explicitly, as `RecipeAPIClientSpy` does; without that annotation the body is treated as nonisolated and does not compile.
+- **Waits are bounded.** `waitUntilRequested(count:)` replaces a single `Task.yield()` that assumed one turn was enough. A timeout records an issue instead of hanging.
+- **A regression must fail, not hang.** Mutation check: removing the in-flight guard from `load()` made the while-loading test wait forever on a second request nobody completed. Fixed by asserting `requestCount` before awaiting, `failPendingRequests()` to resolve stray requests, an out-of-range request index recorded as an issue instead of a crash, and `@Suite(.hangGuard)` on the suite as a measure to avoid any future hang: a time-limit failure replaces a stuck run. It is on the suite, not on each test, so tests added later are covered too.
+
+- **The API service tests follow the same layout.** `RecipeListServiceTests` and `RecipeDetailsServiceTests` are grouped with `// MARK: -` (request, happy path, failure modes), use one `makeSUT()` returning `(sut, spy)` through a `SUTBundle` typealias, and keep their helpers (`makeSUT`, the data builders, `CustomError`, the undecodable payloads) in a private extension. They have no `hangGuard`: `RecipeAPIClientSpy` answers immediately, so those tests cannot wait on a request. `RecipeEndpointTests` is two pure URL checks and was left as is.
+- **`hangGuard` is a DSL that names the intent** (`ReciMateTests/Helpers/HangGuardTrait.swift`, a `Trait` extension over `.timeLimit(.minutes(1))`). The raw call only says "one minute", which hides why it is there; `hangGuard` says it is a guardrail against a hanging test, not a performance budget. One minute is the shortest limit Swift Testing supports. Use `@Suite(.hangGuard)` on any suite whose tests await a spy.
+
+## Not verified here
+
+- Visual and simulator checks (AC1, 2, 3, 5, 6, 9, 12, 13): left to the user's manual pass.
