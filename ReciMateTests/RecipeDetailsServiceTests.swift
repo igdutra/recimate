@@ -93,15 +93,6 @@ struct RecipeDetailsServiceTests {
         await #expect(throws: RecipeError.unavailable) { try await service.loadRecipe(id: "petit-gateau") }
     }
 
-    @Test(arguments: ["", " ", ".", ".."])
-    func loadRecipe_withUnusableID_throwsNotFoundWithoutRequesting(recipeID: String) async {
-        let (service, clientSpy) = makeSUT()
-        clientSpy.stub(data: makeDetailsData(.fixture(id: recipeID)))
-
-        await #expect(throws: RecipeError.notFound) { try await service.loadRecipe(id: recipeID) }
-        #expect(clientSpy.requestedURLs.isEmpty)
-    }
-
     // MARK: - Helpers
 
     private struct CustomError: Error {}

@@ -60,3 +60,9 @@ and whether the button shows how many recipes match ("Apply Filters, 12
 recipes"). A live count needs a count query against the search endpoint. The
 design pass draws a plain "Apply Filters" button with no count; the count is
 optional polish.
+
+## URL handling and path security
+
+Check the URL path conventions and security concerns (client-side path
+traversal) when building URLs from ids. Ids are trusted for the MVP; a guard
+for blank, `.` and `..` ids was removed from spec 002.

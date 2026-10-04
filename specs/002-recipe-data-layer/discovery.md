@@ -166,7 +166,7 @@ enum RecipeEndpoint: Sendable {
   percent-encodes the id: `a b` → `a%20b`, `a/b` → `a%2Fb`, `a?b` → `a%3Fb`,
   `a#b` → `a%23b`. A string-concatenated path would let `a/b` become two
   segments. The dot segments `.` and `..` are *not* encoded and stay path
-  traversal, so the service rejects them as `notFound` before building a URL.
+  traversal; ids are trusted for the MVP (URL handling, backlog).
 - **Query items (milestone 004) are appended only when there are any.**
   Verified: `appending(queryItems: [])` leaves a dangling `?` on the URL, so 004
   must guard on non-empty.
@@ -245,8 +245,7 @@ should not do. What remains:
 - Instructions are returned ordered by `step`; out-of-order input is sorted.
 - Valid and not errors: an empty list, a recipe without a photo, an ingredient
   without a quantity, empty ingredient or instruction arrays.
-- The request side keeps one check: blank, `.` and `..` ids are `notFound` without
-  a request. `URL.appending` does not encode dot segments, so they would traverse.
+- The request side has no id check; ids are trusted (URL handling, backlog).
 - The malformed fixture `creamy-tomato-pasta` (`"step": "two"`) is the real
   decoding failure for E2.
 - Seeing bad data in the field is Observability (backlog): logging and analytics.
@@ -351,8 +350,7 @@ middle fails the whole list); any other client error gives `unavailable`.
 URLs); valid JSON maps to the full recipe; out-of-order steps are sorted; a
 recipe without photo, ingredients or instructions succeeds; client `notFound`
 gives `notFound`; undecodable data gives `invalidData` with a reason (including
-the `"step": "two"` shape); any other client error gives `unavailable`; unusable
-ids (`""`, `" "`, `.`, `..`) give `notFound` without a request.
+the `"step": "two"` shape); any other client error gives `unavailable`.
 
 ## Files this milestone adds
 

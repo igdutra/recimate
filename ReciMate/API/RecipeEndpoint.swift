@@ -12,7 +12,8 @@ enum RecipeEndpoint: Sendable {
 
     /// `URL.appending` keeps the base URL's scheme, port and path prefix, ignores
     /// a trailing slash, and percent-encodes an id as a single path component.
-    /// The dot segments `.` and `..` are not encoded; services reject them first.
+    /// Assumption: ids are trusted (they come from `recipe-list`); the dot
+    /// segments `.` and `..` are not encoded (see BACKLOG.md, URL handling).
     func url(baseURL: URL) -> URL {
         switch self {
         case .list:

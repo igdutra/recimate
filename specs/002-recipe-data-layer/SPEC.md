@@ -32,8 +32,8 @@ Nothing is visible on screen yet; the behaviour is observable through tests.
   the one asked for all pass through). Validating the backend would hide what it
   actually sent; an MVP should not.
 - Any other failure is reported as "unavailable". The caller never sees why.
-- Ids that cannot name a recipe (blank, `.`, `..`) are "not found" without
-  any lookup. Ids with special characters are looked up safely as one name.
+- Ids with special characters are looked up safely as one name. Ids are trusted;
+  blank, `.` and `..` ids are not guarded (see [BACKLOG.md](../../product/BACKLOG.md)).
 - The intentionally broken recipe (`creamy-tomato-pasta`) reports "invalid
   data"; recipes without a detail file report "not found" (what E2 needs).
 
@@ -67,9 +67,8 @@ Nothing is visible on screen yet; the behaviour is observable through tests.
 7. **No validation of backend data.** `invalidData` means "does not decode".
    Rule checks (servings, blank strings, duplicates, id mismatch) were designed,
    built and removed: they masked what the backend sent. Seeing bad data is
-   Observability (backlog). The one check kept is on the request: blank, `.` and
-   `..` ids are `notFound` without a request, because `URL.appending` does not
-   encode dot segments.
+   Observability (backlog). Ids are trusted: blank, `.` and `..` are not guarded
+   (URL handling, backlog).
 8. **Swift 6 isolation.** The app target's default actor isolation is switched
    off, so the app and test targets are both nonisolated by default and the data
    layer needs no isolation keywords. Value types still declare `Sendable`. One
@@ -90,7 +89,7 @@ Under `ReciMate/`:
 - `API/RecipeEndpoint.swift`.
 - `API/Infrastructure/LocalRecipeAPIClient.swift`: finds `<last path component>.json` in the bundle and returns its bytes; a missing file throws `RecipeAPIClientError.notFound`, anything else passes through. It ignores scheme and host.
 - `API/List/`: the list DTO, `RecipeListService` (protocol and `RemoteRecipeListService`, a struct initialised with `baseURL` and `client`), `RecipeListDataMapper`, `RecipeListMapper`.
-- `API/Details/`: the same for details, including the shared `DietaryAttributesDTO`. The details service rejects unusable ids first.
+- `API/Details/`: the same for details, including the shared `DietaryAttributesDTO`.
 - Each service: build the URL via `RecipeEndpoint`, call the client, run the two mappers, translate errors.
 - `Domain/RecipeError.swift`.
 - DTOs and domain models declare `Sendable`; the domain models are `Equatable`.
@@ -168,7 +167,7 @@ Task list: yes
 - **AC3** A missing resource gives `notFound`; undecodable data gives
   `invalidData` with a reason; any other client error gives `unavailable`.
 - **AC4** One undecodable item in the list fails the whole list.
-- **AC5** Blank, `.` and `..` ids give `notFound` without a client call.
+- **AC5** Removed: the unusable-id guard (see Deviations in `implementation-notes.md`).
 - **AC6** Each load makes exactly one client request, to the URL `RecipeEndpoint`
   gives for the injected base URL.
 - **AC7** The list URL is the base URL plus `/recipe-list`; the details URL is the
@@ -187,7 +186,7 @@ Task list: yes
 Each line names the criteria it checks.
 
 - **AC1, AC3, AC4** `scripts/test.sh ReciMateTests/RecipeListServiceTests`.
-- **AC2, AC3, AC5** `scripts/test.sh ReciMateTests/RecipeDetailsServiceTests`.
+- **AC2, AC3** `scripts/test.sh ReciMateTests/RecipeDetailsServiceTests`.
 - **AC6** Both service suites (`…_requestsListEndpointURL`, `…_requestsDetailsEndpointURL`).
 - **AC7** `scripts/test.sh ReciMateTests/RecipeEndpointTests`.
 - **AC8** Read the imports and initialisers of the services and endpoint: only

@@ -7,12 +7,7 @@ struct RemoteRecipeDetailsService: RecipeDetailsService {
     let client: any RecipeAPIClient
 
     func loadRecipe(id: String) async throws -> RecipeDetails {
-        // Ids that cannot name a recipe never reach the client. `.` and `..`
-        // are not percent-encoded by `URL.appending`, so they would traverse.
-        guard !id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, id != ".", id != ".." else {
-            throw RecipeError.notFound
-        }
-        return try await load(id: id)
+        try await load(id: id)
     }
 
     /// `@concurrent`: see `RemoteRecipeListService.load()`.

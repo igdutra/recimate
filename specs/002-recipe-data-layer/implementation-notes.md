@@ -30,9 +30,9 @@ file records what changed on the way and why.
   `RecipeRules` helper was written for them. On review that is the app validating
   the backend and hiding what it sent, which an MVP should not do. All of it was
   removed, with its tests. `invalidData` now means "the bytes do not decode into
-  the DTO"; one undecodable item still fails the whole list. The one kept check is
-  on the request: blank, `.` and `..` ids are `notFound` without a request, because
-  `URL.appending` does not encode dot segments and they would traverse the path.
+  the DTO"; one undecodable item still fails the whole list. Ids are
+  trusted: the request-side guard for blank, `.` and `..` ids was removed too (see
+  Deviations; URL handling, backlog).
 - **`invalidData` carries a reason.** `invalidData(reason:)` holds the decoder's
   description as a string (a string so `RecipeError` stays `Equatable`), so the
   cause reaches the service layer and the view model decides what to do with it.
@@ -91,3 +91,4 @@ file records what changed on the way and why.
 - DTOs and domain types do not carry `nonisolated`; see the isolation decision.
 - The spec's test plan (EP, DL, DD ids, the larger endpoint suite, the spy's
   `Mutex`, cancellation tests, rule-violation tests) was replaced by the lean suite.
+- Removed the unusable-id guard (blank, `.`, `..` gave `notFound` without a request) and AC5: ids are trusted for the MVP. Logged in the backlog as "URL handling and path security".

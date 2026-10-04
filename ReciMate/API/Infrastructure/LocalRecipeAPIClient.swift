@@ -17,6 +17,8 @@ struct LocalRecipeAPIClient: RecipeAPIClient {
     }
 
     func data(from url: URL) async throws -> Data {
+        // Note: the RecipeAPIClient endpoint for details resolves as ` https://api.recimate.example/recipe-details/petit-gateau`
+        // But this mock object only cares for the lastPathComponent, that is why the filename is `petit-gateau.json`.
         guard let fileURL = bundle.url(forResource: url.lastPathComponent, withExtension: "json") else {
             throw RecipeAPIClientError.notFound
         }
@@ -36,7 +38,7 @@ struct LocalRecipeAPIClient: RecipeAPIClient {
     print("list:", previews.map(\.title))
 
     // A good recipe, the intentionally broken one, and ids with no detail file.
-    for recipeID in ["petit-gateau", "creamy-tomato-pasta", "beef-tacos", ".."] {
+    for recipeID in ["petit-gateau", "creamy-tomato-pasta", "beef-tacos"] {
         do {
             let recipe = try await detailsService.loadRecipe(id: recipeID)
             print("\(recipeID):", recipe.title, "-", recipe.ingredients.count, "ingredients,", recipe.instructions.count, "steps")
