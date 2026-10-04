@@ -5,8 +5,11 @@
 - Chip icon-to-label gap uses `Spacing.extraSmall` (4); the mock's 6 is off the scale.
 - `Typography.screenTitle` and `searchText` exist as the design lists them, but the title
   and the search field are native, so no component reads them yet.
-- While a photo is loading, the card shows the bare placeholder tile (no icon); the icon
-  appears only for no URL or a failed load.
+- While a photo is loading, the card shows a `ProgressView` on the placeholder tile; the "no image"
+  icon appears only for no URL or a failed load. The phase-based `AsyncImage` initializer is
+  used, not the `placeholder:` one: Apple's docs say the placeholder stays on screen when the
+  load fails, so a spinner there would spin forever on a bad URL. `AsyncImage` also reports
+  `.empty` for a `nil` URL, so `RecipeImageView` checks for `nil` before it creates one.
 - The search field is attached to the loaded content, so it is hidden together with the
   grid before load and after an error (AC8).
 - Previews use a local PNG written to the temp directory (`_DevelopmentAssets/PreviewImage.swift`,
