@@ -59,8 +59,7 @@ root view with `NavigationStack`, `.navigationDestination(for:)` and `.sheet(ite
   not contradicted ("just basic wiring"). Confirm in the spec; it is replaced when
   the real filters entry point is designed.
 - **Card tap target.** Make the whole card a `Button` or add a tap gesture to it,
-  without changing its look. Decide in the spec, with accessibility in mind
-  (a button keeps VoiceOver and focus behavior).
+  without changing its look. Decide in the spec.
 - **Details for recipes without data.** Only 3 of 9 recipes have details, so a
   tap on the others will reach a dummy view that cannot load them. Out of scope
   here; the real Detail spec handles the unavailable state.

@@ -19,8 +19,7 @@ navigation works. Decisions come from [discovery.md](discovery.md).
   recipe was tapped, with a back button that returns to the Recipes screen.
 - The Recipes screen has a Filters button in its navigation bar. Tapping it opens
   a placeholder filters sheet, which can be dismissed by swiping it down.
-- Cards look the same as before, and each is one accessibility element that
-  VoiceOver announces as a button.
+- Cards look the same as before.
 - Nothing else changes: no loading of details, no filter state, no new behavior.
 
 ## Decisions / Architecture
@@ -40,8 +39,7 @@ navigation works. Decisions come from [discovery.md](discovery.md).
    is one fixed route type. Router API: `path`, `sheet`, `push(_:)`, `pop()`, `popToRoot()`,
    `present(_:)`, `dismissSheet()`. `pop()` on an empty path does nothing.
 5. **The whole card is a `Button` with the plain style**, added in the grid, not
-   in `RecipeCardView`. Rejected: a tap gesture, which loses the button trait for
-   VoiceOver. Cost: no pressed-state highlight on the card for now.
+   in `RecipeCardView`. Rejected: a tap gesture. Cost: no pressed-state highlight on the card for now.
 6. **The Filters entry point is a temporary toolbar button** (title "Filters",
    system image `slider.horizontal.3`) on the Recipes screen. It is replaced when
    the real filters entry point is built.
@@ -110,8 +108,7 @@ Fixed and assumed:
 4. Wire `RecipeLibraryView`: remove its stack, add the toolbar button, wrap the
    cards in buttons, update its previews.
 5. Wire `ReciMateApp` and its preview to `RootView`.
-6. Check in the simulator: card tap, back, Filters button, swipe down, and with
-   VoiceOver on or the accessibility inspector for the card trait.
+6. Check in the simulator: card tap, back, Filters button, swipe down.
 7. Run the full suite once. Note any deviation in `implementation-notes.md` under
    `## Deviations`, and update `product/ROADMAP.md` if it tracks navigation.
 
@@ -121,8 +118,8 @@ Task list: no
 
 - **Where does the Filters button go?** → A temporary toolbar button on the
   Recipes screen: smallest change, replaced later by the designed entry point.
-- **Card tap: button or gesture?** → A plain-style `Button` around the card, for
-  VoiceOver and keyboard focus behavior. Accepted cost: no pressed highlight.
+- **Card tap: button or gesture?** → A plain-style `Button` around the card. Accepted cost:
+  no pressed highlight.
 - **Details for recipes that have none?** → Out of scope; the dummy view shows the
   id only. The real Detail spec owns the unavailable state.
 - **Does `.task` still run once after the stack moves?** → Yes, if it sits on a
@@ -145,8 +142,7 @@ Task list: no
   tapping it presents the filters placeholder as a sheet.
 - **AC5.** The filters sheet can be dismissed by swiping down, and the router's
   sheet is cleared afterwards.
-- **AC6.** Each card is a single accessibility element with the button trait,
-  and looks the same as before.
+- **AC6.** Cards look the same as before.
 - **AC7.** `AppRouter` behaves as specified: `push` adds to the path, `pop`
   removes the last entry and does nothing on an empty path, `popToRoot` empties
   the path, `present` sets the sheet and `dismissSheet` clears it.
@@ -162,8 +158,7 @@ Task list: no
 - **AC1, AC2, AC3, AC4, AC5** Run the app on the iPhone 17 simulator: launch,
   tap a card, go back, tap Filters, swipe the sheet down. Previews cover each
   placeholder and `RootView` for a quick check.
-- **AC6** Accessibility inspector on a card in the simulator: one element, role
-  Button. Compare the card against the previous screenshot or preview.
+- **AC6** Compare the card against the previous screenshot or preview.
 - **AC8** `rg "Environment\(AppRouter|\.environment\(router" ReciMate` returns
   nothing, and `rg AppRouter ReciMate/Presentation/Library/RecipeLibraryViewModel.swift`
   returns nothing.

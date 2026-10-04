@@ -103,6 +103,16 @@ handlers). Each needs a package or a reference-image workflow, so decide the
 tools when it is scheduled. Revisit when the state, search and filter views land,
 since more views make regressions more likely.
 
+## Accessibility pass
+
+Spec 005 made each recipe card a plain-style `Button` around a card that is one
+combined accessibility element, and did not check it with VoiceOver. Do a proper
+pass: confirm a card reads as a button with its title, servings and the
+vegetarian mark; the Filters toolbar button reads as "Filters"; the details and
+sheet placeholders announce their screen; focus order; and large Dynamic Type.
+Check the card's pressed state too (the plain style removes the highlight).
+Revisit when the real Details and Filters screens land.
+
 ## Navigation tests with ViewInspector
 
 The views call the `AppRouter` directly (injected by initializer at the
