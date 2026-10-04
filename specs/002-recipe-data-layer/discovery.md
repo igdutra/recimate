@@ -14,7 +14,7 @@ which win. Superseded: validation rules (5), cancellation (4), `nonisolated`
 data layer (6), the spy and test plan (Testing approach).
 
 Inputs read: `product/`, `specs/001-*/notes.md`, the DTOs, domain types and
-fixtures, and everything in `references/` (architecture notes, test map, testing
+fixtures, and everything in `references/` (a git-ignored folder, not part of the repo: architecture notes, test map, testing
 cheat sheet, `RemoteSongRepositoryTests.swift`).
 
 ## Decisions

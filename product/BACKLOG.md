@@ -17,6 +17,16 @@ milestone B (spec 002) dropped the handling and its tests. Add it back, with a t
 together with the URLSession client: rethrow `CancellationError` (and map
 `URLError(.cancelled)` to it) before the services' catch-all.
 
+Test side, from the Essential Developer course's async spy pattern: `ServiceSpy`
+(`ReciMateTests/Helpers/`) leaves cancellation out. When this lands, have it record a
+third outcome, `cancelled`, when the awaiting task was cancelled (check `Task.isCancelled`
+in the catch), and let a test wait for that outcome with the same bounded `Task.yield()`
+loop. A view model that owns a task must cancel it in `deinit` and check
+`Task.isCancelled` before presenting, because releasing a `Task` cancels nothing (unlike
+an `AnyCancellable`). If the view model starts its work from a synchronous `load()`,
+`Task.immediate` (iOS 26 and later) registers the request before the next line of the
+test; with a plain `Task` the request registers one main-actor turn later.
+
 ## Search by title / description
 
 Free-text search over recipe title and description. The brief only asks for
