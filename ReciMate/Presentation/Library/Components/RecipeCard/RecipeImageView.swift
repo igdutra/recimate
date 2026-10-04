@@ -1,12 +1,15 @@
 import SwiftUI
 
-/// A card's photo: fills a fixed-height tile. While the photo loads the tile shows a
-/// spinner; with no URL, or when the photo fails to load, it shows a neutral icon.
+/// A recipe photo: fills a fixed-height tile (the card's, or the Details hero). While the
+/// photo loads the tile shows a spinner; with no URL, or when the photo fails to load, it
+/// shows a neutral icon.
 struct RecipeImageView: View {
     let imageURL: URL?
+    let height: CGFloat
+    let placeholderIconSize: CGFloat
 
     var body: some View {
-        RecipeImageTile {
+        RecipeImageTile(height: height) {
             if let imageURL {
                 AsyncImage(url: imageURL) { phase in
                     switch phase {
@@ -19,15 +22,15 @@ struct RecipeImageView: View {
                             .resizable()
                             .scaledToFill()
                     case .failure:
-                        PlaceholderIcon()
+                        PlaceholderIcon(size: placeholderIconSize)
                     @unknown default:
                         // `AsyncImagePhase` is not frozen. A phase we do not know gets the
                         // neutral icon, never a spinner that might never stop.
-                        PlaceholderIcon()
+                        PlaceholderIcon(size: placeholderIconSize)
                     }
                 }
             } else {
-                PlaceholderIcon()
+                PlaceholderIcon(size: placeholderIconSize)
             }
         }
     }
@@ -35,11 +38,12 @@ struct RecipeImageView: View {
 
 /// The fixed-height tile every state of the photo sits in.
 private struct RecipeImageTile<Content: View>: View {
+    let height: CGFloat
     @ViewBuilder let content: Content
 
     var body: some View {
         Color.placeholderFill
-            .frame(height: Sizing.cardPhotoHeight)
+            .frame(height: height)
             .frame(maxWidth: .infinity)
             .overlay { content }
             .clipped()
@@ -47,9 +51,11 @@ private struct RecipeImageTile<Content: View>: View {
 }
 
 private struct PlaceholderIcon: View {
+    let size: CGFloat
+
     var body: some View {
         Image(systemName: "photo")
-            .font(.system(size: Sizing.iconPlaceholder, weight: .light))
+            .font(.system(size: size, weight: .light))
             .foregroundStyle(Color.inkSecondary)
             .accessibilityHidden(true)
     }
@@ -59,20 +65,20 @@ private struct PlaceholderIcon: View {
 
 #if DEBUG
 #Preview("Loaded") {
-    RecipeImageView(imageURL: PreviewImage.fileURL)
+    RecipeImageView(imageURL: PreviewImage.fileURL, height: Sizing.cardPhotoHeight, placeholderIconSize: Sizing.iconPlaceholder)
 }
 
 // A real URL cannot be held in its loading phase in a preview, so this draws the
 // loading state directly.
 #Preview("Loading") {
-    RecipeImageTile { ProgressView() }
+    RecipeImageTile(height: Sizing.cardPhotoHeight) { ProgressView() }
 }
 
 #Preview("No URL") {
-    RecipeImageView(imageURL: nil)
+    RecipeImageView(imageURL: nil, height: Sizing.cardPhotoHeight, placeholderIconSize: Sizing.iconPlaceholder)
 }
 
 #Preview("Failing URL") {
-    RecipeImageView(imageURL: PreviewImage.failingURL)
+    RecipeImageView(imageURL: PreviewImage.failingURL, height: Sizing.cardPhotoHeight, placeholderIconSize: Sizing.iconPlaceholder)
 }
 #endif

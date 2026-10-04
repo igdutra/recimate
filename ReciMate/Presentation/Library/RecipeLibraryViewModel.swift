@@ -52,14 +52,9 @@ final class RecipeLibraryViewModel {
         RecipeCardViewData(
             id: preview.id,
             title: preview.title,
-            servingsLabel: servingsLabel(forServingCount: preview.servings),
+            servingsLabel: ServingsLabelFormatter.label(forServingCount: preview.servings),
             isVegetarian: preview.dietaryAttributes.isVegetarian,
             imageURL: preview.imageURL
         )
-    }
-
-    /// "1 serving", "2 servings". English only; String Catalog plural variation is in the backlog.
-    private static func servingsLabel(forServingCount servingCount: Int) -> String {
-        servingCount == 1 ? "1 serving" : "\(servingCount) servings"
     }
 }

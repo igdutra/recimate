@@ -11,4 +11,6 @@ enum Spacing {
     static let large: CGFloat = 16
     /// Screen gutter, chips to grid.
     static let extraLarge: CGFloat = 20
+    /// Details body top padding; gap before the second section (single scroll only).
+    static let extraExtraLarge: CGFloat = 24
 }

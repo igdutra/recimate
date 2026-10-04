@@ -9,4 +9,6 @@ extension Color {
     static let inkSecondary = Color.ink.opacity(0.66)
     /// The no-image placeholder tile.
     static let placeholderFill = Color.ink.opacity(0.08)
+    /// Ingredient row dividers, and (single scroll layout only) the rule under servings.
+    static let separator = Color.ink.opacity(0.12)
 }

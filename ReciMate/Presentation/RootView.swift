@@ -4,10 +4,16 @@ import SwiftUI
 struct RootView: View {
     @Bindable private var router: AppRouter
     private let libraryViewModel: RecipeLibraryViewModel
+    private let makeDetailsViewModel: (String) -> RecipeDetailsViewModel
 
-    init(router: AppRouter, libraryViewModel: RecipeLibraryViewModel) {
+    init(
+        router: AppRouter,
+        libraryViewModel: RecipeLibraryViewModel,
+        makeDetailsViewModel: @escaping (String) -> RecipeDetailsViewModel
+    ) {
         self.router = router
         self.libraryViewModel = libraryViewModel
+        self.makeDetailsViewModel = makeDetailsViewModel
     }
 
     var body: some View {
@@ -16,7 +22,7 @@ struct RootView: View {
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case .details(let recipeID):
-                        RecipeDetailsView(recipeID: recipeID)
+                        RecipeDetailsView(viewModel: makeDetailsViewModel(recipeID))
                     }
                 }
         }
@@ -35,7 +41,10 @@ struct RootView: View {
 #Preview("Root, sample recipes") {
     RootView(
         router: AppRouter(),
-        libraryViewModel: RecipeLibraryViewModel(service: PreviewRecipeListService())
+        libraryViewModel: RecipeLibraryViewModel(service: PreviewRecipeListService()),
+        makeDetailsViewModel: { recipeID in
+            RecipeDetailsViewModel(recipeID: recipeID, service: PreviewRecipeDetailsService())
+        }
     )
 }
 #endif

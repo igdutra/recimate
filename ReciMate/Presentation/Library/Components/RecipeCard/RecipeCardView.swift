@@ -14,7 +14,11 @@ struct RecipeCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            RecipeImageView(imageURL: card.imageURL)
+            RecipeImageView(
+                imageURL: card.imageURL,
+                height: Sizing.cardPhotoHeight,
+                placeholderIconSize: Sizing.iconPlaceholder
+            )
             details
         }
         .background(Color.mist)

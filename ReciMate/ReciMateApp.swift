@@ -18,13 +18,22 @@ struct ReciMateApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(router: router, libraryViewModel: Self.makeLibraryViewModel())
+            RootView(
+                router: router,
+                libraryViewModel: Self.makeLibraryViewModel(),
+                makeDetailsViewModel: Self.makeDetailsViewModel
+            )
         }
     }
 
     static func makeLibraryViewModel() -> RecipeLibraryViewModel {
         let service = RemoteRecipeListService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
         return RecipeLibraryViewModel(service: service)
+    }
+
+    static func makeDetailsViewModel(recipeID: String) -> RecipeDetailsViewModel {
+        let service = RemoteRecipeDetailsService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
+        return RecipeDetailsViewModel(recipeID: recipeID, service: service)
     }
 }
 
@@ -33,6 +42,16 @@ struct ReciMateApp: App {
 // Lives here, not in `Presentation/`, because it builds an `API/` type.
 #if DEBUG
 #Preview("Root, local client") {
-    RootView(router: AppRouter(), libraryViewModel: ReciMateApp.makeLibraryViewModel())
+    RootView(
+        router: AppRouter(),
+        libraryViewModel: ReciMateApp.makeLibraryViewModel(),
+        makeDetailsViewModel: ReciMateApp.makeDetailsViewModel
+    )
+}
+
+#Preview("Details, local client") {
+    NavigationStack {
+        RecipeDetailsView(viewModel: ReciMateApp.makeDetailsViewModel(recipeID: "petit-gateau"))
+    }
 }
 #endif
