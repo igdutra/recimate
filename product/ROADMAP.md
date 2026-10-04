@@ -17,7 +17,7 @@ A Foundation + Data Contract
         ↓
 B Recipe Data Layer
         ↓
-C Recipe List
+C Recipe Library
         ↓
 D Search + Filtering
         ↓
@@ -30,7 +30,7 @@ F Polish + README
 |---|-----------|--------|-------|--------|
 | A | Foundation + Data Contract | D1, D2 | 001 | done |
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
-| C | Recipe List | V1, V2, V3, E1 | 003 (design prototype for C, D, E) | not started |
+| C | Recipe Library | V1, V2, V3, E1 | 003 (design prototype for C, D, E), 004 (loaded state) | in progress |
 | D | Search + Filtering | S1–S6, E3 (filter side) | | not started |
 | E | Recipe Details | E2 | | not started |
 | F | Polish + README | R1–R6, P2 | | not started |
@@ -49,9 +49,17 @@ on, a local implementation backed by the fixture, DTO → domain mapping, typed
 errors, async calls, and the decoding tests, so a network client could replace
 it later. Also switches the project to Swift 6 language mode (P1).
 
-**C. Recipe List.** The list or grid screen and its view model, with
+**C. Recipe Library.** The list or grid screen and its view model, with
 loading, empty and error states. Each recipe shows its title, servings and a
-vegetarian indicator.
+vegetarian indicator. Delivered in steps:
+
+- Spec 004: the Library in its loaded state only, with the search field and
+  quick chips drawn but inert (they print). Light mode only.
+- Still to do: loading, error, empty and no-results states. Mandatory, not
+  optional polish, so they live here and not in the backlog. They are handled
+  with the `View+StateOverlay` pattern (state-driven overlay over a stable
+  content view, `ContentUnavailableView` for error and empty) on top of the
+  `ViewState` introduced in spec 004.
 
 **D. Search + Filtering.** The search endpoint (S1–S6) behind the data layer,
 plus the search bar and filter UI that drive it:

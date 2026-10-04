@@ -189,13 +189,19 @@ does not conform to protocol 'Equatable'"). Options:
 | Gain | Cost |
 |---|---|
 | Re-assigning equal data (a reload that returns the same recipes, a repeated `.loaded`) does not invalidate any view | Every set of `viewData` compares the whole struct, including all cards. About 0.2 µs at 9 cards; the 100,000-card diff measured about 19 ms |
-| `Equatable` cards let SwiftUI compare card values and skip unchanged ones ([Fatbobman](https://fatbobman.com/en/posts/avoid_repeated_calculations_of_swiftui_views/)) | Changing only `state` re-evaluates every view that reads `viewData`, such as a view that reads only `cards`, because tracking is per class property (finding B) |
+| `Equatable` cards let SwiftUI compare card values and skip unchanged ones ([Fatbobman](https://fatbobman.com/en/posts/avoid_repeated_calculations_of_swiftui_views/)) | Any field change invalidates every view that reads `viewData` directly, because tracking is per class property (finding B). Here only `RecipeLibraryView` reads it; cards get their data by value and are diffed through `Equatable`, so in practice this costs nothing today |
 | `Equatable` view data is trivially unit-testable (`#expect(viewData == expected)`) | The error case carries only a `RecipeError`: an unexpected error type loses its detail when mapped to `.unavailable` |
 | One observed property keeps the view model simple | `ViewState` in `Presentation/Shared` now depends on the domain `RecipeError`. Allowed (`Presentation` imports `Domain`), but a screen that wants a different error type needs a generic `ViewState` |
 
-The two costs that could grow are the whole-struct comparison and the shared
-invalidation. Both are negligible at this size and have the same fix when they
-are not: expose `state` and `cards` as two observed properties on the view model
+For context, this is what `@Observable` already buys over `ObservableObject`: a
+view re-renders only when a property its body reads changes, not when any
+published property changes ([Nil Coalescing](https://nilcoalescing.com/blog/ObservableInSwiftUI/),
+[WWDC23 10149](https://developer.apple.com/videos/play/wwdc2023/10149)). The
+finer split inside `viewData` is a separate, smaller question.
+
+The two costs that could grow are the whole-struct comparison and views that
+read `viewData` directly. Both are negligible at this size and have the same fix
+when they are not: expose `state` and `cards` as two observed properties on the view model
 so a state change neither compares nor invalidates the cards. That would
 replace the single `viewData` property, so it is a deliberate non-choice for
 now, to be revisited only after a profile or after pagination (backlog) makes
