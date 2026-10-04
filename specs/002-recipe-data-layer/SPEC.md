@@ -141,34 +141,45 @@ Task list: yes
 
 ## Acceptance Criteria
 
-- Requesting the list returns all previews in order with every field mapped, and
-  returns an empty array for an empty list.
-- Requesting details returns every field, with steps ordered by step number.
-- A missing resource gives `notFound`; undecodable or rule-breaking data gives
-  `invalidData`; any other client error gives `unavailable`; cancellation stays
-  a cancellation.
-- One bad item in the list fails the whole list.
-- Blank, `.` and `..` ids give `notFound` without a client call.
-- Each load makes exactly one client request, to the URL `RecipeEndpoint` gives
-  for the injected base URL.
-- Endpoint URLs keep the base URL's port, scheme and path prefix, ignore a
+- **AC1** Requesting the list returns all previews in order with every field
+  mapped, and returns an empty array for an empty list.
+- **AC2** Requesting details returns every field, with steps ordered by step
+  number.
+- **AC3** A missing resource gives `notFound`; undecodable or rule-breaking data
+  gives `invalidData`; any other client error gives `unavailable`; cancellation
+  stays a cancellation.
+- **AC4** One bad item in the list fails the whole list.
+- **AC5** Blank, `.` and `..` ids give `notFound` without a client call.
+- **AC6** Each load makes exactly one client request, to the URL `RecipeEndpoint`
+  gives for the injected base URL.
+- **AC7** Endpoint URLs keep the base URL's port, scheme and path prefix, ignore a
   trailing slash, and encode ids as one path component.
-- The services and endpoint depend on `RecipeAPIClient` only; nothing outside
-  `LocalRecipeAPIClient` knows about files or the bundle.
-- Production types carry no test-only code or conformances; no `@unchecked
-  Sendable`, `nonisolated(unsafe)` or `@preconcurrency` is used.
-- The project builds in Swift 6 mode with no concurrency warnings from the new
-  code, and the full test suite passes.
-- `implementation-notes.md` records the assumptions and any deviation.
+- **AC8** The services and endpoint depend on `RecipeAPIClient` only; nothing
+  outside `LocalRecipeAPIClient` knows about files or the bundle.
+- **AC9** Production types carry no test-only code or conformances; no
+  `@unchecked Sendable`, `nonisolated(unsafe)` or `@preconcurrency` is used.
+- **AC10** The project builds in Swift 6 mode with no concurrency warnings from
+  the new code, and the full test suite passes.
+- **AC11** `implementation-notes.md` records the assumptions and any deviation.
 
 ## Verification
 
-- `scripts/test.sh ReciMateTests/RecipeEndpointTests`, then
-  `…/RecipeListServiceTests`, then `…/RecipeDetailsServiceTests` while building
-  each piece; a single test as `…/<Suite>/<test>()`. Post the `tail -F` line
-  from `CLAUDE.md` before each run.
-- Full `scripts/test.sh` once at the end: ends with `PASS`.
-- Read `build/build.log` for concurrency warnings from the new files.
-- `rg "unchecked Sendable|nonisolated\(unsafe\)|preconcurrency" ReciMate` returns nothing.
-- `rg "Equatable|Hashable" ReciMate/API ReciMate/Domain` shows no conformance added only for tests.
-- Read `implementation-notes.md` against the Open Questions / Risks above.
+Each line names the criteria it checks.
+
+- **AC1, AC4** `scripts/test.sh ReciMateTests/RecipeListServiceTests` (DL-4, DL-5, DL-10).
+- **AC2, AC5** `scripts/test.sh ReciMateTests/RecipeDetailsServiceTests` (DD-4, DD-5, DD-11).
+- **AC3** Both service suites (DL-6 to DL-8, DL-11, DD-7, DD-9).
+- **AC6** Both service suites (DL-2, DL-3, DD-2, DD-3).
+- **AC7** `scripts/test.sh ReciMateTests/RecipeEndpointTests` (EP-1 to EP-6).
+- **AC8** Read the imports and initialisers of the services and endpoint: only
+  `RecipeAPIClient` appears; `rg "Bundle|FileManager" ReciMate/API` matches only
+  `LocalRecipeAPIClient.swift`.
+- **AC9** `rg "unchecked Sendable|nonisolated\(unsafe\)|preconcurrency" ReciMate`
+  returns nothing; `rg "Equatable|Hashable" ReciMate/API ReciMate/Domain` shows no
+  conformance added only for tests.
+- **AC10** Read `build/build.log` for concurrency warnings from the new files;
+  full `scripts/test.sh` once at the end ends with `PASS`.
+- **AC11** Read `implementation-notes.md` against Open Questions / Risks above.
+
+Single tests run as `…/<Suite>/<test>()`. Post the `tail -F` line from
+`CLAUDE.md` before each run.
