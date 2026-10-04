@@ -1,9 +1,5 @@
 import Foundation
 
-protocol RecipeListService: Sendable {
-    func loadRecipes() async throws -> [RecipePreview]
-}
-
 /// Loads the list through a `RecipeAPIClient`, maps it to domain values and
 /// translates every failure into a `RecipeError`.
 struct RemoteRecipeListService: RecipeListService {
