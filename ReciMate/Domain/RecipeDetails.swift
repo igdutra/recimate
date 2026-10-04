@@ -2,7 +2,7 @@ import Foundation
 
 // Domain types: what the app means by a recipe, independent of how any API spells it.
 
-struct RecipeDetails: Identifiable {
+struct RecipeDetails: Identifiable, Equatable, Sendable {
     let id: String
     let title: String
     /// The brief calls this "description". `summary` avoids clashing with
@@ -18,7 +18,7 @@ struct RecipeDetails: Identifiable {
     let imageURL: URL?
 }
 
-struct Ingredient: Identifiable {
+struct Ingredient: Identifiable, Equatable, Sendable {
     /// Stable across recipes ("eggs" is the same ingredient everywhere), so the
     /// include/exclude filters match on it rather than on the display name.
     let id: String
@@ -28,7 +28,7 @@ struct Ingredient: Identifiable {
     let quantity: String?
 }
 
-struct CookingInstruction: Identifiable {
+struct CookingInstruction: Identifiable, Equatable, Sendable {
     let step: Int
     let text: String
 
@@ -37,6 +37,6 @@ struct CookingInstruction: Identifiable {
 
 /// A struct rather than a set of flags so each attribute is a named, documented
 /// property. The brief only names vegetarian.
-struct DietaryAttributes {
+struct DietaryAttributes: Equatable, Sendable {
     let isVegetarian: Bool
 }

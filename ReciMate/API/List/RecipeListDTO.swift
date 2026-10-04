@@ -5,7 +5,7 @@ import Foundation
 typealias RecipeListDTO = [RecipePreviewDTO]
 
 /// One item of the list endpoint.
-struct RecipePreviewDTO: Decodable {
+struct RecipePreviewDTO: Decodable, Sendable {
     let id: String
     let title: String
     let description: String

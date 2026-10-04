@@ -6,7 +6,7 @@ import Foundation
 
 /// Response of the detail endpoint (`GET /recipe-details/{id}`), mocked by
 /// `Infrastructure/RecipeDetails/<id>.json`.
-struct RecipeDetailsDTO: Decodable {
+struct RecipeDetailsDTO: Decodable, Sendable {
     let id: String
     let title: String
     let description: String
@@ -26,18 +26,18 @@ struct RecipeDetailsDTO: Decodable {
     }
 }
 
-struct IngredientDTO: Decodable {
+struct IngredientDTO: Decodable, Sendable {
     let id: String
     let name: String
     let quantity: String?
 }
 
-struct CookingInstructionDTO: Decodable {
+struct CookingInstructionDTO: Decodable, Sendable {
     let step: Int
     let text: String
 }
 
-struct DietaryAttributesDTO: Decodable {
+struct DietaryAttributesDTO: Decodable, Sendable {
     let isVegetarian: Bool
 
     enum CodingKeys: String, CodingKey {

@@ -2,7 +2,7 @@ import Foundation
 
 /// The light version of a recipe shown in the list. Ingredients and
 /// instructions only come with `RecipeDetails`, fetched when it's opened.
-struct RecipePreview: Identifiable {
+struct RecipePreview: Identifiable, Equatable, Sendable {
     let id: String
     let title: String
     let summary: String
