@@ -7,19 +7,21 @@
 
 import SwiftUI
 
+/// Compositon Root:  The only place an `API/` type is built; `Presentation/` sees `Domain` only.
 @main
 struct ReciMateApp: App {
     /// Placeholder. `LocalRecipeAPIClient` ignores scheme and host, so this is
     /// unused until a real client replaces it.
     static let apiBaseURL = URL(string: "https://api.recimate.example")!
 
+    @State private var router = AppRouter()
+
     var body: some Scene {
         WindowGroup {
-            RecipeLibraryView(viewModel: Self.makeLibraryViewModel())
+            RootView(router: router, libraryViewModel: Self.makeLibraryViewModel())
         }
     }
 
-    /// The only place an `API/` type is built; `Presentation/` sees `Domain` only.
     static func makeLibraryViewModel() -> RecipeLibraryViewModel {
         let service = RemoteRecipeListService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
         return RecipeLibraryViewModel(service: service)
@@ -30,7 +32,7 @@ struct ReciMateApp: App {
 
 // Lives here, not in `Presentation/`, because it builds an `API/` type.
 #if DEBUG
-#Preview("Library, local client") {
-    RecipeLibraryView(viewModel: ReciMateApp.makeLibraryViewModel())
+#Preview("Root, local client") {
+    RootView(router: AppRouter(), libraryViewModel: ReciMateApp.makeLibraryViewModel())
 }
 #endif

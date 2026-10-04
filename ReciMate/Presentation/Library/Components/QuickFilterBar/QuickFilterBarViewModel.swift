@@ -18,18 +18,11 @@ final class QuickFilterBarViewModel {
             showsChevron: true,
             usesAccentIcon: false
         ),
-        FilterChipViewData(
-            id: .filters,
-            title: "Filters",
-            symbolName: "slider.horizontal.3",
-            showsChevron: false,
-            usesAccentIcon: false
-        ),
     ])
 
     func didTapChip(_ chipID: FilterChipViewData.ID) {
         // TODO(milestone D): replace with chip selection state, the servings range
-        // and the Filters sheet, all driven by the shared filter state.
+        // all driven by the shared filter state.
         print("Tapped chip: \(chipID)")
     }
 }

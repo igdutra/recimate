@@ -16,7 +16,7 @@ struct RecipeLibraryViewModelTests {
     @Test func quickFilterBar_isOwnedByTheViewModel() {
         let (sut, _) = makeSUT()
 
-        #expect(sut.quickFilterBar.viewData.chips.map(\.id) == [.vegetarian, .servings, .filters])
+        #expect(sut.quickFilterBar.viewData.chips.map(\.id) == [.vegetarian, .servings])
     }
 
     // MARK: - Happy path

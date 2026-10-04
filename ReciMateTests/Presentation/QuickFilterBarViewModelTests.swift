@@ -3,11 +3,11 @@ import Testing
 
 @MainActor
 struct QuickFilterBarViewModelTests {
-    @Test func viewData_listsVegetarianServingsFiltersInOrder() {
+    @Test func viewData_listsVegetarianServingsInOrder() {
         let viewModel = QuickFilterBarViewModel()
 
-        #expect(viewModel.viewData.chips.map(\.id) == [.vegetarian, .servings, .filters])
-        #expect(viewModel.viewData.chips.map(\.title) == ["Vegetarian", "Servings", "Filters"])
+        #expect(viewModel.viewData.chips.map(\.id) == [.vegetarian, .servings])
+        #expect(viewModel.viewData.chips.map(\.title) == ["Vegetarian", "Servings"])
     }
 
     @Test func viewData_showsChevronOnlyOnServings() {

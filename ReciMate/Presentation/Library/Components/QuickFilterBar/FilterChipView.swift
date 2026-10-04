@@ -5,7 +5,6 @@ struct FilterChipViewData: Identifiable, Equatable {
     enum ID: Equatable {
         case vegetarian
         case servings
-        case filters
     }
 
     let id: ID
