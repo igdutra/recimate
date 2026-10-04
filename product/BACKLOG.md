@@ -113,6 +113,17 @@ sheet placeholders announce their screen; focus order; and large Dynamic Type.
 Check the card's pressed state too (the plain style removes the highlight).
 Revisit when the real Details and Filters screens land.
 
+Added from spec 006 (Recipe Details), built but not verified:
+- Large Dynamic Type on Details (spec AC15): long titles and steps wrap, rows grow,
+  nothing is clipped, hero and sheet overlap hold.
+- The native segmented `Picker` (Ingredients / Steps) at accessibility text sizes: it
+  may truncate its labels; the fix would be a menu style, a design change. Also check
+  that the UIKit appearance tint (green selected segment) survives iOS 26 and Larger Text.
+- VoiceOver on Details: the badge, servings line, ingredient row (name and quantity
+  read together) and step row ("Step N" then the text) each read as one element; the
+  back button; heading order; the hero photo is not announced.
+- Contrast: step numbers white on green (5.05:1) and secondary ink on white, on a device.
+
 ## Navigation tests with ViewInspector
 
 The views call the `AppRouter` directly (injected by initializer at the

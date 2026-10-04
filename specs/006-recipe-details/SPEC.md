@@ -229,6 +229,12 @@ screens now need it (Decision 9).
 - View tests of any kind: snapshot, ViewInspector and UI tests (backlog). Only the
   view model layer and the servings formatter are unit tested.
 - Pull to refresh, share sheet, a stretchy hero on overscroll.
+- **Accessibility verification (moved to the backlog, "Accessibility pass"):** large
+  Dynamic Type behavior (AC15), the segmented `Picker` truncating at accessibility
+  sizes, and how the badge, servings line, ingredient rows and step rows read in
+  VoiceOver. The code keeps the card's `.accessibilityElement(children: .combine)`
+  and label habit and the Dynamic Type previews are built; checking them is the
+  backlog item.
 
 ## Steps
 
@@ -297,8 +303,8 @@ Task list: yes
   are stable across recipes); a duplicate would break the list identity. The
   fixtures have none.
 - Risk: the native `Picker` at the largest accessibility text sizes may truncate its
-  labels. Checked at a large Dynamic Type size in Step 6; the fix, if needed, is a
-  menu style, which would be a design change.
+  labels. **Moved to the backlog ("Accessibility pass")**, not checked in this spec; the
+  fix, if needed, is a menu style, which would be a design change.
 - Risk: `@State(initialValue:)` builds the view model when its owner is rebuilt. The
   destination closure creates a new view model per navigation, which is intended
   (one per pushed screen).
@@ -335,8 +341,9 @@ Task list: yes
   component views.
 - **AC14.** `DesignTokens/` gains every new token listed in `design.html`'s tables and
   no token that is not listed there.
-- **AC15.** The page works at a large Dynamic Type size: long titles and steps wrap,
-  rows grow, nothing is clipped.
+- **AC15.** *(Moved to the backlog, "Accessibility pass"; not verified in this spec.)*
+  The page works at a large Dynamic Type size: long titles and steps wrap, rows grow,
+  nothing is clipped.
 - **AC16.** Every new component and the screen have a working preview.
 - **AC17.** The full `ReciMateTests` suite passes.
 - **AC19.** The new code follows the Library's conventions listed under "Conventions
@@ -352,10 +359,10 @@ Task list: yes
 - **AC7** `scripts/test.sh ReciMateTests/ServingsLabelFormatterTests`.
 - **AC8** `scripts/test.sh ReciMateTests/RecipeDetailsViewModelTests`.
 - **AC4, AC5 (data side), AC2 (flag)** the mapper tests in the same suite.
-- **AC1, AC3, AC6, AC9, AC10, AC15** run the app on the iPhone 17 simulator: open
+- **AC1, AC3, AC6, AC9, AC10** run the app on the iPhone 17 simulator: open
   Petit Gâteau, switch segments, go back; open a recipe with no details and confirm
   a blank screen with a back button; check a recipe with a bad photo URL in a
-  preview; repeat at a large Dynamic Type size.
+  preview. (The large Dynamic Type repeat, AC15, is in the backlog.)
 - **AC11** open the `RecipeImageView` and `RecipeCardView` previews before and after
   Step 4; run `scripts/test.sh ReciMateTests/RecipeLibraryViewModelTests`.
 - **AC12** `rg "API|Remote|Local|@Environment" ReciMate/Presentation` finds no `API/`

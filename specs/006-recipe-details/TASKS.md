@@ -10,7 +10,7 @@ what was verified, not when the work happened.
 - [x] 4b. Library card layout checked in a simulator screenshot of the running app (AC11): photo height and placeholder look as before. Xcode previews not opened.
 - [x] 5. Components with previews: badge, servings line, ingredient row, step row.
 - [x] 6. `RecipeDetailsView` (hero, overlapping sheet, `Picker`, lists, `.task`), DEBUG preview service and samples, screen previews.
-- [ ] 6b. Open the Xcode previews (loaded, long text, no image, failing image, large Dynamic Type) (AC15, AC16). Not done by me; compiled only.
+- [ ] 6b. Open the Xcode previews (loaded, long text, no image, failing image, large Dynamic Type) (AC16). Large Dynamic Type (AC15) moved to the backlog, "Accessibility pass".
 - [x] 7a. `RootView` takes `makeDetailsViewModel`; `ReciMateApp` builds service and factory; previews updated.
 - [~] 7b. Simulator walk: the user ran the app and confirmed the loaded page, hero overlap and back button work (AC1, 10). Steps segment, blank screen for a recipe without details, and the picker tint are not confirmed by me.
 - [x] 8a. Full suite: PASS, 56 tests (re-run after the final edit).

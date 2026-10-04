@@ -16,3 +16,4 @@
 - Bottom padding of the sheet is 24 (`Spacing.extraExtraLarge`); the mock's 48 is in no table.
 - The segmented `Picker` is tinted through `UISegmentedControl.appearance()` (green selected segment, mist track). Global to the app; SwiftUI has no modifier for it. Whether iOS 26 honors it is unconfirmed.
 - Typography: `servings` and `stepNumber` repeat the weights of `chipLabel` and `cardTitle`; kept as separate roles because the spec's Step 1 lists them.
+- Accessibility verification (AC15, Picker truncation, VoiceOver) moved out of this spec into the backlog "Accessibility pass", at the user's request; flagged in SPEC.md under Out of Scope.
