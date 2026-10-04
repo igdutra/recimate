@@ -21,7 +21,7 @@ to [REQUIREMENTS.md](REQUIREMENTS.md).
 | # | Milestone | Closes | Status |
 |---|-----------|--------|--------|
 | 001 | Foundation + Data Contract | D1, D2 | done |
-| 002 | Recipe Data Layer | D3, E3 (data side), P1 | not started |
+| 002 | Recipe Data Layer | D3, E3 (data side), P1 | done |
 | 003 | Recipe List | V1, V2, V3, E1 | not started |
 | 004 | Search + Filtering | S1–S6, E3 (filter side) | not started |
 | 005 | Recipe Details | E2 | not started |
