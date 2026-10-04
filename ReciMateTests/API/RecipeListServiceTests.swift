@@ -21,11 +21,7 @@ struct RecipeListServiceTests {
 
     @Test func loadRecipes_onValidJSON_deliversMappedPreviewsInOrder() async throws {
         let (sut, spy) = makeSUT()
-        let previews = [
-            RecipePreview.fixture(id: "petit-gateau"),
-            .fixture(id: "lemon-chicken", title: "Lemon Chicken", summary: "Roast.", servings: 2, isVegetarian: false),
-            .fixture(id: "salad", title: "Salad", summary: "Fresh.", servings: 1, imageURL: nil),
-        ]
+        let previews: [RecipePreview] = [.petitGateau, .lemonHerbChicken, .roastedVegetableCouscous]
         spy.stub(data: makeListData(previews))
 
         let result = try await sut.loadRecipes()
@@ -90,12 +86,12 @@ private extension RecipeListServiceTests {
 
     nonisolated static func undecodablePayloads() -> [Data] {
         // One undecodable item in the middle fails the whole list.
-        var wrongType = makePreviewJSON(from: .fixture(id: "bad"))
+        var wrongType = makePreviewJSON(from: .lemonHerbChicken)
         wrongType["servings"] = "four"
         return [
             Data("not json".utf8),
             makeJSONData(["id": "an object, not an array"]),
-            makeJSONData([makePreviewJSON(from: .fixture(id: "first")), wrongType, makePreviewJSON(from: .fixture(id: "last"))]),
+            makeJSONData([makePreviewJSON(from: .petitGateau), wrongType, makePreviewJSON(from: .roastedVegetableCouscous)]),
         ]
     }
 }

@@ -25,6 +25,8 @@ struct QuickFilterBar: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Quick filter bar") {
     QuickFilterBar(viewModel: QuickFilterBarViewModel())
 }
+#endif

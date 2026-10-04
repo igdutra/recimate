@@ -22,18 +22,14 @@ struct RecipeLibraryViewModelTests {
     // MARK: - Happy path
 
     @Test func load_onSuccess_deliversCardsInRecipeOrder() async {
-        let previews = [
-            RecipePreview.fixture(id: "petit-gateau", servings: 4),
-            .fixture(id: "lemon-chicken", title: "Lemon Chicken", servings: 1, isVegetarian: false),
-            .fixture(id: "salad", title: "Salad", servings: 2, imageURL: nil),
-        ]
+        let previews: [RecipePreview] = [.petitGateau, .lemonHerbChicken, .roastedVegetableCouscous]
         let (sut, spy) = makeSUT()
 
         await load(sut, on: spy, completingWith: previews)
 
         #expect(sut.viewData.state == .loaded)
         #expect(sut.viewData.cards == previews.map(RecipeLibraryViewModel.makeCard))
-        #expect(sut.viewData.cards.map(\.id) == ["petit-gateau", "lemon-chicken", "salad"])
+        #expect(sut.viewData.cards.map(\.id) == ["petit-gateau", "lemon-herb-chicken", "roasted-vegetable-couscous"])
     }
 
     @Test func load_onSuccess_staysLoadingUntilServiceReturnsThenLoaded() async {
@@ -43,7 +39,7 @@ struct RecipeLibraryViewModelTests {
         let loadTask = await startLoad(of: sut, on: spy)
         #expect(sut.viewData.state == .loading)
 
-        await spy.complete(with: [.fixture()])
+        await spy.complete(with: [.petitGateau])
         await loadTask.value
         #expect(sut.viewData.state == .loaded)
     }
@@ -88,7 +84,7 @@ struct RecipeLibraryViewModelTests {
 
     @Test func load_whenAlreadyLoaded_doesNotCallServiceAgain() async {
         let (sut, spy) = makeSUT()
-        await load(sut, on: spy, completingWith: [.fixture()])
+        await load(sut, on: spy, completingWith: [.petitGateau])
 
         await sut.load()
 
@@ -105,7 +101,7 @@ struct RecipeLibraryViewModelTests {
         // would wait for the spy forever.
         #expect(spy.requestCount == 1)
 
-        await spy.complete(with: [.fixture()])
+        await spy.complete(with: [.petitGateau])
         await spy.failPendingRequests()
         await firstLoadTask.value
         await secondLoadTask.value
@@ -118,7 +114,7 @@ struct RecipeLibraryViewModelTests {
         #expect(sut.viewData.state == .error(.unavailable))
 
         let retryLoadTask = await startLoad(of: sut, on: spy, expectedRequestCount: 2)
-        await spy.complete(with: [.fixture()], at: 1)
+        await spy.complete(with: [.petitGateau], at: 1)
         await retryLoadTask.value
 
         #expect(spy.requestCount == 2)
@@ -142,11 +138,10 @@ struct RecipeLibraryViewModelTests {
     }
 
     @Test func makeCard_passesImageURLThrough() {
-        let imageURL = URL(string: "https://example.com/lemon.jpg")
+        let card = RecipeLibraryViewModel.makeCard(from: .lemonHerbChicken)
 
-        let card = RecipeLibraryViewModel.makeCard(from: .fixture(imageURL: imageURL))
-
-        #expect(card.imageURL == imageURL)
+        #expect(card.imageURL == RecipePreview.lemonHerbChicken.imageURL)
+        #expect(card.imageURL != nil)
     }
 
     @Test func makeCard_keepsNilImageURL() {
@@ -156,9 +151,9 @@ struct RecipeLibraryViewModelTests {
     }
 
     @Test func makeCard_keepsIdAndTitle() {
-        let card = RecipeLibraryViewModel.makeCard(from: .fixture(id: "lemon-chicken", title: "Lemon Herb Chicken"))
+        let card = RecipeLibraryViewModel.makeCard(from: .lemonHerbChicken)
 
-        #expect(card.id == "lemon-chicken")
+        #expect(card.id == "lemon-herb-chicken")
         #expect(card.title == "Lemon Herb Chicken")
     }
 }

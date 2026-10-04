@@ -28,9 +28,9 @@ struct ReciMateApp: App {
 
 // MARK: - Preview
 
-// MARK: - Preview
-
 // Lives here, not in `Presentation/`, because it builds an `API/` type.
+#if DEBUG
 #Preview("Library, local client") {
     RecipeLibraryView(viewModel: ReciMateApp.makeLibraryViewModel())
 }
+#endif

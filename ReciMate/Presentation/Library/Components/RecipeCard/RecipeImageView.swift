@@ -46,6 +46,7 @@ private struct PlaceholderIcon: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Loaded") {
     RecipeImageView(imageURL: PreviewImage.fileURL)
 }
@@ -57,3 +58,4 @@ private struct PlaceholderIcon: View {
 #Preview("Failing URL") {
     RecipeImageView(imageURL: PreviewImage.failingURL)
 }
+#endif

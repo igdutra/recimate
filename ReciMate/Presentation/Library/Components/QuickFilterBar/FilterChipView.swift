@@ -46,20 +46,13 @@ struct FilterChipView: View {
 
 // MARK: - Preview
 
-#Preview("Chips: plain, leaf, chevron") {
+#if DEBUG
+#Preview("Chips: leaf, chevron, plain") {
     HStack(spacing: Spacing.small) {
-        FilterChipView(
-            chip: FilterChipViewData(id: .filters, title: "Filters", symbolName: "slider.horizontal.3", showsChevron: false, usesAccentIcon: false),
-            action: {}
-        )
-        FilterChipView(
-            chip: FilterChipViewData(id: .vegetarian, title: "Vegetarian", symbolName: "leaf", showsChevron: false, usesAccentIcon: true),
-            action: {}
-        )
-        FilterChipView(
-            chip: FilterChipViewData(id: .servings, title: "Servings", symbolName: "person.2", showsChevron: true, usesAccentIcon: false),
-            action: {}
-        )
+        ForEach(QuickFilterBarViewModel().viewData.chips) { chip in
+            FilterChipView(chip: chip, action: {})
+        }
     }
     .padding(Spacing.extraLarge)
 }
+#endif

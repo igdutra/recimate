@@ -12,6 +12,8 @@ struct VegetarianMarkView: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Vegetarian mark") {
     VegetarianMarkView()
 }
+#endif

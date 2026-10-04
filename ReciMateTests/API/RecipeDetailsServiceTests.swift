@@ -14,7 +14,7 @@ struct RecipeDetailsServiceTests {
     func loadRecipe_requestsDetailsEndpointURL(recipeID: String, baseURLString: String) async throws {
         let baseURL = URL(string: baseURLString)!
         let (sut, spy) = makeSUT(baseURL: baseURL)
-        spy.stub(data: makeDetailsData(.fixture(id: recipeID)))
+        spy.stub(data: makeDetailsData(.petitGateau))
 
         _ = try await sut.loadRecipe(id: recipeID)
 
@@ -23,16 +23,12 @@ struct RecipeDetailsServiceTests {
 
     // MARK: - Happy path
 
-    @Test func loadRecipe_onValidJSON_deliversMappedDetails() async throws {
+    @Test(arguments: [RecipeDetails.petitGateau, .lemonHerbChicken])
+    func loadRecipe_onValidJSON_deliversMappedDetails(recipe: RecipeDetails) async throws {
         let (sut, spy) = makeSUT()
-        let recipe = RecipeDetails.fixture(
-            ingredients: [.fixture(id: "eggs", name: "Eggs", quantity: "2"), .fixture(id: "salt", name: "Salt", quantity: nil)],
-            instructions: [.fixture(step: 1, text: "Mix."), .fixture(step: 2, text: "Bake.")],
-            isVegetarian: false
-        )
         spy.stub(data: makeDetailsData(recipe))
 
-        let result = try await sut.loadRecipe(id: "petit-gateau")
+        let result = try await sut.loadRecipe(id: recipe.id)
 
         #expect(result == recipe)
     }
@@ -43,7 +39,7 @@ struct RecipeDetailsServiceTests {
         let outOfOrder = RecipeDetails.fixture(instructions: steps.map { .fixture(step: $0, text: "Step \($0)") })
         spy.stub(data: makeDetailsData(outOfOrder))
 
-        let result = try await sut.loadRecipe(id: "petit-gateau")
+        let result = try await sut.loadRecipe(id: knownRecipeID)
 
         #expect(result.instructions == steps.sorted().map { .fixture(step: $0, text: "Step \($0)") })
     }
@@ -53,7 +49,7 @@ struct RecipeDetailsServiceTests {
         let sparseRecipe = RecipeDetails.fixture(ingredients: [], instructions: [], imageURL: nil)
         spy.stub(data: makeDetailsData(sparseRecipe))
 
-        let result = try await sut.loadRecipe(id: "petit-gateau")
+        let result = try await sut.loadRecipe(id: knownRecipeID)
 
         #expect(result == sparseRecipe)
     }
@@ -64,7 +60,7 @@ struct RecipeDetailsServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(error: RecipeAPIClientError.notFound)
 
-        await #expect(throws: RecipeError.notFound) { try await sut.loadRecipe(id: "petit-gateau") }
+        await #expect(throws: RecipeError.notFound) { try await sut.loadRecipe(id: knownRecipeID) }
     }
 
     @Test(arguments: undecodablePayloads())
@@ -72,7 +68,7 @@ struct RecipeDetailsServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(data: payload)
 
-        await #expect { try await sut.loadRecipe(id: "petit-gateau") } throws: { isInvalidDataWithReason($0) }
+        await #expect { try await sut.loadRecipe(id: knownRecipeID) } throws: { isInvalidDataWithReason($0) }
     }
 
     @Test(arguments: [
@@ -83,7 +79,7 @@ struct RecipeDetailsServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(error: clientError)
 
-        await #expect(throws: RecipeError.unavailable) { try await sut.loadRecipe(id: "petit-gateau") }
+        await #expect(throws: RecipeError.unavailable) { try await sut.loadRecipe(id: knownRecipeID) }
     }
 }
 
@@ -93,6 +89,9 @@ private extension RecipeDetailsServiceTests {
     typealias SUTBundle = (sut: RemoteRecipeDetailsService, spy: RecipeAPIClientSpy)
 
     struct CustomError: Error {}
+
+    /// An id the fixtures know, for tests where the id is not the point.
+    var knownRecipeID: String { RecipeDetails.petitGateau.id }
 
     func makeSUT(baseURL: URL = URL(string: "https://api.recimate.example")!) -> SUTBundle {
         let spy = RecipeAPIClientSpy()
@@ -105,9 +104,9 @@ private extension RecipeDetailsServiceTests {
     }
 
     nonisolated static func undecodablePayloads() -> [Data] {
-        var wrongServingsType = makeDetailsJSON(from: .fixture())
+        var wrongServingsType = makeDetailsJSON(from: .petitGateau)
         wrongServingsType["servings"] = "four"
-        var malformedStep = makeDetailsJSON(from: .fixture())
+        var malformedStep = makeDetailsJSON(from: .petitGateau)
         malformedStep["cooking_instructions"] = [["step": "two", "text": "Mix."]]
         return [
             Data("not json".utf8),

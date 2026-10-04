@@ -61,30 +61,12 @@ private struct RecipeGrid: View {
 // MARK: - Preview
 
 #if DEBUG
-private struct RecipeListServiceStub: RecipeListService {
-    func loadRecipes() async throws -> [RecipePreview] {
-        let photoURL = PreviewImage.fileURL
-        return [
-            RecipePreview(id: "petit-gateau", title: "Petit Gâteau", summary: "", servings: 4,
-                          dietaryAttributes: DietaryAttributes(isVegetarian: true), imageURL: photoURL),
-            RecipePreview(id: "lemon-chicken", title: "Lemon Herb Chicken", summary: "", servings: 4,
-                          dietaryAttributes: DietaryAttributes(isVegetarian: false), imageURL: photoURL),
-            RecipePreview(id: "tomato-pasta", title: "Creamy Tomato Pasta", summary: "", servings: 1,
-                          dietaryAttributes: DietaryAttributes(isVegetarian: true), imageURL: photoURL),
-            RecipePreview(id: "salmon", title: "Sheet Pan Salmon with Roasted Vegetables and Herbs", summary: "", servings: 4,
-                          dietaryAttributes: DietaryAttributes(isVegetarian: false), imageURL: PreviewImage.failingURL),
-            RecipePreview(id: "couscous", title: "Roasted Vegetable Couscous", summary: "", servings: 6,
-                          dietaryAttributes: DietaryAttributes(isVegetarian: true), imageURL: nil),
-        ]
-    }
+#Preview("Library, sample recipes") {
+    RecipeLibraryView(viewModel: RecipeLibraryViewModel(service: PreviewRecipeListService()))
 }
 
-#Preview("Library, stub service") {
-    RecipeLibraryView(viewModel: RecipeLibraryViewModel(service: RecipeListServiceStub()))
-}
-
-#Preview("Library, stub service, large Dynamic Type") {
-    RecipeLibraryView(viewModel: RecipeLibraryViewModel(service: RecipeListServiceStub()))
+#Preview("Library, sample recipes, large Dynamic Type") {
+    RecipeLibraryView(viewModel: RecipeLibraryViewModel(service: PreviewRecipeListService()))
         .dynamicTypeSize(.accessibility2)
 }
 #endif

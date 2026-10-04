@@ -47,29 +47,16 @@ struct RecipeCardView: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Card variants") {
-    let photoURL = PreviewImage.fileURL
-    HStack(alignment: .top, spacing: Spacing.large) {
-        VStack(spacing: Spacing.large) {
-            RecipeCardView(card: RecipeCardViewData(
-                id: "one-line-leaf", title: "Petit Gâteau", servingsLabel: "4 servings",
-                isVegetarian: true, imageURL: photoURL
-            ))
-            RecipeCardView(card: RecipeCardViewData(
-                id: "one-line-no-leaf", title: "Sheet Pan Salmon", servingsLabel: "1 serving",
-                isVegetarian: false, imageURL: photoURL
-            ))
-        }
-        VStack(spacing: Spacing.large) {
-            RecipeCardView(card: RecipeCardViewData(
-                id: "two-lines-leaf", title: "Roasted Vegetable Couscous", servingsLabel: "6 servings",
-                isVegetarian: true, imageURL: nil
-            ))
-            RecipeCardView(card: RecipeCardViewData(
-                id: "two-lines-no-leaf", title: "Lemon Herb Chicken with Garlic Potatoes",
-                servingsLabel: "2 servings", isVegetarian: false, imageURL: PreviewImage.failingURL
-            ))
+    LazyVGrid(
+        columns: [GridItem(.adaptive(minimum: Sizing.gridColumnMinimum), spacing: Spacing.large, alignment: .top)],
+        spacing: Spacing.large
+    ) {
+        ForEach(RecipeCardViewData.previewSamples) { card in
+            RecipeCardView(card: card)
         }
     }
     .padding(Spacing.extraLarge)
 }
+#endif
