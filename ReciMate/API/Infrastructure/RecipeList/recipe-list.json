@@ -53,7 +53,7 @@
     "description": "Colorful roast vegetables over fluffy couscous.",
     "servings": 3,
     "dietary_attributes": { "is_vegetarian": true },
-    "image_url": "https://vegankitchenwizard.com/wp-content/uploads/2025/02/roasted_vegetable_couscous_preparation.jpg"
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Couscous_with_Roasted_Vegetables_%26_Feta.jpg"
   },
   {
     "id": "turkey-meatballs",
@@ -69,6 +69,6 @@
     "description": "A slow-stirred, savory risotto for a relaxed evening.",
     "servings": 2,
     "dietary_attributes": { "is_vegetarian": true },
-    "image_url": "https://img.myeverydayrecipe.com/creamy-mushroom-risotto-recipe.webp"
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Mushroom_and_Leek_Risotto_%2849535206656%29.jpg/960px-Mushroom_and_Leek_Risotto_%2849535206656%29.jpg"
   }
 ]
