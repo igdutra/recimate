@@ -20,6 +20,9 @@ Look for unknown unknowns in this task: assumptions the request rests on,
 decisions it implies but doesn't state, parts of the codebase it will touch that
 the user may not know exist.
 
+When researching a field or API, don't stop at blogs and web search: also look
+it up in Apple's own documentation with `/apple-doc`.
+
 If the user can't describe what they want in detail, ask for a reference. The
 best reference is source code: a library or component that already does it, even
 in a different language. Point at the folder and say what to look for — it gives
