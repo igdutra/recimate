@@ -1,6 +1,6 @@
 # Architecture
 
-Three modules: `API`, `Domain` and `Presentation`. `Presentation` and `API` never see each other; both depend on `Domain` only. `ReciMateApp`, the composition root, is the one place that builds `API` types; it forwards them as Domain interfaces to the views, and each view creates the view model it owns.
+Three modules: `API`, `Domain` and `Presentation`. `Presentation` and `API` never see each other; both depend on `Domain` only. `ReciMateApp`, the composition root, is the one place that builds `API` types; it forwards them as Domain interfaces to the views, and each view creates the view model it owns. It also creates the `AppRouter`, which the views receive through their initializers.
 
 Inside `API`, the services reach their data source only through `RecipeAPIClient`, so the bundled-JSON `LocalRecipeAPIClient` can be swapped for a network client without touching a service.
 
@@ -13,6 +13,7 @@ flowchart TB
     subgraph Presentation
         direction LR
         Root[RootView]
+        Router["AppRouter<br/><i>navigation state</i>"]
         LibraryView[RecipeLibraryView]
         LibraryVM[RecipeLibraryViewModel]
         FiltersView[FiltersSheetView]
@@ -46,29 +47,36 @@ flowchart TB
         end
     end
 
-    %% Creates (0-4, and 7)
+    %% Creates (0-10)
+    App ==> Router
     App ==> Root
-    Root ==> LibraryVM
     App ==> RemoteList
     App ==> RemoteDetails
     App ==> LocalClient
+    Root ==> LibraryView
+    Root ==> FiltersView
+    Root ==> DetailsView
+    Root ==> LibraryVM
+    DetailsView ==> DetailsVM
+    LibraryVM ==>|owns| FiltersVM
 
-    %% Presentation (5-10)
+    %% Presentation (11-17)
+    Root --> Router
+    LibraryView --> Router
+    FiltersView --> Router
     LibraryView --> LibraryVM
     FiltersView --> FiltersVM
-    DetailsView ==> DetailsVM
-    LibraryVM -->|owns| FiltersVM
     LibraryVM --> ListService
     DetailsVM --> DetailsService
 
-    %% API (11-15)
+    %% API (18-22)
     RemoteList -.->|implements| ListService
     RemoteDetails -.->|implements| DetailsService
     RemoteList --> APIClient
     RemoteDetails --> APIClient
     LocalClient -.->|implements| APIClient
 
-    %% Model usage (16-30)
+    %% Model usage (23-37)
     ListService --> Preview
     ListService --> Query
     DetailsService --> Details
@@ -92,11 +100,11 @@ flowchart TB
     classDef api fill:#fce7f3,stroke:#be185d,color:#1f2937
 
     class App root
-    class Root,LibraryView,LibraryVM,FiltersView,FiltersVM,DetailsView,DetailsVM presentation
+    class Root,Router,LibraryView,LibraryVM,FiltersView,FiltersVM,DetailsView,DetailsVM presentation
     class ListService,DetailsService,APIClient protocol
     class Preview,Details,Query,Error model
     class RemoteList,RemoteDetails,LocalClient api
 
-    linkStyle 0,1,2,3,4,7 stroke:#b45309,stroke-width:2.5px
-    linkStyle 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30 stroke:#9ca3af,stroke-width:1px
+    linkStyle 0,1,2,3,4,5,6,7,8,9,10 stroke:#b45309,stroke-width:2.5px
+    linkStyle 23,24,25,26,27,28,29,30,31,32,33,34,35,36,37 stroke:#9ca3af,stroke-width:1px
 ```

@@ -119,8 +119,8 @@ Seven choices made on purpose. The reasoning, the rejected options and the rest 
   - No scope picker, following Apple's HIG and NN/g; a card found only by its steps says so. Typing is debounced, and a stale reply never overwrites a newer one.
 - **The view state does not carry the data**
   - `ViewState` (`loading`, `loaded`, `error`) sits beside the data, so the grid keeps its cards and scroll position while a new search runs.
-- **Navigation goes through a router the views own**
-  - `AppRouter` is injected by initializer at the composition root, never through `@Environment`, off-loading the viewModel with one less responsibility.
+- **Views navigate through an injected router**
+  - `AppRouter` is created at the composition root and passed to the views by initializer, never through `@Environment`. The views call it directly, which keeps navigation out of the view models.
 - **Backend data is trusted, not validated**
   - `invalidData` means only "does not decode": rule checks were built, then removed, because they hid what the server sent. Each error kind gets its own message and Try Again.
 - **Native controls first**
