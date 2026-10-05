@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 
 @MainActor
@@ -16,9 +17,12 @@ final class RecipeLibraryViewModel {
     /// so a slow reply that arrives late, or work that was cancelled, never shows.
     @ObservationIgnored private var latestSearchNumber = 0
     @ObservationIgnored private var searchTask: Task<Void, Never>?
+    /// How long typing must pause before a search starts. Tests pass `.zero`.
+    @ObservationIgnored private let searchDebounce: Duration
 
-    init(service: any RecipeListService) {
+    init(service: any RecipeListService, searchDebounce: Duration = .milliseconds(300)) {
         self.service = service
+        self.searchDebounce = searchDebounce
         filtersViewModel = FiltersViewModel()
         filtersViewModel.onChange = { [weak self] filters in
             self?.didChangeFilters(filters)
@@ -37,10 +41,13 @@ final class RecipeLibraryViewModel {
         await runSearch(number: searchNumber)
     }
 
+    /// Stores the trimmed text, so "pasta" and "pasta " are one search, and searches once
+    /// typing pauses (debounce, not throttle: nobody wants the results for every prefix).
     func didChangeSearch(_ searchText: String) {
-        guard searchText != query.instructionText else { return }
-        query.instructionText = searchText
-        startSearch()
+        let trimmedText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedText != query.instructionText else { return }
+        query.instructionText = trimmedText
+        startSearch(debounce: searchDebounce)
     }
 
     /// The sheet reports the filters only; the search text stays as typed.
@@ -50,7 +57,7 @@ final class RecipeLibraryViewModel {
         query = updatedQuery
         // The button reflects the filters at once; the recipes follow with the result.
         viewData = makeViewData(state: viewData.state, cards: viewData.cards)
-        startSearch()
+        startSearch(debounce: .zero)
     }
 
     // MARK: - Searching
@@ -62,9 +69,19 @@ final class RecipeLibraryViewModel {
         return latestSearchNumber
     }
 
-    private func startSearch() {
+    /// Waits `debounce` first. The next search cancels this task (`beginSearch()`), so only
+    /// the last one reaches the service. Not `try?`: it would swallow the cancellation and
+    /// search anyway.
+    private func startSearch(debounce: Duration) {
         let searchNumber = beginSearch()
-        searchTask = Task { await runSearch(number: searchNumber) }
+        searchTask = Task {
+            do {
+                try await Task.sleep(for: debounce)
+            } catch {
+                return
+            }
+            await runSearch(number: searchNumber)
+        }
     }
 
     /// Later searches keep the state and the old cards until their result arrives,

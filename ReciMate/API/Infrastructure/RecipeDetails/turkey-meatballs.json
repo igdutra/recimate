@@ -1,0 +1,21 @@
+{
+  "id": "turkey-meatballs",
+  "title": "Turkey Meatballs",
+  "description": "Tender herb meatballs with a simple tomato finish.",
+  "servings": 5,
+  "ingredients": [
+    { "id": "ground-turkey", "name": "Ground turkey", "quantity": "600 g" },
+    { "id": "breadcrumbs", "name": "Breadcrumbs", "quantity": "1/2 cup" },
+    { "id": "parsley", "name": "Fresh parsley", "quantity": "1/4 cup" },
+    { "id": "egg", "name": "Egg", "quantity": "1" },
+    { "id": "tomato-sauce", "name": "Tomato sauce", "quantity": "2 cups" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Mix the turkey, breadcrumbs, parsley and egg." },
+    { "step": 2, "text": "Roll into golf-ball sized meatballs." },
+    { "step": 3, "text": "Brown the meatballs in a pan, turning often." },
+    { "step": 4, "text": "Pour in the tomato sauce and simmer for 15 minutes." }
+  ],
+  "dietary_attributes": { "is_vegetarian": false },
+  "image_url": "https://irepo.primecp.com/2015/12/249665/EDR-Sicilian-Turkey-Meatballs_ExtraLarge1000_ID-1346135.jpg?v=1346135"
+}

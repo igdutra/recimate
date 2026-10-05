@@ -3,7 +3,7 @@ import Observation
 @MainActor
 @Observable
 final class RecipeDetailsViewModel {
-    private(set) var viewData = RecipeDetailsViewData(state: .loading, content: nil)
+    private(set) var viewData = RecipeDetailsViewData(state: .loading, content: .placeholder)
 
     @ObservationIgnored private let recipeID: String
     @ObservationIgnored private let service: any RecipeDetailsService
@@ -23,14 +23,14 @@ final class RecipeDetailsViewModel {
         guard !viewData.state.isLoaded, !isLoadInFlight else { return }
         isLoadInFlight = true
         defer { isLoadInFlight = false }
-        viewData = RecipeDetailsViewData(state: .loading, content: nil)
+        viewData = RecipeDetailsViewData(state: .loading, content: .placeholder)
         do {
             let recipe = try await service.loadRecipe(id: recipeID)
             viewData = RecipeDetailsViewData(state: .loaded, content: Self.makeContent(from: recipe))
         } catch let recipeError as RecipeError {
-            viewData = RecipeDetailsViewData(state: .error(recipeError), content: nil)
+            viewData = RecipeDetailsViewData(state: .error(recipeError), content: .placeholder)
         } catch {
-            viewData = RecipeDetailsViewData(state: .error(.unavailable), content: nil)
+            viewData = RecipeDetailsViewData(state: .error(.unavailable), content: .placeholder)
         }
     }
 

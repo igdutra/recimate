@@ -10,7 +10,7 @@ struct RecipeDetailsViewModelTests {
     @Test func init_startsLoadingWithNoContent() {
         let (sut, _) = makeSUT()
 
-        #expect(sut.viewData == RecipeDetailsViewData(state: .loading, content: nil))
+        #expect(sut.viewData == RecipeDetailsViewData(state: .loading, content: .placeholder))
     }
 
     // MARK: - Happy path
@@ -29,12 +29,12 @@ struct RecipeDetailsViewModelTests {
         let (sut, spy) = makeSUT()
 
         let loadTask = await startLoad(of: sut, on: spy)
-        #expect(sut.viewData == RecipeDetailsViewData(state: .loading, content: nil))
+        #expect(sut.viewData == RecipeDetailsViewData(state: .loading, content: .placeholder))
 
         await spy.complete(with: .petitGateau)
         await loadTask.value
         #expect(sut.viewData.state == .loaded)
-        #expect(sut.viewData.content != nil)
+        #expect(sut.viewData.content != .placeholder)
     }
 
     // MARK: - Failure modes
@@ -52,7 +52,7 @@ struct RecipeDetailsViewModelTests {
 
         await spy.fail(with: recipeError)
         await loadTask.value
-        #expect(sut.viewData == RecipeDetailsViewData(state: .error(recipeError), content: nil))
+        #expect(sut.viewData == RecipeDetailsViewData(state: .error(recipeError), content: .placeholder))
     }
 
     @Test func load_onNonRecipeError_movesToUnavailable() async {
@@ -61,7 +61,7 @@ struct RecipeDetailsViewModelTests {
 
         await load(sut, on: spy, failingWith: UnrelatedError())
 
-        #expect(sut.viewData == RecipeDetailsViewData(state: .error(.unavailable), content: nil))
+        #expect(sut.viewData == RecipeDetailsViewData(state: .error(.unavailable), content: .placeholder))
     }
 
     // MARK: - Repeated loads

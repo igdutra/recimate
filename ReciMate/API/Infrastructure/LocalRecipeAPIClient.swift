@@ -12,12 +12,18 @@ import Playgrounds
 /// so the whole data layer can be exercised and printed without a screen.
 struct LocalRecipeAPIClient: RecipeAPIClient {
     let bundle: Bundle
+    /// How long every request waits before it is answered.
+    let delay: Duration
 
-    init(bundle: Bundle = .main) {
+    init(bundle: Bundle = .main, delay: Duration = .seconds(1)) {
         self.bundle = bundle
+        self.delay = delay
     }
 
     func data(from url: URL) async throws -> Data {
+        // Only to mock network latency, so the loading state is visible when running the
+        // app. A real client has no such wait. A cancelled request throws `CancellationError` here.
+        try await Task.sleep(for: delay)
         if url.lastPathComponent == "recipes" {
             return try searchResponse(for: url)
         }
@@ -58,7 +64,7 @@ struct LocalRecipeAPIClient: RecipeAPIClient {
     let filteredRecipes = try await listService.loadRecipes(matching: filteredQuery)
     print("vegetarian, 2 servings, cream, no mushrooms:", filteredRecipes.map(\.title))
 
-    // A good recipe, the intentionally broken one, and ids with no detail file.
+    // A good recipe, the one with a malformed detail, and the one with no detail file.
     for recipeID in ["petit-gateau", "creamy-tomato-pasta", "beef-tacos"] {
         do {
             let recipe = try await detailsService.loadRecipe(id: recipeID)

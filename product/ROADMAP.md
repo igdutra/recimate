@@ -30,9 +30,9 @@ F Polish + README
 |---|-----------|--------|-------|--------|
 | A | Foundation + Data Contract | D1, D2 | 001 | done |
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
-| C | Recipe Library | V1, V2, V3 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded state done (004); error state in milestone E's shared error pass |
+| C | Recipe Library | V1, V2, V3 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded, loading and error states done (004, 009) |
 | D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008; follow-up spec pending (see D below) | built; simulator walk pending; follow-up not started |
-| E | Recipe Details | E2, E1 (error half, Library and Details) | 006 (loaded state) | loaded state done (006); shared error pass pending, no spec yet |
+| E | Recipe Details | E2, E1 (error half, Library and Details) | 006 (loaded state), 009 (loading and error) | loaded state done (006); loading and error states done (009) |
 | F | Polish + README | R1–R6, P2 | | not started |
 
 The user flow the milestones build toward:
@@ -60,9 +60,9 @@ vegetarian indicator. Delivered in steps:
 - Error and no-results states (E1) are mandatory. No-results lands in spec 008,
   because a search is what produces it, using the system
   `ContentUnavailableView.search`. The error state is built together with the
-  Details error state, in one shared pass under milestone E (see below). Loading
-  and empty-collection states are outside the brief and live in
-  [BACKLOG.md](BACKLOG.md).
+  Details error state, in one shared pass under milestone E (spec 009, done), which
+  also draws the loading state. The empty-collection state is outside the brief and
+  lives in [BACKLOG.md](BACKLOG.md).
 
 **D. Search + Filtering.** The search endpoint (S1–S6) behind the data layer,
 plus the minimal UI that drives it (spec 008):
@@ -98,7 +98,8 @@ Also the intentional failure (E2) shown through the view state and
 
 - Spec 006: the Details screen in its loaded state only (segmented
   Ingredients / Steps layout, native back button, full-bleed hero).
-- **Error states, one shared pass for both screens (E1, E2).** The Library's error
+- **Error and loading states, one shared pass for both screens (E1, E2). Done in spec
+  009.** The Library's error
   state (a failed load, and a failed search, since search runs through the same
   view model) and the Details error state (E2, with Try Again) are built together,
   with one `View+StateOverlay` view extension: a state-driven overlay over a stable
@@ -106,18 +107,15 @@ Also the intentional failure (E2) shown through the view state and
   `ViewState` introduced in spec 004. On the Library the search field and the
   Filters button stay on screen under the overlay, so a failed search can be
   retried or changed, and Try Again re-runs the current query (the view model
-  already allows `load()` again after an error). On Details, until this lands, a
-  tap on a recipe with no detail file (6 of 9, plus `creamy-tomato-pasta`) opens a
-  blank screen. Mandatory, so it lives here and not in the backlog. Needs its own
-  spec. What changes when it lands: both screens drop their "blank unless loaded"
-  branch for the overlay; the Details frame's "Back to Recipes" button is
-  redundant with the native back button and is dropped or kept as a decision then;
-  new constants (the 80pt badge circle) are declared inline in the view that uses
+  already allows `load()` again after an error). Only two recipes fail now, on purpose, and their
+  titles say so (`creamy-tomato-pasta`, malformed; `beef-tacos`, no detail file); the
+  other seven have a detail file. Both screens dropped their "blank unless loaded"
+  branch for the overlay, the Details `ZStack` is gone, and the Details frame's "Back
+  to Recipes" button was dropped in favour of the native back button. New constants (the 80pt badge circle) are declared inline in the view that uses
   them (see spec 007).
-- Still to do, separate from the error pass: loading and the no-image hero on
-  Details. Neither is in the brief (see [BACKLOG.md](BACKLOG.md), "Loading and
-  empty-collection states"); whether they stay here or move to the backlog is
-  decided when Details is next scheduled.
+- Still to do, separate from the error pass: the no-image hero on Details. It is not
+  in the brief; whether it stays here or moves to the backlog is decided when Details
+  is next scheduled.
 
 **F. Polish + README.** Final full test run and the README sections R2–R6.
 The accessibility and visual pass is outside the brief and lives in

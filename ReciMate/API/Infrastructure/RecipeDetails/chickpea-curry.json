@@ -1,0 +1,21 @@
+{
+  "id": "chickpea-curry",
+  "title": "Chickpea Coconut Curry",
+  "description": "Comforting chickpeas in a gently spiced coconut sauce.",
+  "servings": 6,
+  "ingredients": [
+    { "id": "chickpeas", "name": "Chickpeas", "quantity": "2 cans" },
+    { "id": "coconut-milk", "name": "Coconut milk", "quantity": "400 ml" },
+    { "id": "onion", "name": "Onion", "quantity": "1" },
+    { "id": "curry-paste", "name": "Mild curry paste", "quantity": "2 tbsp" },
+    { "id": "spinach", "name": "Baby spinach", "quantity": "100 g" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Soften the chopped onion in a large pot." },
+    { "step": 2, "text": "Stir in the curry paste for one minute." },
+    { "step": 3, "text": "Add chickpeas and coconut milk and simmer for 20 minutes." },
+    { "step": 4, "text": "Fold in the spinach until it wilts, then serve with rice." }
+  ],
+  "dietary_attributes": { "is_vegetarian": true },
+  "image_url": "https://i.pinimg.com/originals/ec/89/03/ec890374cc0c34a6abae73a747903c60.jpg"
+}

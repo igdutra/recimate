@@ -183,10 +183,11 @@ struct RecipeLibraryViewModelTests {
         await load(sut, on: spy, completingWith: [.petitGateau])
         sut.filtersViewModel.chooseServings(.count(4))
         sut.filtersViewModel.submitIncludedTerm("eggs")
-        await spy.waitUntilRequested(count: 3)
+        // The first filter's search is cancelled before it reaches the service.
+        await spy.waitUntilRequested(count: 2)
 
         sut.didChangeSearch("bake")
-        await spy.waitUntilRequested(count: 4)
+        await spy.waitUntilRequested(count: 3)
 
         #expect(spy.requestedQueries.last == RecipeSearchQuery(
             instructionText: "bake", servings: 4, includedIngredients: ["eggs"]
@@ -206,6 +207,57 @@ struct RecipeLibraryViewModelTests {
         await spy.waitUntilRequested(count: 4)
 
         #expect(spy.requestedQueries.last == RecipeSearchQuery(instructionText: "bake"))
+        await spy.failPendingRequests()
+    }
+
+    // MARK: - Debounce and trimming
+
+    @Test func typing_threeKeystrokesInARow_reachTheServiceOnceWithTheLastText() async {
+        let (sut, spy) = makeSUT(searchDebounce: .milliseconds(50))
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        sut.didChangeSearch("r")
+        sut.didChangeSearch("ra")
+        sut.didChangeSearch("ram")
+        await spy.waitUntilRequested(count: 2)
+        await settle()
+
+        #expect(spy.requestedQueries == [.empty, RecipeSearchQuery(instructionText: "ram")])
+        await spy.failPendingRequests()
+    }
+
+    @Test func typing_withALongDebounce_requestsNothingYet() async {
+        let (sut, spy) = makeSUT(searchDebounce: .seconds(1))
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        sut.didChangeSearch("ramekins")
+        await settle()
+
+        #expect(spy.requestCount == 1)
+    }
+
+    @Test func didChangeSearch_withTextThatDiffersOnlyBySpaces_doesNotSearchAgain() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("ramekins")
+        await spy.waitUntilRequested(count: 2)
+        await finishSearch(on: spy, at: 1, with: [.petitGateau])
+
+        sut.didChangeSearch("ramekins ")
+        sut.didChangeSearch("  ramekins")
+        await settle()
+
+        #expect(spy.requestCount == 2)
+    }
+
+    @Test func filterChange_isNotDebounced() async {
+        let (sut, spy) = makeSUT(searchDebounce: .seconds(60))
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        sut.filtersViewModel.setVegetarianOnly(true)
+        await spy.waitUntilRequested(count: 2)
+
+        #expect(spy.requestedQueries.last == RecipeSearchQuery(onlyVegetarian: true))
         await spy.failPendingRequests()
     }
 
@@ -374,9 +426,9 @@ struct RecipeLibraryViewModelTests {
 private extension RecipeLibraryViewModelTests {
     typealias SUTBundle = (sut: RecipeLibraryViewModel, spy: RecipeListServiceSpy)
 
-    func makeSUT() -> SUTBundle {
+    func makeSUT(searchDebounce: Duration = .zero) -> SUTBundle {
         let spy = RecipeListServiceSpy()
-        let sut = RecipeLibraryViewModel(service: spy)
+        let sut = RecipeLibraryViewModel(service: spy, searchDebounce: searchDebounce)
         return (sut, spy)
     }
 

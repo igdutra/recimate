@@ -1,0 +1,20 @@
+{
+  "id": "sheet-pan-salmon",
+  "title": "Sheet Pan Salmon",
+  "description": "Salmon, potatoes, and greens in one easy pan.",
+  "servings": 4,
+  "ingredients": [
+    { "id": "salmon", "name": "Salmon fillets", "quantity": "4" },
+    { "id": "potatoes", "name": "Baby potatoes", "quantity": "500 g" },
+    { "id": "green-beans", "name": "Green beans", "quantity": "200 g" },
+    { "id": "olive-oil", "name": "Olive oil", "quantity": "3 tbsp" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Heat the oven to 220°C." },
+    { "step": 2, "text": "Toss potatoes with oil and roast on a sheet pan for 15 minutes." },
+    { "step": 3, "text": "Add the salmon and green beans to the pan and season well." },
+    { "step": 4, "text": "Roast for 12 minutes more, until the salmon flakes easily." }
+  ],
+  "dietary_attributes": { "is_vegetarian": false },
+  "image_url": "https://realhealthyrecipes.com/uploads/images/2017-11-08/1544891717/815905505large.jpg"
+}

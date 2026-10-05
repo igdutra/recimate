@@ -32,10 +32,16 @@ struct RecipeLibraryView: View {
 
     var body: some View {
         // The title, search field and toolbar are always there, so the screen keeps its
-        // shape while loading and when nothing matches. The scroll view also gives
-        // `.task` a view to attach to. The loading and error views are a later spec.
+        // shape while loading, after a failure and when nothing matches. The scroll view also
+        // gives `.task` a view to attach to.
         ScrollView {
+            // Only the grid is covered: fading the scroll view would fade the large title too.
             RecipeGrid(cards: viewModel.viewData.cards, router: router)
+                .coveredBy(state: viewModel.viewData.state)
+        }
+        // Before `.searchable`, so nothing here reaches the search field.
+        .stateOverlay(state: viewModel.viewData.state, hidesContent: false) {
+            Task { await viewModel.load() }
         }
         .searchable(text: $searchText, prompt: "Search instructions")
         // After `.searchable`, so the system view can read the query from the field.
@@ -125,10 +131,11 @@ private extension RecipeLibraryView {
     /// A Library over sample recipes. `previews` is what every search returns.
     static func preview(
         previews: [RecipePreview] = RecipePreview.previewSamples,
+        outcome: PreviewOutcome = .loaded,
         searchText: String = "",
         configure: (RecipeLibraryViewModel) -> Void = { _ in }
     ) -> some View {
-        let viewModel = RecipeLibraryViewModel(service: PreviewRecipeListService(previews: previews))
+        let viewModel = RecipeLibraryViewModel(service: PreviewRecipeListService(previews: previews, outcome: outcome))
         configure(viewModel)
         return NavigationStack {
             RecipeLibraryView(viewModel: viewModel, router: AppRouter(), searchText: searchText)
@@ -156,6 +163,18 @@ private extension RecipeLibraryView {
         viewModel.filtersViewModel.setVegetarianOnly(true)
         viewModel.filtersViewModel.chooseServings(.count(5))
     }
+}
+
+#Preview("Library, loading") {
+    RecipeLibraryView.preview(outcome: .loading)
+}
+
+#Preview("Library, error") {
+    RecipeLibraryView.preview(outcome: .failed(.unavailable))
+}
+
+#Preview("Library, error with search text") {
+    RecipeLibraryView.preview(outcome: .failed(.unavailable), searchText: "ramekins")
 }
 
 #Preview("Library, sample recipes, large Dynamic Type") {

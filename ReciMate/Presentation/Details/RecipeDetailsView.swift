@@ -5,8 +5,8 @@ import SwiftUI
 /// What the Details screen shows: where its data is, and the page once loaded.
 struct RecipeDetailsViewData: Equatable {
     let state: ViewState
-    /// `nil` until loaded, and again after an error.
-    let content: RecipeDetailsContentViewData?
+    /// `.placeholder` until loaded, and again after an error; the state overlay covers it.
+    let content: RecipeDetailsContentViewData
 }
 
 /// The loaded page, already formatted for display.
@@ -18,6 +18,17 @@ struct RecipeDetailsContentViewData: Equatable {
     let imageURL: URL?
     let ingredients: [IngredientRowViewData]
     let steps: [StepRowViewData]
+
+    /// Blank page shown under the loading and error overlay.
+    static let placeholder = RecipeDetailsContentViewData(
+        title: "",
+        summary: "",
+        servingsLabel: "",
+        isVegetarian: false,
+        imageURL: nil,
+        ingredients: [],
+        steps: []
+    )
 }
 
 /// One ingredient row. A `nil` quantity shows the name alone.
@@ -46,17 +57,13 @@ struct RecipeDetailsView: View {
     }
 
     var body: some View {
-        // A `ZStack` so `.task` always has a view to attach to: an empty `Group` (before the
-        // content loads) gives it nothing.
-        // TODO(milestone E): drop the `ZStack` when the state overlay lands.
-        ZStack {
-            if let content = viewModel.viewData.content {
-                RecipeDetailsPage(content: content)
+        RecipeDetailsPage(content: viewModel.viewData.content)
+            .stateOverlay(state: viewModel.viewData.state) {
+                Task { await viewModel.load() }
             }
-        }
-        .task { await viewModel.load() }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
+            .task { await viewModel.load() }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
     }
 }
 
@@ -311,6 +318,24 @@ struct StepRowView: View {
 #Preview("Details, failing image") {
     NavigationStack {
         RecipeDetailsView(viewModel: RecipeDetailsViewModel(recipeID: "failing-image", service: PreviewRecipeDetailsService(recipe: .previewSamples[3])))
+    }
+}
+
+#Preview("Details, loading") {
+    NavigationStack {
+        RecipeDetailsView(viewModel: RecipeDetailsViewModel(
+            recipeID: "petit-gateau",
+            service: PreviewRecipeDetailsService(outcome: .loading)
+        ))
+    }
+}
+
+#Preview("Details, error") {
+    NavigationStack {
+        RecipeDetailsView(viewModel: RecipeDetailsViewModel(
+            recipeID: "beef-tacos",
+            service: PreviewRecipeDetailsService(outcome: .failed(.notFound))
+        ))
     }
 }
 

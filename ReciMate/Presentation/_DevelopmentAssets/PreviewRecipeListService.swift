@@ -9,16 +9,18 @@
 
 /// A `RecipeListService` for previews that returns the sample recipes at once, with no
 /// network and no bundled data. It ignores the query; a preview with no matches
-/// passes an empty array.
+/// passes an empty array. `outcome` makes it load forever or fail.
 struct PreviewRecipeListService: RecipeListService {
     let previews: [RecipePreview]
+    let outcome: PreviewOutcome
 
-    init(previews: [RecipePreview] = RecipePreview.previewSamples) {
+    init(previews: [RecipePreview] = RecipePreview.previewSamples, outcome: PreviewOutcome = .loaded) {
         self.previews = previews
+        self.outcome = outcome
     }
 
     func loadRecipes(matching query: RecipeSearchQuery) async throws -> [RecipePreview] {
-        previews
+        try await outcome.resolve(previews)
     }
 }
 #endif

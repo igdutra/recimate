@@ -7,17 +7,19 @@
 
 #if DEBUG
 
-/// A `RecipeDetailsService` for previews that returns one sample recipe at once, with no
-/// network and no bundled data.
+/// A `RecipeDetailsService` for previews that returns one sample recipe at once (or
+/// loads forever, or fails, per its `outcome`), with no network and no bundled data.
 struct PreviewRecipeDetailsService: RecipeDetailsService {
     let recipe: RecipeDetails
+    let outcome: PreviewOutcome
 
-    init(recipe: RecipeDetails = RecipeDetails.previewSamples[0]) {
+    init(recipe: RecipeDetails = RecipeDetails.previewSamples[0], outcome: PreviewOutcome = .loaded) {
         self.recipe = recipe
+        self.outcome = outcome
     }
 
     func loadRecipe(id: String) async throws -> RecipeDetails {
-        recipe
+        try await outcome.resolve(recipe)
     }
 }
 #endif

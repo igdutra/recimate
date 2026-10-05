@@ -27,7 +27,7 @@ load failed, search failed, retrying, two no-results; Details loading and load f
   error message with a Try Again button. The search field and Filters button stay
   usable, so the search can be changed instead of retried.
 - Every recipe opens its page, except two that fail on purpose and say so in their
-  title: "Creamy Tomato Pasta (Fails: Bad Data)" (its detail is malformed) and
+  title: "Creamy Tomato Pasta (Fails: Data)" (its detail is malformed) and
   "Beef Tacos (Fails: Not Found)" (it has no detail). Tapping either shows the error
   view, with the message for its error kind and Try Again, on the Details screen, with
   the native back button still available to leave.
@@ -188,7 +188,7 @@ default would add about 20 seconds to the suite).
   recipe's catalog record as is, formatted like `petit-gateau.json`. The project uses
   synchronized folders, so the files join the app target on their own.
 - In `recipe-catalog.json`, retitle `creamy-tomato-pasta` "Creamy Tomato Pasta (Fails:
-  Bad Data)" and `beef-tacos` "Beef Tacos (Fails: Not Found)". Same title in
+  Data)" and `beef-tacos` "Beef Tacos (Fails: Not Found)". Same title in
   `creamy-tomato-pasta.json`. Ids do not change. Check in the simulator that the titles
   fit the card's two lines; if not, shorten the suffix and log it as a deviation.
 - `LocalRecipeAPIClient`'s `#Playground` comment: `beef-tacos` is the recipe with no
@@ -305,7 +305,7 @@ Task list: no
 - **AC4:** Try Again on the Library runs the current query again and shows the spinner
   first.
 - **AC5:** Tapping a recipe shows a centered spinner while its page loads.
-- **AC6:** Tapping "Creamy Tomato Pasta (Fails: Bad Data)" or "Beef Tacos (Fails: Not
+- **AC6:** Tapping "Creamy Tomato Pasta (Fails: Data)" or "Beef Tacos (Fails: Not
   Found)" shows the error message with Try Again, and the native back button returns
   to the Library. Every other recipe opens its page.
 - **AC7:** Try Again on Details shows the spinner and then the error again for those

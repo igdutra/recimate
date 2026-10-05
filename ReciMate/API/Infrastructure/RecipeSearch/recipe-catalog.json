@@ -92,7 +92,7 @@
   },
   {
     "id": "creamy-tomato-pasta",
-    "title": "Creamy Tomato Pasta",
+    "title": "Creamy Tomato Pasta (Fails: Data)",
     "description": "A quick pantry pasta with a silky tomato sauce.",
     "servings": 2,
     "dietary_attributes": {
@@ -238,7 +238,7 @@
   },
   {
     "id": "beef-tacos",
-    "title": "Weeknight Beef Tacos",
+    "title": "Beef Tacos (Fails: Not Found)",
     "description": "Crisp tacos filled with warmly spiced beef.",
     "servings": 4,
     "dietary_attributes": {

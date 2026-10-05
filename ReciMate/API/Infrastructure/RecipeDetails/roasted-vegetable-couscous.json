@@ -1,0 +1,21 @@
+{
+  "id": "roasted-vegetable-couscous",
+  "title": "Roasted Vegetable Couscous",
+  "description": "Colorful roast vegetables over fluffy couscous.",
+  "servings": 3,
+  "ingredients": [
+    { "id": "couscous", "name": "Couscous", "quantity": "250 g" },
+    { "id": "zucchini", "name": "Zucchini", "quantity": "2" },
+    { "id": "bell-pepper", "name": "Red bell pepper", "quantity": "2" },
+    { "id": "red-onion", "name": "Red onion", "quantity": "1" },
+    { "id": "feta", "name": "Feta cheese", "quantity": "100 g" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Heat the oven to 200°C." },
+    { "step": 2, "text": "Chop the vegetables, toss with oil and roast for 25 minutes." },
+    { "step": 3, "text": "Pour boiling water over the couscous, cover and rest for 5 minutes." },
+    { "step": 4, "text": "Fluff the couscous, top with the vegetables and crumble over the feta." }
+  ],
+  "dietary_attributes": { "is_vegetarian": true },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Couscous_with_Roasted_Vegetables_%26_Feta.jpg"
+}

@@ -17,7 +17,7 @@ cancels the previous search task, and never presents a cancelled or outdated res
 outcome, and cancelling the view model's task in `deinit`.
 
 Make a cancelled load (a `.task` that goes away, a search keystroke in milestone D) not
-show up as `unavailable`. The local client cannot throw `CancellationError`, so
+show up as `unavailable`. The local client now throws `CancellationError` from its mock delay (spec 009), but the services' catch-all still turns it into `unavailable`; the Library drops it because the search is outdated. Before spec 009 the local client could not throw it, so
 milestone B (spec 002) dropped the handling and its tests. Add it back, with a test,
 together with the URLSession client: rethrow `CancellationError` (and map
 `URLError(.cancelled)` to it) before the services' catch-all.
@@ -78,13 +78,24 @@ wraps the client in one that throws. With the bundled data the Library never fai
 so its error state is visible only in previews and view model tests. Details has two
 recipes that fail on purpose (spec 009), so its error state can be seen in the app.
 
-## Loading and empty-collection states
+## Empty-collection state
 
-The Library's loading state (placeholders or a spinner while the first load runs)
-and its empty-collection state (no recipes at all, which is different from no
+The Library's empty-collection state (no recipes at all, which is different from no
 results). The brief asks only for error handling, so error and no-results (E1) are
-built and these two are not. The local JSON loads instantly, so loading is rarely
-visible; both matter once a real network client replaces it.
+built and this is not. The loading state is done (spec 009, a spinner); skeleton or
+shimmer placeholders are not planned.
+
+## Try Again by error kind
+
+Spec 009 shows Try Again for every error. A retry cannot help `notFound` or `invalidData`
+(the data is the problem), so the button could be hidden or replaced by those kinds,
+with their own copy.
+
+## Accessibility pass
+
+The state overlay hides the covered content with `opacity(0)` and `.disabled`, which
+leaves it in the VoiceOver tree. Hide it from accessibility while loading or in error,
+and announce the state change.
 
 ## Quick filter chips
 

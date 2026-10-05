@@ -11,7 +11,10 @@ import Testing
 struct RecipeCatalogDriftTests {
     /// Creamy Tomato Pasta is left out on purpose: its details file is malformed
     /// (step 2 is "two") to demo the E2 failure, and the catalog holds the corrected step.
-    @Test(arguments: ["petit-gateau", "lemon-herb-chicken"])
+    @Test(arguments: [
+        "petit-gateau", "lemon-herb-chicken", "sheet-pan-salmon", "chickpea-curry",
+        "roasted-vegetable-couscous", "turkey-meatballs", "mushroom-risotto",
+    ])
     func catalog_matchesTheDetailsFile(recipeID: String) throws {
         let catalogRecord = try #require(Self.catalogRecords.first { $0["id"] as? String == recipeID })
         let detailsRecord = try Self.jsonObject(named: recipeID)

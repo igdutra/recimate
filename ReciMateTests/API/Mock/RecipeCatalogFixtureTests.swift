@@ -53,7 +53,7 @@ struct RecipeCatalogFixtureTests {
         ),
     ])
     func search_throughTheLocalClient_returnsTheExpectedRecipes(query: RecipeSearchQuery, expectedIDs: [String]) async throws {
-        let service = RemoteRecipeListService(baseURL: Self.baseURL, client: LocalRecipeAPIClient())
+        let service = RemoteRecipeListService(baseURL: Self.baseURL, client: LocalRecipeAPIClient(delay: .zero))
 
         let previews = try await service.loadRecipes(matching: query)
 
@@ -61,7 +61,7 @@ struct RecipeCatalogFixtureTests {
     }
 
     @Test func search_throughTheLocalClient_keepsThePreviewFields() async throws {
-        let service = RemoteRecipeListService(baseURL: Self.baseURL, client: LocalRecipeAPIClient())
+        let service = RemoteRecipeListService(baseURL: Self.baseURL, client: LocalRecipeAPIClient(delay: .zero))
 
         let previews = try await service.loadRecipes(matching: RecipeSearchQuery(instructionText: "ramekins"))
 
@@ -70,5 +70,34 @@ struct RecipeCatalogFixtureTests {
         #expect(petitGateau.servings == 4)
         #expect(petitGateau.dietaryAttributes.isVegetarian)
         #expect(petitGateau.imageURL != nil)
+    }
+
+    // MARK: - End to end: local client, details service, domain
+
+    @Test(arguments: [
+        "petit-gateau", "lemon-herb-chicken", "sheet-pan-salmon", "chickpea-curry",
+        "roasted-vegetable-couscous", "turkey-meatballs", "mushroom-risotto",
+    ])
+    func details_throughTheLocalClient_loadTheSevenGoodRecipes(recipeID: String) async throws {
+        let service = RemoteRecipeDetailsService(baseURL: Self.baseURL, client: LocalRecipeAPIClient(delay: .zero))
+
+        let recipe = try await service.loadRecipe(id: recipeID)
+
+        #expect(recipe.id == recipeID)
+    }
+
+    /// The two recipes that fail on purpose, one for each way a detail can fail.
+    @Test func details_throughTheLocalClient_failOnPurposeForTwoRecipes() async {
+        let service = RemoteRecipeDetailsService(baseURL: Self.baseURL, client: LocalRecipeAPIClient(delay: .zero))
+
+        do {
+            _ = try await service.loadRecipe(id: "creamy-tomato-pasta")
+            Issue.record("creamy-tomato-pasta should fail")
+        } catch {
+            #expect(isInvalidDataWithReason(error))
+        }
+        await #expect(throws: RecipeError.notFound) {
+            try await service.loadRecipe(id: "beef-tacos")
+        }
     }
 }

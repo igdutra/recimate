@@ -1,0 +1,21 @@
+{
+  "id": "mushroom-risotto",
+  "title": "Mushroom Risotto",
+  "description": "A slow-stirred, savory risotto for a relaxed evening.",
+  "servings": 2,
+  "ingredients": [
+    { "id": "arborio-rice", "name": "Arborio rice", "quantity": "300 g" },
+    { "id": "mushrooms", "name": "Mushrooms", "quantity": "250 g" },
+    { "id": "vegetable-stock", "name": "Vegetable stock", "quantity": "1 l" },
+    { "id": "parmesan", "name": "Parmesan", "quantity": "50 g" },
+    { "id": "cream", "name": "Single cream", "quantity": "100 ml" }
+  ],
+  "cooking_instructions": [
+    { "step": 1, "text": "Warm the stock in a saucepan and keep it at a low simmer." },
+    { "step": 2, "text": "Sauté the sliced mushrooms until golden, then set them aside." },
+    { "step": 3, "text": "Toast the rice, then add the stock a ladle at a time, stirring, for about 20 minutes." },
+    { "step": 4, "text": "Stir in the mushrooms, cream and parmesan, then rest for 2 minutes before serving." }
+  ],
+  "dietary_attributes": { "is_vegetarian": true },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Mushroom_and_Leek_Risotto_%2849535206656%29.jpg/960px-Mushroom_and_Leek_Risotto_%2849535206656%29.jpg"
+}
