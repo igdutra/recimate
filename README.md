@@ -1,5 +1,7 @@
 # ReciMate 🍋👨‍🍳 — Your recipe companion
 
+[![CI](https://github.com/igdutra/recimate/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/igdutra/recimate/actions/workflows/ci.yml)
+
 ReciMate is a native iOS recipe browser built with Swift and SwiftUI. It loads recipes from a local JSON mock API and lets you search titles and cooking steps, and filter by vegetarian, servings, and ingredients to include or exclude. Built with MVVM, clear layer boundaries and explicit loading, error and no-results states.
 
 <p align="center">
