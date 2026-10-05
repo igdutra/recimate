@@ -19,8 +19,9 @@ struct RecipeDetails: Identifiable, Equatable, Sendable {
 }
 
 struct Ingredient: Identifiable, Equatable, Sendable {
-    /// Stable across recipes ("eggs" is the same ingredient everywhere), so the
-    /// include/exclude filters match on it rather than on the display name.
+    /// Stable across recipes ("eggs" is the same ingredient everywhere). The
+    /// include/exclude filters do not use it: people type names, so they match on
+    /// `name` (see `RecipeSearchQuery`).
     let id: String
     let name: String
     /// Free text such as "200 g" or "To serve". Not structured, so quantities
