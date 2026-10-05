@@ -95,10 +95,11 @@ enum SearchTextMatching {
             .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
     }
 
-    /// Whether `text` contains `term` as a phrase, ignoring case and accents.
+    /// Whether `text` contains `term` as a phrase, ignoring case and accents. A plain
+    /// substring search (no regular expression), and it does not copy `text`.
     static func text(_ text: String, contains term: String) -> Bool {
-        let foldedTerm = folded(term)
-        guard !foldedTerm.isEmpty else { return true }
-        return folded(text).contains(foldedTerm)
+        let trimmedTerm = term.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTerm.isEmpty else { return true }
+        return text.range(of: trimmedTerm, options: [.caseInsensitive, .diacriticInsensitive]) != nil
     }
 }
