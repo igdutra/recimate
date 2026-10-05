@@ -293,7 +293,8 @@ struct RecipeLibraryViewModelTests {
 
         await spy.fail(with: RecipeError.unavailable, at: 1)
         await settle()
-        #expect(sut.viewData.state == .loaded)
+        // Still waiting for the latest search; the outdated failure shows nothing.
+        #expect(sut.viewData.state == .loading)
 
         await spy.complete(with: [.lemonHerbChicken], at: 2)
         await settle()
@@ -310,23 +311,25 @@ struct RecipeLibraryViewModelTests {
         await spy.fail(with: CancellationError(), at: 1)
         await settle()
 
-        #expect(sut.viewData.state == .loaded)
+        // A cancelled search presents nothing, not even an error.
+        #expect(sut.viewData.state == .loading)
         #expect(sut.viewData.cards.map(\.id) == ["petit-gateau"])
     }
 
     // MARK: - State during a new search
 
-    @Test func newSearch_keepsLoadedStateAndOldCardsUntilTheResultArrives() async {
+    @Test func newSearch_showsLoadingAndKeepsOldCardsUntilTheResultArrives() async {
         let (sut, spy) = makeSUT()
         await load(sut, on: spy, completingWith: [.petitGateau, .lemonHerbChicken])
 
         sut.didChangeSearch("ramekins")
         await spy.waitUntilRequested(count: 2)
 
-        #expect(sut.viewData.state == .loaded)
+        #expect(sut.viewData.state == .loading)
         #expect(sut.viewData.cards.map(\.id) == ["petit-gateau", "lemon-herb-chicken"])
 
         await finishSearch(on: spy, at: 1, with: [.petitGateau])
+        #expect(sut.viewData.state == .loaded)
         #expect(sut.viewData.cards.map(\.id) == ["petit-gateau"])
     }
 

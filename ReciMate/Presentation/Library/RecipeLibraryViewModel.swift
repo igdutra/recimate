@@ -93,10 +93,12 @@ final class RecipeLibraryViewModel {
         }
     }
 
-    /// Later searches keep the state and the old cards until their result arrives,
-    /// so the grid does not flicker. A cancelled or outdated search presents nothing,
-    /// not even an error.
+    /// Every search shows the loading state while it waits, like the first load, so the
+    /// person gets feedback; the old cards stay in the view data underneath until the
+    /// result replaces them. A cancelled or outdated search presents nothing, not even
+    /// an error.
     private func runSearch(number searchNumber: Int) async {
+        viewData = makeViewData(state: .loading, cards: viewData.cards)
         do {
             // The query as sent: later keystrokes or filter changes must not leak into
             // what this result says it searched.
