@@ -29,7 +29,7 @@ struct RootView: View {
         .sheet(item: $router.sheet) { sheet in
             switch sheet {
             case .filters:
-                FiltersSheetView()
+                FiltersSheetView(viewModel: libraryViewModel.filtersViewModel, router: router)
             }
         }
     }

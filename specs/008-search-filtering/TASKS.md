@@ -9,7 +9,7 @@ Tick each item when done. Steps follow [SPEC.md](SPEC.md).
 - [x] 5. `RecipeListService.loadRecipes(matching:)` and `RemoteRecipeListService` pass the query; spy, preview service, tests; delete `recipe-list.json`; end-to-end catalog tests
 - [x] 6. `FiltersViewModel` and `FiltersViewModelTests`
 - [x] 7. `RecipeLibraryViewModel` on search (sequence guard, state rules, owned `FiltersViewModel`); update tests
-- [ ] 8. Views: Library, `FiltersSheetView` + chips layout, `RootView` wiring, previews for every listed state
+- [x] 8. Views: Library, `FiltersSheetView` + chips layout, `RootView` wiring, previews for every listed state
 - [ ] 9. Simulator pass; record the system no-results wording
 - [ ] 10. Full suite; greps for retired names
 - [ ] 11. Final notes, ROADMAP D, backlog chips entry with removal commit hash
