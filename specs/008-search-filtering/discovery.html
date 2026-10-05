@@ -1,0 +1,239 @@
+<!-- generated from the published artifact https://claude.ai/artifact/Mred1x5xgLKsrhRvhbSjPE on 2026-10-04: the discovery record for spec 008 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReciMate Search Discovery</title>
+<style>
+  /* Layout: one reading column; tables for the brief mapping, decisions and edge cases; two phone sketches; one flow strip.
+     Palette is ReciMate's own: green accent, ink text, mist surfaces. No scripts, so the file also works offline. */
+  :root {
+    --bg: #ffffff; --fg: #1b1f1d; --muted: #5d6662; --mist: #eef1ee; --line: #d9dfdb;
+    --accent: #2e7d4f; --on-accent: #ffffff; --warn-bg: #fff4e0; --warn-fg: #7a4b00; --cut-bg: #fbe9e7; --cut-fg: #8a2a1d;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #131715; --fg: #e8ece9; --muted: #a2aca6; --mist: #1f2622; --line: #323b36;
+    --accent: #5fbf84; --on-accent: #0e1a13; --warn-bg: #3a2d12; --warn-fg: #f2c879; --cut-bg: #3b1f1b; --cut-fg: #f4a597; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #131715; --fg: #e8ece9; --muted: #a2aca6; --mist: #1f2622; --line: #323b36;
+    --accent: #5fbf84; --on-accent: #0e1a13; --warn-bg: #3a2d12; --warn-fg: #f2c879; --cut-bg: #3b1f1b; --cut-fg: #f4a597; color-scheme: dark; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.55;
+    padding-inline: 16px; padding-block: 32px 64px; }
+  main { max-width: 760px; margin-inline: auto; display: flex; flex-direction: column; gap: 40px; min-width: 0; }
+  h1 { font-size: 2rem; line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+  h2 { font-size: 1.25rem; margin: 0 0 12px; letter-spacing: -0.01em; text-wrap: balance; }
+  h3 { font-size: 1rem; margin: 0 0 6px; }
+  p { margin: 0 0 12px; max-width: 65ch; }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+  .eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .lede { font-size: 1.1rem; color: var(--muted); }
+  .dates { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--mist); padding: 1px 5px; border-radius: 4px; }
+  .rule { background: var(--mist); border-left: 4px solid var(--accent); padding: 14px 16px; border-radius: 8px; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td:first-child { min-width: 140px; }
+  .tag { display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .tag.build { background: var(--accent); color: var(--on-accent); }
+  .tag.cut { background: var(--cut-bg); color: var(--cut-fg); }
+  .tag.back { background: var(--mist); color: var(--muted); border: 1px solid var(--line); }
+  .phones { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+  .phone { width: 240px; background: var(--mist); border: 1px solid var(--line); border-radius: 28px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .phone .bar { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1.05rem; }
+  .pill { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: .78rem; color: var(--muted); }
+  .glass { background: var(--bg); border: 1px solid var(--line); border-radius: 50%; width: 30px; height: 30px; display: grid; place-items: center; font-size: .8rem; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .card { background: var(--bg); border-radius: 12px; padding: 8px; font-size: .7rem; }
+  .card i { display: block; height: 44px; border-radius: 8px; background: var(--line); margin-bottom: 6px; }
+  .row { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-radius: 10px; padding: 8px 10px; font-size: .78rem; gap: 8px; }
+  .chip { background: var(--accent); color: var(--on-accent); border-radius: 999px; padding: 1px 8px; font-size: .7rem; }
+  .sketch-label { text-align: center; font-size: .82rem; color: var(--muted); margin-top: 8px; max-width: 240px; }
+  .note { background: var(--warn-bg); color: var(--warn-fg); padding: 12px 14px; border-radius: 8px; font-size: .92rem; }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: .85rem; }
+  .flow span.step { background: var(--mist); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+  .flow span.arrow { color: var(--muted); }
+  ul, ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; max-width: 65ch; }
+  ol.decisions { gap: 12px; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .col { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Spec 008 · Milestone D · Discovery</div>
+    <h1>Search and filtering, cut down to what the brief asks</h1>
+    <p class="lede">The brief asks for a search endpoint with four filters plus instruction-text search, and a UI that lets a person use them. Nothing in it asks for chips, tokens, an Apply button or a result count. This page records what gets built, what is deleted, what moved to the backlog, and the prototype decisions.</p>
+    <p class="dates">Created 2026-10-04 · Updated 2026-10-04 · Slug <code>008-search-filtering</code> · Live copy: <a href="https://claude.ai/artifact/Mred1x5xgLKsrhRvhbSjPE">claude.ai/artifact/Mred1x5xgLKsrhRvhbSjPE</a></p>
+  </header>
+
+  <section>
+    <h2>Where this fits</h2>
+    <p>Milestone D in <a href="../../product/ROADMAP.md">ROADMAP.md</a>. Closes S1 to S6, the filter side of E3, and the no-results half of E1.</p>
+    <p>Inputs read: <a href="../../product/REQUIREMENTS.md">REQUIREMENTS.md</a>, the roadmap and backlog, specs 003 to 007, the Library, quick filter bar, Filters sheet and router code, the service protocols, <code>RecipeEndpoint</code>, <code>LocalRecipeAPIClient</code> and the JSON fixtures.</p>
+  </section>
+
+  <section class="rule">
+    <h3>Scope rule for this spec</h3>
+    <p>Only what the challenge brief asks for is built. Everything else is in <a href="../../product/BACKLOG.md">BACKLOG.md</a> and is not done. The roadmap lists brief items only.</p>
+  </section>
+
+  <section>
+    <h2>What the brief asks for, mapped to this spec</h2>
+    <div class="scroll"><table>
+      <tr><th>Brief item</th><th>ID</th><th>Built in 008</th></tr>
+      <tr><td>Search endpoint, optional query filters</td><td>S1</td><td><code>search</code> behind the service boundary; no filters returns every recipe</td></tr>
+      <tr><td>Vegetarian filter</td><td>S2</td><td>Toggle in the Filters sheet</td></tr>
+      <tr><td>Servings filter</td><td>S3</td><td>Exact serving count in the Filters sheet</td></tr>
+      <tr><td>Include ingredients</td><td>S4</td><td>Free-text terms in the Filters sheet</td></tr>
+      <tr><td>Exclude ingredients</td><td>S5</td><td>Free-text terms in the Filters sheet</td></tr>
+      <tr><td>Instruction content search</td><td>S6</td><td>The native search field</td></tr>
+      <tr><td>Search and filtering capabilities in the UI</td><td></td><td><code>.searchable</code> plus one Filters sheet from the toolbar button</td></tr>
+      <tr><td>Handling of errors and constraints, documented assumptions</td><td>E1, E3</td><td>The no-results state (system view); edge cases decided below. The error state is not in this spec.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>At a glance</h2>
+    <div class="scroll"><table>
+      <tr><th>Item</th><th>Call</th><th>Why</th></tr>
+      <tr><td>Quick filter chips</td><td><span class="tag cut">delete</span></td><td>Not in the brief; they duplicate two sheet controls. Recoverable from git (last changed in <code>59650c7</code>), pointer in the backlog.</td></tr>
+      <tr><td>Native search tokens</td><td><span class="tag back">backlog</span></td><td>Not in the brief. Research is saved there, including two open risks.</td></tr>
+      <tr><td>Toolbar Filters button + sheet</td><td><span class="tag build">keep</span></td><td>Already built; one entry point for all four filters.</td></tr>
+      <tr><td>Search field</td><td><span class="tag build">instructions only</span></td><td>S6 is the only text search the brief names. The prompt says so.</td></tr>
+      <tr><td>Apply button, result count</td><td><span class="tag back">backlog</span></td><td>Not in the brief. The sheet applies live.</td></tr>
+      <tr><td>Servings 1–2 / 3–4 / 5+</td><td><span class="tag back">backlog</span></td><td>An interpretation from the design pass. Exact count is the literal reading.</td></tr>
+      <tr><td>Ingredient picker</td><td><span class="tag back">backlog</span></td><td>Free text is enough for S4 and S5.</td></tr>
+      <tr><td>Loading, empty-collection states</td><td><span class="tag back">backlog</span></td><td>The brief asks for error handling only. No-results is built with the system view; the error state is not in this spec.</td></tr>
+      <tr><td>Accessibility pass</td><td><span class="tag back">backlog</span></td><td>Not in the brief; removed from milestone F.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <ol class="decisions">
+      <li><strong>The quick filter chips are deleted.</strong> <code>QuickFilterBar</code>, <code>QuickFilterBarViewModel</code>, <code>FilterChipView</code> and <code>QuickFilterBarViewModelTests</code> are not in the brief and duplicate two of the sheet's controls. The backlog entry "Quick filter chips" points at the last commit that changed them (<code>59650c7</code>); when the deleting commit exists, add its hash to that entry. The README's code organization paragraph mentions the chips folder and is fixed in the same change.</li>
+      <li><strong>Native search tokens are not built.</strong> The research (verified against Apple's docs) is in the backlog as "Native search tokens and suggestions".</li>
+      <li><strong>One entry point for filters: the toolbar button.</strong> It opens <code>FiltersSheetView</code>, which replaces its placeholder. The button already exists (spec 005). Whether its icon changes when filters are active is a small judgment call for <code>/spec</code>, inside "logical, intuitive UX".</li>
+      <li><strong>The search field searches instruction text only (S6).</strong> The brief asks for no title or description search (backlog: "Search by title / description"). The prompt reads "Search instructions" so the scope is visible. Known limitation for the README: typing a recipe's name finds nothing unless its steps say it.</li>
+      <li><strong>The Filters sheet applies live.</strong> No Apply button and no result count (backlog: "Apply button and result count"). A Done button dismisses it. One small Reset control is kept as part of intuitive UX; <code>/spec</code> may cut it.</li>
+      <li><strong>Servings is an exact count.</strong> Backlog: "Servings ranges". Assumption to document: the brief says only "servings filter". The control only offers valid values (1 or more) and an "Any" state.</li>
+      <li><strong>Include and exclude ingredients are free-text terms</strong> (backlog: "Ingredient picker"). Matching rule to settle in <code>/spec</code>: case- and diacritic-insensitive "contains" on the ingredient name. <code>Ingredient.id</code>'s doc comment in <code>RecipeDetails.swift</code> says the filters match on the id; that comment is updated to whatever <code>/spec</code> decides, since people type names, not ids.</li>
+      <li><strong>The search data is a new bundled fixture.</strong> The list JSON has no ingredients or instructions, and only 3 of 9 recipes have a details file (one deliberately malformed for E2). A new fixture holds the full record of all 9 recipes (the list fields plus ingredients and instruction text), read only by the fake server's search. The details contract and E2's failure demo are not touched. Cost: some fixture data is duplicated for the 2 well-formed details files; add a test that the shared fields agree so they cannot drift.</li>
+      <li><strong>The fake server filters.</strong> <code>LocalRecipeAPIClient</code> today serves <code>&lt;last path component&gt;.json</code> and cannot filter. It gains a search handler that reads the query items from the URL (<code>RecipeEndpoint.search</code>, built with <code>URLComponents</code>, as spec 002 anticipated), filters the fixture and returns list-shaped JSON. The services, DTO mapper and domain types then work as they would against a real server (D3).</li>
+      <li><strong>E1 scope.</strong> Spec 008 builds the no-results state only, and uses the system <code>ContentUnavailableView.search</code> as is (see Prototype below). The Library's error state is not part of this spec: it stays an E1 item with no spec yet (milestone C). Loading and empty-collection states are backlog ("Loading and empty-collection states"). The Details screen's states stay milestone E.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>What the UI becomes</h2>
+    <div class="phones">
+      <div>
+        <div class="phone">
+          <div class="bar"><span>Recipes</span><span class="glass">☰</span></div>
+          <div class="pill">🔍 Search instructions</div>
+          <div class="cards">
+            <div class="card"><i></i>Petit Gâteau<br>4 servings</div>
+            <div class="card"><i></i>Lemon Herb Chicken<br>4 servings</div>
+          </div>
+        </div>
+        <div class="sketch-label">Library: no chip row. One filter button in the toolbar.</div>
+      </div>
+      <div>
+        <div class="phone">
+          <div class="bar"><span>Filters</span><span class="chip">Done</span></div>
+          <div class="row"><span>Vegetarian only</span><span class="chip">on</span></div>
+          <div class="row"><span>Servings</span><span>Any · 4 ▾</span></div>
+          <div class="row"><span>Include</span><span>eggs, butter</span></div>
+          <div class="row"><span>Exclude</span><span>nuts</span></div>
+          <div class="row"><span>Reset</span><span>›</span></div>
+        </div>
+        <div class="sketch-label">Filters sheet: applies live, no Apply button.</div>
+      </div>
+    </div>
+    <p style="margin-top:16px">Sketches show structure, not final styling. The system draws the search field and toolbar controls on iOS 26. The real design frames are in <a href="design.html">design.html</a>.</p>
+  </section>
+
+  <section>
+    <h2>Where the filtering runs</h2>
+    <p>The list data has no ingredients or instructions, and only 3 of 9 recipes have a details file. So the fake server needs a fuller dataset to answer S4 to S6 truthfully. A new bundled fixture holds all 9 recipes in full, read only by search. The details contract and the intentional E2 failure stay untouched.</p>
+    <div class="flow" role="img" aria-label="Library view model, search service, RecipeEndpoint.search with query items, local fake server reading the full recipe fixture, list-shaped JSON back through the service and DTO-to-domain mapping to the view model">
+      <span class="step">Library view model</span><span class="arrow">→</span>
+      <span class="step">Search service</span><span class="arrow">→</span>
+      <span class="step">RecipeEndpoint.search (query items)</span><span class="arrow">→</span>
+      <span class="step">Local fake server</span><span class="arrow">→</span>
+      <span class="step">Full recipe fixture</span><span class="arrow">⇢</span>
+      <span class="step">list-shaped JSON → DTO → domain → view model</span>
+    </div>
+    <p style="margin-top:12px">The services, mapper and domain types behave as they would against a real server, so a network client can replace the fake one.</p>
+    <p class="note">Cost: shared fields are duplicated for the two well-formed details files. A test will assert they agree so they cannot drift.</p>
+  </section>
+
+  <section>
+    <h2>Edge cases to decide and document (E3)</h2>
+    <p>These are the answers to propose in <code>/spec</code>. Each goes into <code>implementation-notes.md</code> and then the README.</p>
+    <div class="scroll"><table>
+      <tr><th>Case</th><th>Proposed decision</th></tr>
+      <tr><td>Blank or whitespace-only text, empty ingredient term</td><td>Dropped when the query is built, in one place. A blank query field means no filter.</td></tr>
+      <tr><td>Same ingredient included and excluded</td><td>The sheet prevents it (adding a term to one list removes it from the other). The endpoint treats it as logically unsatisfiable and returns an empty result, so no new error type is needed.</td></tr>
+      <tr><td>Vegetarian toggle off</td><td>No filter. It does not mean "non-vegetarian only".</td></tr>
+      <tr><td>Recipe with unknown ingredient data</td><td>With the new fixture every recipe has data. The contract: a recipe missing the data fails an include filter and passes an exclude filter. Document it.</td></tr>
+      <tr><td>Out-of-range servings</td><td>The control only offers 1 or more; the endpoint treats a value below 1 as matching nothing.</td></tr>
+      <tr><td>Several include terms</td><td>A recipe must match all of them (AND). Exclude: a recipe is dropped if it matches any.</td></tr>
+      <tr><td>Malformed fixture or a thrown error</td><td><code>RecipeError</code> as today, held in the existing <code>.error</code> view state. The screen has no error view until the error-state spec, a known gap for the README.</td></tr>
+      <tr><td>Overlapping searches (typing quickly)</td><td>The view model keeps one search task, cancels the previous one, and does not present a cancelled result as an error. The local server answers instantly, so no debounce; the README notes a network client would debounce. This is the part of the backlog's "Cancellation handling" that spec 008 needs; the URLSession mapping stays backlog.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Open questions for <code>/spec</code></h2>
+    <div class="cols">
+      <div class="col"><h3>Retire <code>/recipe-list</code>?</h3><p>S1 says search with no filters returns everything, so the Library could load through <code>search</code> with an empty query and the list endpoint and <code>loadRecipes()</code> become redundant. Keeping both means two paths to the same data; retiring means changing spec 002's tests. Recommended: the Library loads through <code>search</code>; decide whether to delete the old path.</p><p><em>Settled in SPEC.md:</em> retired.</p></div>
+      <div class="col"><h3>Where the filter state lives</h3><p>The Library view model and the sheet edit one query. Options: the sheet gets a small view model that the Library view model owns, or the Library view model exposes the editable query. Views get the router by initializer and never <code>@Environment</code>, so the sheet's dependencies are wired in <code>RootView</code>.</p><p><em>Settled in SPEC.md:</em> a small <code>FiltersViewModel</code> owned by the Library view model.</p></div>
+      <div class="col"><h3>Service shape</h3><p>Extend <code>RecipeListService</code> with <code>search(query:)</code> or add a separate <code>RecipeSearchService</code>. The query type (<code>RecipeSearchQuery</code>, in the domain) is not in dispute.</p><p><em>Settled in SPEC.md:</em> <code>RecipeSearchService</code> replaces the list service.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Requirements check, done in this discovery</h2>
+    <p><code>REQUIREMENTS.md</code> was compared with the original brief item by item. Everything in the brief was already listed. One section was extended and one wording was narrowed (the submission step is not tracked: the repository is already public):</p>
+    <ul>
+      <li>"How it gets judged" now opens with the reviewers' stated focus: coding style, design intuition and developer mindset.</li>
+      <li><strong>E1</strong> narrowed to error and no-results. This spec builds only no-results.</li>
+    </ul>
+    <p>Still outside the brief and tracked only in the backlog: dark mode, an accessibility pass, pagination, observability, image caching, snapshot tests, and the items listed above.</p>
+    <p class="note">Follow-up for the Details work, not this spec: milestone E in the roadmap still lists loading and a no-image hero for the Details screen. Neither is in the brief (E2's error screen is). The same rule would move them to the backlog.</p>
+  </section>
+
+  <section>
+    <h2>Prototype</h2>
+    <p>No divergent directions: the approach was settled in this discovery, so the prototype step extracted and adapted the spec 003 frames instead (the same way specs 004 and 006 did). Read-only design snapshot: <a href="design.html"><code>specs/008-search-filtering/design.html</code></a>. It is regenerated by hand from the 003 design and goes stale if that design is edited afterward. There is no new canvas.</p>
+    <p>Seven frames: Library loaded, text search results, filtered, no results (search text), no results (filters only), Filters sheet default and with choices on.</p>
+    <h3 style="margin-top:20px">What changed from the 003 design, and why</h3>
+    <ul>
+      <li><strong>No chip row.</strong> One Filters button in the toolbar. When filters are active it turns to a filled, tinted style and its accessibility label carries the count ("Filters, 2 active"). Text search alone does not make it active.</li>
+      <li><strong>Search field prompt is "Search instructions".</strong> It is S6.</li>
+      <li><strong>No-results is the system view, used as is.</strong> <code>ContentUnavailableView.search</code> (iOS 17 and later; Apple's docs: it "conveys a search state" and "is expected to be contained within a searchable view hierarchy", so it reads the query from the field). Its symbol, title, description and wording are the system's. No custom view, no Clear Filters button: the filters are cleared with Reset in the sheet. Consequence for the build: today <code>.searchable</code> is attached to the loaded grid inside an <code>if</code>; the no-results overlay must sit inside the same searchable hierarchy.</li>
+      <li><strong>The sheet:</strong> Reset on the left, Done on the right, no Apply button (changes apply live). Groups: Vegetarian only, Servings, Include ingredients, Exclude ingredients. The "Instructions" group is gone because the search field does it. Include and exclude are a text field plus removable term chips. Adding a term to one list removes it from the other.</li>
+    </ul>
+    <h3 style="margin-top:20px">Decisions still open after the prototype, for <code>/spec</code></h3>
+    <ul>
+      <li><strong>Servings control.</strong> Drawn as a menu <code>Picker</code> row ("Exactly", values Any and a number). Its upper bound is arbitrary (the fixture holds 2 to 6). Options: a fixed range such as 1 to 8, or values supplied by the search data. Document it as an assumption either way. <em>Settled in SPEC.md:</em> Any plus 1 to 8.</li>
+      <li><strong>Wording for filters-only no results.</strong> With an empty search field the system view reads "No Results" with "Check the spelling or try a new search." The description is slightly off when filters are the cause. Frame 5 shows this from memory of the system text; confirm on the simulator when building. If it reads badly, the fallback is the generic <code>ContentUnavailableView</code> initializer with a filters-specific description, which is the first thing the "use the system view" rule would give up. <em>Settled in SPEC.md:</em> use the system view as is, check it on the simulator and record the wording.</li>
+      <li><strong>The error state</strong> (decision 10) is not in this spec, so the Library has no error view when a search throws. It is built later with the Details error state in one shared pass under milestone E, using the <code>View+StateOverlay</code> extension.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Next step</h2>
+    <p><code>/spec 008-search-filtering</code>, written: <a href="SPEC.md">SPEC.md</a>.</p>
+  </section>
+</main>
+</body>
+</html>
