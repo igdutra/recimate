@@ -1,10 +1,14 @@
 import SwiftUI
 
+// MARK: - View data
+
 /// Everything the Library screen shows, replaced as a whole on every change.
 struct RecipeLibraryViewData: Equatable {
     let state: ViewState
     let cards: [RecipeCardViewData]
 }
+
+// MARK: - RecipeLibraryView
 
 struct RecipeLibraryView: View {
     @State private var viewModel: RecipeLibraryViewModel
@@ -27,7 +31,7 @@ struct RecipeLibraryView: View {
             // The search field is attached to the loaded content so it hides with it.
             if viewModel.viewData.state.isLoaded {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: Spacing.extraLarge) {
+                    VStack(alignment: .leading, spacing: 20) {
                         QuickFilterBar(viewModel: viewModel.quickFilterBar)
                         RecipeGrid(cards: viewModel.viewData.cards, router: router)
                     }
@@ -56,16 +60,18 @@ struct RecipeLibraryView: View {
     }
 }
 
+// MARK: - RecipeGrid
+
 private struct RecipeGrid: View {
     let cards: [RecipeCardViewData]
     let router: AppRouter
 
     private let columns = [
-        GridItem(.adaptive(minimum: Sizing.gridColumnMinimum), spacing: Spacing.large, alignment: .top)
+        GridItem(.adaptive(minimum: Constants.columnMinimumWidth), spacing: Constants.gridSpacing, alignment: .top)
     ]
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: Spacing.large) {
+        LazyVGrid(columns: columns, spacing: Constants.gridSpacing) {
             ForEach(cards) { card in
                 Button {
                     router.push(.details(recipeID: card.id))
@@ -75,7 +81,15 @@ private struct RecipeGrid: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, Spacing.extraLarge)
+        .padding(.horizontal, Layout.screenGutter)
+    }
+}
+
+private extension RecipeGrid {
+    enum Constants {
+        /// Smallest grid column; a 390pt screen fits two.
+        static let columnMinimumWidth: CGFloat = 160
+        static let gridSpacing: CGFloat = 16
     }
 }
 

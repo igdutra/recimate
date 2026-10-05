@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - View data
+
 /// What the Details screen shows: where its data is, and the page once loaded.
 struct RecipeDetailsViewData: Equatable {
     let state: ViewState
@@ -32,6 +34,8 @@ struct StepRowViewData: Identifiable, Equatable {
 
     var id: Int { number }
 }
+
+// MARK: - RecipeDetailsView
 
 struct RecipeDetailsView: View {
     @State private var viewModel: RecipeDetailsViewModel
@@ -70,6 +74,8 @@ private extension RecipeDetailsView {
     }
 }
 
+// MARK: - RecipeDetailsPage
+
 /// The loaded page: the photo under the status bar, with the content sheet rising over it.
 private struct RecipeDetailsPage: View {
     let content: RecipeDetailsContentViewData
@@ -77,18 +83,25 @@ private struct RecipeDetailsPage: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                RecipeImageView(
-                    imageURL: content.imageURL,
-                    height: Sizing.heroHeight,
-                    placeholderIconSize: Sizing.iconPlaceholder
-                )
+                RecipeImageView(imageURL: content.imageURL, height: Constants.heroHeight)
                 RecipeDetailsSheet(content: content)
-                    .padding(.top, -Sizing.heroOverlap)
+                    .padding(.top, -Constants.heroOverlap)
             }
         }
         .ignoresSafeArea(edges: .top)
     }
 }
+
+private extension RecipeDetailsPage {
+    enum Constants {
+        /// Measured from the top of the screen (status bar included).
+        static let heroHeight: CGFloat = 280
+        /// How far the sheet rises over the hero.
+        static let heroOverlap: CGFloat = 28
+    }
+}
+
+// MARK: - RecipeDetailsSheet
 
 /// The white sheet: badge, title, summary, servings, the segmented control and its list.
 private struct RecipeDetailsSheet: View {
@@ -107,32 +120,31 @@ private struct RecipeDetailsSheet: View {
         VStack(alignment: .leading, spacing: 0) {
             if content.isVegetarian {
                 VegetarianBadgeView()
-                    .padding(.bottom, Spacing.medium)
+                    .padding(.bottom, 12)
             }
             Text(content.title)
-                .font(Typography.detailsTitle)
+                .font(.title.bold())
                 .foregroundStyle(Color.ink)
             Text(content.summary)
-                .font(Typography.detailsBody)
+                .font(.body)
                 .foregroundStyle(Color.inkSecondary)
-                .padding(.top, Spacing.small)
+                .padding(.top, 8)
             ServingsLineView(label: content.servingsLabel)
-                .padding(.top, Spacing.large)
+                .padding(.top, 16)
             Picker("Section", selection: $selectedSegment) {
                 ForEach(Segment.allCases) { segment in
                     Text(segment.rawValue).tag(segment)
                 }
             }
             .pickerStyle(.segmented)
-            .padding(.top, Spacing.extraLarge)
+            .padding(.top, 20)
             selectedList
-                .padding(.top, selectedSegment == .steps ? Spacing.extraLarge : Spacing.small)
+                .padding(.top, selectedSegment == .steps ? 20 : 8)
         }
-        .padding(.horizontal, Spacing.extraLarge)
-        .padding(.top, Spacing.extraExtraLarge)
-        .padding(.bottom, Spacing.extraExtraLarge)
+        .padding(.horizontal, Layout.screenGutter)
+        .padding(.vertical, 24)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background, in: .rect(topLeadingRadius: Radius.bodySheet, topTrailingRadius: Radius.bodySheet))
+        .background(.background, in: .rect(topLeadingRadius: 28, topTrailingRadius: 28))
     }
 
     @ViewBuilder
@@ -145,7 +157,7 @@ private struct RecipeDetailsSheet: View {
                 }
             }
         case .steps:
-            VStack(alignment: .leading, spacing: Spacing.extraLarge) {
+            VStack(alignment: .leading, spacing: 20) {
                 ForEach(content.steps) { step in
                     StepRowView(step: step)
                 }
@@ -154,60 +166,66 @@ private struct RecipeDetailsSheet: View {
     }
 }
 
+// MARK: - VegetarianBadgeView
+
 /// "Vegetarian" in white on green: the badge above the title. The card keeps the icon-only mark.
 struct VegetarianBadgeView: View {
     var body: some View {
-        HStack(spacing: Spacing.small) {
+        HStack(spacing: 8) {
             Image(systemName: "leaf")
-                .font(.system(size: Sizing.iconSmall, weight: .medium))
+                .font(.system(size: 14, weight: .medium))
                 .accessibilityHidden(true)
             Text("Vegetarian")
-                .font(Typography.badgeLabel)
+                .font(.footnote.weight(.semibold))
         }
         .foregroundStyle(Color.white)
-        .padding(.horizontal, Spacing.medium)
-        .padding(.vertical, Spacing.extraSmall)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
         .background(Color.accentColor, in: .capsule)
         .accessibilityElement(children: .combine)
     }
 }
+
+// MARK: - ServingsLineView
 
 /// People icon and the servings label.
 struct ServingsLineView: View {
     let label: String
 
     var body: some View {
-        HStack(spacing: Spacing.small) {
+        HStack(spacing: 8) {
             Image(systemName: "person.2")
-                .font(.system(size: Sizing.iconMedium))
+                .font(.system(size: 20))
                 .foregroundStyle(Color.accentColor)
                 .accessibilityHidden(true)
             Text(label)
-                .font(Typography.servings)
+                .font(.subheadline.weight(.medium))
                 .foregroundStyle(Color.ink)
         }
         .accessibilityElement(children: .combine)
     }
 }
 
+// MARK: - IngredientRowView
+
 /// Name on the left, quantity on the right in secondary ink, with a rule underneath.
 struct IngredientRowView: View {
     let ingredient: IngredientRowViewData
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: Spacing.large) {
+        HStack(alignment: .firstTextBaseline, spacing: 16) {
             Text(ingredient.name)
-                .font(Typography.detailsBody)
+                .font(.body)
                 .foregroundStyle(Color.ink)
             Spacer(minLength: 0)
             if let quantity = ingredient.quantity {
                 Text(quantity)
-                    .font(Typography.detailsBody)
+                    .font(.body)
                     .foregroundStyle(Color.inkSecondary)
                     .multilineTextAlignment(.trailing)
             }
         }
-        .frame(minHeight: Sizing.ingredientRowMinimumHeight)
+        .frame(minHeight: 52) // A minimum, so Dynamic Type can grow the row
         .overlay(alignment: .bottom) {
             Divider()
                 .overlay(Color.separator)
@@ -216,20 +234,22 @@ struct IngredientRowView: View {
     }
 }
 
+// MARK: - StepRowView
+
 /// A numbered green circle and the step text.
 struct StepRowView: View {
     let step: StepRowViewData
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: Spacing.medium) {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text("\(step.number)")
-                .font(Typography.stepNumber)
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.white)
-                .frame(minWidth: Sizing.stepNumber, minHeight: Sizing.stepNumber)
+                .frame(minWidth: 28, minHeight: 28) // Minimums, so Dynamic Type can grow the circle
                 .background(Color.accentColor, in: .circle)
                 .accessibilityLabel("Step \(step.number)")
             Text(step.text)
-                .font(Typography.detailsBody)
+                .font(.body)
                 .foregroundStyle(Color.ink)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -245,7 +265,7 @@ struct StepRowView: View {
 }
 
 #Preview("Servings line") {
-    VStack(alignment: .leading, spacing: Spacing.large) {
+    VStack(alignment: .leading, spacing: 16) {
         ServingsLineView(label: "1 serving")
         ServingsLineView(label: "4 servings")
     }
@@ -256,18 +276,18 @@ struct StepRowView: View {
         IngredientRowView(ingredient: IngredientRowViewData(id: "dark-chocolate", name: "Dark chocolate", quantity: "200 g"))
         IngredientRowView(ingredient: IngredientRowViewData(id: "salt", name: "Salt", quantity: nil))
     }
-    .padding(Spacing.extraLarge)
+    .padding(20)
 }
 
 #Preview("Step row") {
-    VStack(alignment: .leading, spacing: Spacing.extraLarge) {
+    VStack(alignment: .leading, spacing: 20) {
         StepRowView(step: StepRowViewData(number: 1, text: "Heat the oven to 220°C."))
         StepRowView(step: StepRowViewData(
             number: 2,
             text: "Fill the ramekins and bake for 8 to 10 minutes, until the edges set and the centers stay soft, then rest briefly."
         ))
     }
-    .padding(Spacing.extraLarge)
+    .padding(20)
 }
 
 #Preview("Details, loaded") {

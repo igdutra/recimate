@@ -1,8 +1,12 @@
 import SwiftUI
 
+// MARK: - View data
+
 struct QuickFilterBarViewData: Equatable {
     let chips: [FilterChipViewData]
 }
+
+// MARK: - QuickFilterBar
 
 /// The horizontal row of quick chips.
 struct QuickFilterBar: View {
@@ -10,7 +14,7 @@ struct QuickFilterBar: View {
 
     var body: some View {
         ScrollView(.horizontal) {
-            HStack(spacing: Spacing.small) {
+            HStack(spacing: 8) {
                 ForEach(viewModel.viewData.chips) { chip in
                     FilterChipView(chip: chip) {
                         viewModel.didTapChip(chip.id)
@@ -19,7 +23,7 @@ struct QuickFilterBar: View {
             }
         }
         .scrollIndicators(.hidden)
-        .contentMargins(.horizontal, Spacing.extraLarge, for: .scrollContent)
+        .contentMargins(.horizontal, Layout.screenGutter, for: .scrollContent)
     }
 }
 

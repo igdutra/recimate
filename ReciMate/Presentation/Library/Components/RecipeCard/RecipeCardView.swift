@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - View data
+
 /// What one recipe card shows. A plain value so SwiftUI can skip cards that did not change.
 struct RecipeCardViewData: Identifiable, Equatable {
     let id: String
@@ -9,6 +11,8 @@ struct RecipeCardViewData: Identifiable, Equatable {
     let imageURL: URL?
 }
 
+// MARK: - RecipeCardView
+
 struct RecipeCardView: View {
     let card: RecipeCardViewData
 
@@ -16,25 +20,24 @@ struct RecipeCardView: View {
         VStack(alignment: .leading, spacing: 0) {
             RecipeImageView(
                 imageURL: card.imageURL,
-                height: Sizing.cardPhotoHeight,
-                placeholderIconSize: Sizing.iconPlaceholder
+                height: 140
             )
             details
         }
         .background(Color.mist)
-        .clipShape(.rect(cornerRadius: Radius.card))
+        .clipShape(.rect(cornerRadius: 20))
         .accessibilityElement(children: .combine)
     }
 
     private var details: some View {
-        VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(card.title)
-                .font(Typography.cardTitle)
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.ink)
                 .lineLimit(2, reservesSpace: true)
             HStack {
                 Text(card.servingsLabel)
-                    .font(Typography.cardDetail)
+                    .font(.footnote)
                     .foregroundStyle(Color.inkSecondary)
                 Spacer()
                 if card.isVegetarian {
@@ -42,9 +45,9 @@ struct RecipeCardView: View {
                 }
             }
             // Same height with or without the leaf, so cards in a row match.
-            .frame(minHeight: Sizing.icon)
+            .frame(minHeight: VegetarianMarkView.iconSize)
         }
-        .padding(Spacing.medium)
+        .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -54,13 +57,13 @@ struct RecipeCardView: View {
 #if DEBUG
 #Preview("Card variants") {
     LazyVGrid(
-        columns: [GridItem(.adaptive(minimum: Sizing.gridColumnMinimum), spacing: Spacing.large, alignment: .top)],
-        spacing: Spacing.large
+        columns: [GridItem(.adaptive(minimum: 160), spacing: 16, alignment: .top)],
+        spacing: 16
     ) {
         ForEach(RecipeCardViewData.previewSamples) { card in
             RecipeCardView(card: card)
         }
     }
-    .padding(Spacing.extraLarge)
+    .padding(20)
 }
 #endif

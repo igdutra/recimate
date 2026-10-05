@@ -1,12 +1,13 @@
 import SwiftUI
 
+// MARK: - RecipeImageView
+
 /// A recipe photo: fills a fixed-height tile (the card's, or the Details hero). While the
 /// photo loads the tile shows a spinner; with no URL, or when the photo fails to load, it
 /// shows a neutral icon.
 struct RecipeImageView: View {
     let imageURL: URL?
     let height: CGFloat
-    let placeholderIconSize: CGFloat
 
     var body: some View {
         RecipeImageTile(height: height) {
@@ -22,19 +23,21 @@ struct RecipeImageView: View {
                             .resizable()
                             .scaledToFill()
                     case .failure:
-                        PlaceholderIcon(size: placeholderIconSize)
+                        PlaceholderIcon()
                     @unknown default:
                         // `AsyncImagePhase` is not frozen. A phase we do not know gets the
                         // neutral icon, never a spinner that might never stop.
-                        PlaceholderIcon(size: placeholderIconSize)
+                        PlaceholderIcon()
                     }
                 }
             } else {
-                PlaceholderIcon(size: placeholderIconSize)
+                PlaceholderIcon()
             }
         }
     }
 }
+
+// MARK: - RecipeImageTile
 
 /// The fixed-height tile every state of the photo sits in.
 private struct RecipeImageTile<Content: View>: View {
@@ -50,12 +53,12 @@ private struct RecipeImageTile<Content: View>: View {
     }
 }
 
-private struct PlaceholderIcon: View {
-    let size: CGFloat
+// MARK: - PlaceholderIcon
 
+private struct PlaceholderIcon: View {
     var body: some View {
         Image(systemName: "photo")
-            .font(.system(size: size, weight: .light))
+            .font(.system(size: 36, weight: .light))
             .foregroundStyle(Color.inkSecondary)
             .accessibilityHidden(true)
     }
@@ -65,20 +68,20 @@ private struct PlaceholderIcon: View {
 
 #if DEBUG
 #Preview("Loaded") {
-    RecipeImageView(imageURL: PreviewImage.fileURL, height: Sizing.cardPhotoHeight, placeholderIconSize: Sizing.iconPlaceholder)
+    RecipeImageView(imageURL: PreviewImage.fileURL, height: 140)
 }
 
 // A real URL cannot be held in its loading phase in a preview, so this draws the
 // loading state directly.
 #Preview("Loading") {
-    RecipeImageTile(height: Sizing.cardPhotoHeight) { ProgressView() }
+    RecipeImageTile(height: 140) { ProgressView() }
 }
 
 #Preview("No URL") {
-    RecipeImageView(imageURL: nil, height: Sizing.cardPhotoHeight, placeholderIconSize: Sizing.iconPlaceholder)
+    RecipeImageView(imageURL: nil, height: 140)
 }
 
 #Preview("Failing URL") {
-    RecipeImageView(imageURL: PreviewImage.failingURL, height: Sizing.cardPhotoHeight, placeholderIconSize: Sizing.iconPlaceholder)
+    RecipeImageView(imageURL: PreviewImage.failingURL, height: 140)
 }
 #endif

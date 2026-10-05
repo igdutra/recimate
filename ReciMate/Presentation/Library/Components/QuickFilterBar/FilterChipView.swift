@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - View data
+
 /// What one quick chip shows.
 struct FilterChipViewData: Identifiable, Equatable {
     enum ID: Equatable {
@@ -15,27 +17,29 @@ struct FilterChipViewData: Identifiable, Equatable {
     let usesAccentIcon: Bool
 }
 
+// MARK: - FilterChipView
+
 struct FilterChipView: View {
     let chip: FilterChipViewData
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: Spacing.extraSmall) {
+            HStack(spacing: 4) {
                 Image(systemName: chip.symbolName)
-                    .font(.system(size: Sizing.icon, weight: .medium))
+                    .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(chip.usesAccentIcon ? Color.accentColor : Color.ink)
                 Text(chip.title)
-                    .font(Typography.chipLabel)
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(Color.ink)
                 if chip.showsChevron {
                     Image(systemName: "chevron.down")
-                        .font(.system(size: Sizing.iconSmall, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color.ink)
                 }
             }
-            .padding(.horizontal, Spacing.medium)
-            .frame(minHeight: Sizing.touchTarget)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 44) // Touch target
             .background(Color.mist, in: .capsule)
             .contentShape(.capsule)
         }
@@ -47,11 +51,11 @@ struct FilterChipView: View {
 
 #if DEBUG
 #Preview("Chips: leaf, chevron, plain") {
-    HStack(spacing: Spacing.small) {
+    HStack(spacing: 8) {
         ForEach(QuickFilterBarViewModel().viewData.chips) { chip in
             FilterChipView(chip: chip, action: {})
         }
     }
-    .padding(Spacing.extraLarge)
+    .padding(20)
 }
 #endif
