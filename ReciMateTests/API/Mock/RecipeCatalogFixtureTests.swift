@@ -1,6 +1,11 @@
 // Tests the mock only: the bundled catalog fixture and the local client that serves
-// it. Delete this file, with `API/Infrastructure/` (the fake server, the catalog, the
-// details fixtures and `LocalRecipeAPIClient`), when a real backend replaces the mock.
+// it. It exists to check the mock end to end on the real bundled data: the catalog
+// holds the nine recipes, and real queries through `LocalRecipeAPIClient`, the fake
+// search server and the list service return the expected recipes. The other mock
+// tests use the server or spies directly, so this is the one place the whole mock
+// chain runs together. Delete this file, with `API/Infrastructure/` (the fake server,
+// the catalog, the details fixtures and `LocalRecipeAPIClient`), when a real backend
+// replaces the mock.
 
 import Foundation
 import Testing
