@@ -29,7 +29,7 @@ An ID is closed when a test or a preview shows it working, not when code exists.
 
 ## Errors and constraints
 
-- **E1** Loading, empty, no-results and error states are each handled explicitly in the UI (`ContentUnavailableView` where it fits).
+- **E1** Error and no-results states are each handled explicitly in the UI (`ContentUnavailableView` where it fits). Loading and empty-collection states are outside the brief (see [BACKLOG.md](BACKLOG.md)).
 - **E2** One recipe fails on purpose when its detail opens, and the app shows a recoverable error screen for it instead of crashing or showing a blank view.
 - **E3** Constraints and edge cases (malformed data, conflicting filters such as the same ingredient included and excluded, empty strings) are decided and documented, not left to chance.
 
@@ -49,7 +49,8 @@ An ID is closed when a test or a preview shows it working, not when code exists.
 
 ## How it gets judged
 
-Not checkboxes, but every spec should be reviewed against them:
+Reviewers look at coding style, design intuition and developer mindset. These are
+not checkboxes, but every spec should be reviewed against them:
 
 - Logical, intuitive user experience.
 - Idiomatic SwiftUI and use of the platform frameworks.

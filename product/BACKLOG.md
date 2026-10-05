@@ -30,8 +30,9 @@ test; with a plain `Task` the request registers one main-actor turn later.
 ## Search by title / description
 
 Free-text search over recipe title and description. The brief only asks for
-search within instruction text (S6), so this is extra scope. Undecided: if
-wanted, it needs its own requirement ID before moving to the roadmap.
+search within instruction text (S6), so this is extra scope. Spec 008's search
+field searches instructions only, and its prompt says so. If wanted, it needs its
+own requirement ID before moving to the roadmap.
 
 ## Features that need new recipe data
 
@@ -55,21 +56,52 @@ what failed in the field, such as the `reason` of an `invalidData` or the cause
 behind an `unavailable`, without the services validating or masking the
 backend's data. Not part of the challenge; nothing in the data layer logs today.
 
-## Ingredient entry for include/exclude filters
+## Loading and empty-collection states
 
-How the user enters ingredients in the Filters sheet: free text, comma-separated
-tokens, or a picker over known ingredient ids. A picker needs a source of known
-ingredients, but list previews carry none and only 3 recipes have a details file,
-so the choice depends on the data. Not scoped in the design pass (spec 003);
-the design draws the rows as plain placeholders. Decide in milestone D.
+The Library's loading state (placeholders or a spinner while the first load runs)
+and its empty-collection state (no recipes at all, which is different from no
+results). The brief asks only for error handling, so error and no-results (E1) are
+built and these two are not. The local JSON loads instantly, so loading is rarely
+visible; both matter once a real network client replaces it.
 
-## Filter apply behaviour and result count
+## Quick filter chips
 
-Whether the Filters sheet applies changes live or on an "Apply Filters" button,
-and whether the button shows how many recipes match ("Apply Filters, 12
-recipes"). A live count needs a count query against the search endpoint. The
-design pass draws a plain "Apply Filters" button with no count; the count is
-optional polish.
+A horizontal row of chips above the Library grid (Vegetarian, Servings) that
+duplicates two of the Filters sheet's controls. Built in spec 004, removed in spec
+008 because the brief does not ask for it. The code is retrievable from git: the
+last commit that changed those files is `59650c7`, so
+`git show 59650c7:ReciMate/Presentation/Library/Components/QuickFilterBar/QuickFilterBar.swift`
+(also `QuickFilterBarViewModel.swift`, `FilterChipView.swift` and
+`ReciMateTests/Presentation/QuickFilterBarViewModelTests.swift`). The commit that
+deletes them is noted here when spec 008 lands.
+
+## Native search tokens and suggestions
+
+Quick filters through the search field itself instead of chips: `searchable` with
+`tokens`, plus `searchSuggestions` shown when the field is tapped (iOS 16 and later;
+Apple's HIG recommends tokens for common filters and pairing them with suggestions).
+Vegetarian, a servings value and include/exclude ingredients ("with eggs") fit as
+tokens; tokens do not enforce one servings value, so that needs code. Open risks to
+test first: whether active tokens stay visible after search is dismissed, and where
+the iOS 26 iPhone search field sits. On iOS 26, `searchToolbarBehavior(.minimized)`
+collapses the field into a toolbar button.
+
+## Servings ranges
+
+The 1–2, 3–4 and 5+ buckets from the spec 003 design pass. The brief only says
+"servings filter", so spec 008 filters on an exact serving count.
+
+## Apply button and result count
+
+Filters applied on an "Apply Filters" button, optionally showing how many recipes
+match ("Apply Filters, 12 recipes"). A live count needs a count query against the
+search endpoint. Spec 008 applies changes live, with no button.
+
+## Ingredient picker
+
+Choosing include/exclude ingredients from a list of known ingredient ids instead of
+typing them. Spec 008 uses free text. A picker needs a source of known ingredients,
+which the search fixture could provide.
 
 ## URL handling and path security
 
