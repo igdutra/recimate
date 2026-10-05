@@ -11,6 +11,11 @@ pages; the local client does the slicing, like a server would.
 
 ## Cancellation handling
 
+Partly done in spec 008: the Library view model gives each search a sequence number,
+cancels the previous search task, and never presents a cancelled or outdated result
+(or an error for one). Still open: the URLSession part below, the spy's `cancelled`
+outcome, and cancelling the view model's task in `deinit`.
+
 Make a cancelled load (a `.task` that goes away, a search keystroke in milestone D) not
 show up as `unavailable`. The local client cannot throw `CancellationError`, so
 milestone B (spec 002) dropped the handling and its tests. Add it back, with a test,
