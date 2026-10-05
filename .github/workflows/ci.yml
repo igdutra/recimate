@@ -1,0 +1,46 @@
+# Builds the app and runs the unit tests on the iOS Simulator.
+# The toolchain is pinned to the one the project is developed with (Xcode 26.5,
+# iOS 26.5 simulator), not the runner's default Xcode, so CI matches local runs.
+name: CI
+
+on:
+  # Work is committed straight to main, so main is where CI has to run. One run per
+  # push, not per commit: pushing five commits at once starts one run.
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'specs/**', 'product/**']
+  pull_request:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'specs/**', 'product/**']
+  # A manual "Run workflow" button, for running it on demand.
+  workflow_dispatch:
+
+# A newer push to the same branch or pull request cancels the run still in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode 26.5
+        run: sudo xcode-select --switch /Applications/Xcode_26.5.app
+
+      - name: Show toolchain
+        run: xcodebuild -version
+
+      # Not scripts/test.sh: it needs ripgrep, which the runner image does not have,
+      # and its log trimming is for local runs. Same build and test settings.
+      - name: Build and test
+        run: |
+          xcodebuild test \
+            -project ReciMate.xcodeproj \
+            -scheme ReciMate \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+            -parallel-testing-enabled NO \
+            CODE_SIGNING_ALLOWED=NO
