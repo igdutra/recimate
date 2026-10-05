@@ -73,7 +73,7 @@ last commit that changed those files is `59650c7`, so
 `git show 59650c7:ReciMate/Presentation/Library/Components/QuickFilterBar/QuickFilterBar.swift`
 (also `QuickFilterBarViewModel.swift`, `FilterChipView.swift` and
 `ReciMateTests/Presentation/QuickFilterBarViewModelTests.swift`). The commit that
-deletes them is noted here when spec 008 lands.
+deletes them is `ea21838`.
 
 ## Native search tokens and suggestions
 
