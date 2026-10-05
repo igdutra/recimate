@@ -29,7 +29,7 @@ An ID is closed when a test or a preview shows it working, not when code exists.
 
 ## Errors and constraints
 
-- **E1** Error and no-results states are each handled explicitly in the UI (`ContentUnavailableView` where it fits). Loading and empty-collection states are outside the brief (see [BACKLOG.md](BACKLOG.md)).
+- **E1** Error and no-results states are each handled explicitly in the UI (`ContentUnavailableView` where it fits). Loading and empty-collection states are outside the brief; loading was built anyway (spec 009), the empty-collection state is in [BACKLOG.md](BACKLOG.md).
 - **E2** One recipe fails on purpose when its detail opens, and the app shows a recoverable error screen for it instead of crashing or showing a blank view.
 - **E3** Constraints and edge cases (malformed data, conflicting filters such as the same ingredient included and excluded, empty strings) are decided and documented, not left to chance.
 

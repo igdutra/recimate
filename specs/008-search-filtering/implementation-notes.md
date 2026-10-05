@@ -37,6 +37,7 @@
 ## Manual checks
 
 - **Done:** simulator launch (iPhone 17): the Library opens with all recipes, no chip row, a Filters button and a "Search instructions" field. On iOS 26 the search field sits at the **bottom** of the screen, above the home indicator, not under the title.
+- **Done later (2026-10-05):** the full typed walk, including spec 010, passed 21 of 21 checks; see [manual-verification-report.md](manual-verification-report.md). The note below is kept as it was at the time.
 - **Not done (blocked):** typing in the field, opening the sheet, chip entry, the prominent button, and the system no-results wording (text only, and filters only). The environment could not tap or type in the Simulator (no `idb`/`axe`; Apple events to System Events were not authorized). The previews were written but not opened (no Xcode canvas here). **The no-results wording is therefore not recorded.** To do by hand.
 
 ## Delete when the mock is replaced by a real backend

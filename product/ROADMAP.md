@@ -30,10 +30,10 @@ F Polish + README
 |---|-----------|--------|-------|--------|
 | A | Foundation + Data Contract | D1, D2 | 001 | done |
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
-| C | Recipe Library | V1, V2, V3 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded, loading and error states done (004, 009) |
-| D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008, 010 | built; simulator walk pending; follow-up (010) built, typed simulator check pending |
-| E | Recipe Details | E2, E1 (error half, Library and Details) | 006 (loaded state), 009 (loading and error) | loaded state done (006); loading and error states done (009) |
-| F | Polish + README | R1–R6, P2 | | not started |
+| C | Recipe Library | V1, V2, V3 | 003 (design prototype for C, D, E), 004 (loaded state) | done (loaded 004; loading and error 009) |
+| D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008, 010 | done (simulator walk, 21 of 21 checks: [report](../specs/008-search-filtering/manual-verification-report.md)) |
+| E | Recipe Details | E2, E1 (error half, Library and Details) | 006 (loaded state), 009 (loading and error) | done (loaded 006; loading and error 009) |
+| F | Polish + README | R1–R6, P2 | | done (fresh-clone build and full suite, 140 tests, green on 2026-10-05) |
 
 The user flow the milestones build toward:
 `Library → search / Filters sheet → Recipe Details`.
@@ -113,11 +113,13 @@ Also the intentional failure (E2) shown through the view state and
   branch for the overlay, the Details `ZStack` is gone, and the Details frame's "Back
   to Recipes" button was dropped in favour of the native back button. New constants (the 80pt badge circle) are declared inline in the view that uses
   them (see spec 007).
-- Still to do, separate from the error pass: the no-image hero on Details. It is not
-  in the brief; whether it stays here or moves to the backlog is decided when Details
-  is next scheduled.
+- The no-image hero on Details is not in the brief and moved to
+  [BACKLOG.md](BACKLOG.md), "Details hero with no photo".
 
-**F. Polish + README.** Final full test run and the README sections R2–R6.
+**F. Polish + README.** Done. The README covers setup (R2), the architecture
+overview with the dependency diagram (R3), the API design and key decisions (R4),
+assumptions and tradeoffs (R5), known limitations (R6), and states that no packages
+are used (P2). R1 was checked with a build from a fresh clone and a full test run.
 The accessibility and visual pass is outside the brief and lives in
 [BACKLOG.md](BACKLOG.md).
 

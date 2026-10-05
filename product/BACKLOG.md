@@ -94,6 +94,12 @@ results). The brief asks only for error handling, so error and no-results (E1) a
 built and this is not. The loading state is done (spec 009, a spinner); skeleton or
 shimmer placeholders are not planned.
 
+## Details hero with no photo
+
+A designed hero for a recipe with no photo, or whose photo fails to load. Today the
+Details screen shows the neutral placeholder in the hero's place and the title stays
+readable (spec 006), which is enough for the brief. Moved here from milestone E.
+
 ## Try Again by error kind
 
 Spec 009 shows Try Again for every error. A retry cannot help `notFound` or `invalidData`

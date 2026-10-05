@@ -14,8 +14,7 @@ which win. Superseded: validation rules (5), cancellation (4), `nonisolated`
 data layer (6), the spy and test plan (Testing approach).
 
 Inputs read: `product/`, `specs/001-*/notes.md`, the DTOs, domain types and
-fixtures, and everything in `references/` (a git-ignored folder, not part of the repo: architecture notes, test map, testing
-cheat sheet, `RemoteSongRepositoryTests.swift`).
+fixtures.
 
 ## Decisions
 
@@ -295,8 +294,7 @@ the app or a preview in 003.
 ## Testing approach
 
 All test files use the **Swift Testing** framework (`import Testing`, `@Test`,
-`#expect`, `#expect(throws:)`, `@Test(arguments:)`), not XCTest. Style follows
-`RemoteSongRepositoryTests.swift` and the references.
+`#expect`, `#expect(throws:)`, `@Test(arguments:)`), not XCTest.
 
 **Lean, on purpose.** The first pass aimed to be thorough (a test for "init does
 no work", "called twice", boundary values, cancellation). It was cut back: test
