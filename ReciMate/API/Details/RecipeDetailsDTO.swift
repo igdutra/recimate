@@ -4,7 +4,7 @@ import Foundation
 // The JSON files in `Infrastructure/` stand in for the server's responses.
 // Mapping to domain types belongs to the API layer, not to these types.
 
-/// Response of the detail endpoint (`GET /recipe-details/{id}`), mocked by
+/// Response of the detail endpoint (`GET /recipes/{id}`), mocked by
 /// `Infrastructure/RecipeDetails/<id>.json`.
 struct RecipeDetailsDTO: Decodable, Sendable {
     let id: String
@@ -37,7 +37,7 @@ struct CookingInstructionDTO: Decodable, Sendable {
     let text: String
 }
 
-struct DietaryAttributesDTO: Decodable, Sendable {
+struct DietaryAttributesDTO: Codable, Sendable {
     let isVegetarian: Bool
 
     enum CodingKeys: String, CodingKey {

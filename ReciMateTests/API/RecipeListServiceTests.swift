@@ -7,14 +7,15 @@ struct RecipeListServiceTests {
     // MARK: - Request
 
     @Test(arguments: ["https://api.recimate.example", "http://localhost:8080/v2"])
-    func loadRecipes_requestsListEndpointURL(baseURLString: String) async throws {
+    func loadRecipes_requestsRecipesURLForTheQuery(baseURLString: String) async throws {
         let baseURL = URL(string: baseURLString)!
+        let query = RecipeSearchQuery(instructionText: "ramekins", onlyVegetarian: true, servings: 4, includedIngredients: ["eggs"])
         let (sut, spy) = makeSUT(baseURL: baseURL)
         spy.stub(data: makeListData([]))
 
-        _ = try await sut.loadRecipes()
+        _ = try await sut.loadRecipes(matching: query)
 
-        #expect(spy.requestedURLs == [RecipeEndpoint.list.url(baseURL: baseURL)])
+        #expect(spy.requestedURLs == [RecipeEndpoint.list(query: query).url(baseURL: baseURL)])
     }
 
     // MARK: - Happy path
@@ -24,7 +25,7 @@ struct RecipeListServiceTests {
         let previews: [RecipePreview] = [.petitGateau, .lemonHerbChicken, .roastedVegetableCouscous]
         spy.stub(data: makeListData(previews))
 
-        let result = try await sut.loadRecipes()
+        let result = try await sut.loadRecipes(matching: .empty)
 
         #expect(result == previews)
     }
@@ -33,7 +34,7 @@ struct RecipeListServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(data: makeListData([]))
 
-        let result = try await sut.loadRecipes()
+        let result = try await sut.loadRecipes(matching: .empty)
 
         #expect(result.isEmpty)
     }
@@ -44,7 +45,7 @@ struct RecipeListServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(error: RecipeAPIClientError.notFound)
 
-        await #expect(throws: RecipeError.notFound) { try await sut.loadRecipes() }
+        await #expect(throws: RecipeError.notFound) { try await sut.loadRecipes(matching: .empty) }
     }
 
     @Test(arguments: undecodablePayloads())
@@ -52,7 +53,7 @@ struct RecipeListServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(data: payload)
 
-        await #expect { try await sut.loadRecipes() } throws: { isInvalidDataWithReason($0) }
+        await #expect { try await sut.loadRecipes(matching: .empty) } throws: { isInvalidDataWithReason($0) }
     }
 
     @Test(arguments: [
@@ -63,7 +64,7 @@ struct RecipeListServiceTests {
         let (sut, spy) = makeSUT()
         spy.stub(error: clientError)
 
-        await #expect(throws: RecipeError.unavailable) { try await sut.loadRecipes() }
+        await #expect(throws: RecipeError.unavailable) { try await sut.loadRecipes(matching: .empty) }
     }
 }
 

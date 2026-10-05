@@ -8,5 +8,6 @@
 import Foundation
 
 protocol RecipeListService: Sendable {
-    func loadRecipes() async throws -> [RecipePreview]
+    /// The recipe collection, narrowed by the query. `.empty` returns every recipe.
+    func loadRecipes(matching query: RecipeSearchQuery) async throws -> [RecipePreview]
 }

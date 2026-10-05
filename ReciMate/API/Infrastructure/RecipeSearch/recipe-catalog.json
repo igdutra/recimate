@@ -1,0 +1,459 @@
+[
+  {
+    "id": "petit-gateau",
+    "title": "Petit Gâteau",
+    "description": "Brazilian-style warm chocolate cake with a molten center, served with vanilla ice cream.",
+    "servings": 4,
+    "dietary_attributes": {
+      "is_vegetarian": true
+    },
+    "image_url": "https://static.itdg.com.br/images/640-400/9654b1eb43fdd1aec9e88267cb3f90a3/243868-original.jpg",
+    "ingredients": [
+      {
+        "id": "dark-chocolate",
+        "name": "Dark chocolate",
+        "quantity": "200 g"
+      },
+      {
+        "id": "butter",
+        "name": "Unsalted butter",
+        "quantity": "100 g"
+      },
+      {
+        "id": "eggs",
+        "name": "Eggs",
+        "quantity": "2"
+      },
+      {
+        "id": "vanilla-ice-cream",
+        "name": "Vanilla ice cream",
+        "quantity": "To serve"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oven to 220°C and butter four small ramekins."
+      },
+      {
+        "step": 2,
+        "text": "Melt chocolate and butter together, then whisk in eggs, sugar, and flour."
+      },
+      {
+        "step": 3,
+        "text": "Fill the ramekins and bake for 8 to 10 minutes, until the edges set and the centers stay soft."
+      },
+      {
+        "step": 4,
+        "text": "Turn out while warm and serve immediately with vanilla ice cream."
+      }
+    ]
+  },
+  {
+    "id": "lemon-herb-chicken",
+    "title": "Lemon Herb Chicken",
+    "description": "Roasted chicken with bright lemon and herbs.",
+    "servings": 4,
+    "dietary_attributes": {
+      "is_vegetarian": false
+    },
+    "image_url": "https://itsonly.recipes/images/recipeimages/lemon-herb-roasted-chicken.webp",
+    "ingredients": [
+      {
+        "id": "chicken",
+        "name": "Chicken thighs",
+        "quantity": "8"
+      },
+      {
+        "id": "lemon",
+        "name": "Lemon",
+        "quantity": "1"
+      },
+      {
+        "id": "thyme",
+        "name": "Fresh thyme",
+        "quantity": "2 sprigs"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oven to 220°C."
+      },
+      {
+        "step": 2,
+        "text": "Season chicken with lemon, oil, salt, and pepper."
+      },
+      {
+        "step": 3,
+        "text": "Roast until browned and cooked through, about 30 minutes."
+      }
+    ]
+  },
+  {
+    "id": "creamy-tomato-pasta",
+    "title": "Creamy Tomato Pasta",
+    "description": "A quick pantry pasta with a silky tomato sauce.",
+    "servings": 2,
+    "dietary_attributes": {
+      "is_vegetarian": true
+    },
+    "image_url": "https://reserveamana.com/wp-content/uploads/Creamy-Tomato-Pasta-fb.jpg",
+    "ingredients": [
+      {
+        "id": "pasta",
+        "name": "Pasta",
+        "quantity": "200 g"
+      },
+      {
+        "id": "tomatoes",
+        "name": "Crushed tomatoes",
+        "quantity": "1 can"
+      },
+      {
+        "id": "cream",
+        "name": "Cooking cream",
+        "quantity": "120 ml"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Cook pasta in salted water."
+      },
+      {
+        "step": 2,
+        "text": "Simmer tomatoes and cream for five minutes."
+      },
+      {
+        "step": 3,
+        "text": "Toss with pasta and season to taste."
+      }
+    ]
+  },
+  {
+    "id": "sheet-pan-salmon",
+    "title": "Sheet Pan Salmon",
+    "description": "Salmon, potatoes, and greens in one easy pan.",
+    "servings": 4,
+    "dietary_attributes": {
+      "is_vegetarian": false
+    },
+    "image_url": "https://realhealthyrecipes.com/uploads/images/2017-11-08/1544891717/815905505large.jpg",
+    "ingredients": [
+      {
+        "id": "salmon",
+        "name": "Salmon fillets",
+        "quantity": "4"
+      },
+      {
+        "id": "potatoes",
+        "name": "Baby potatoes",
+        "quantity": "500 g"
+      },
+      {
+        "id": "green-beans",
+        "name": "Green beans",
+        "quantity": "200 g"
+      },
+      {
+        "id": "olive-oil",
+        "name": "Olive oil",
+        "quantity": "3 tbsp"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oven to 220°C."
+      },
+      {
+        "step": 2,
+        "text": "Toss potatoes with oil and roast on a sheet pan for 15 minutes."
+      },
+      {
+        "step": 3,
+        "text": "Add the salmon and green beans to the pan and season well."
+      },
+      {
+        "step": 4,
+        "text": "Roast for 12 minutes more, until the salmon flakes easily."
+      }
+    ]
+  },
+  {
+    "id": "chickpea-curry",
+    "title": "Chickpea Coconut Curry",
+    "description": "Comforting chickpeas in a gently spiced coconut sauce.",
+    "servings": 6,
+    "dietary_attributes": {
+      "is_vegetarian": true
+    },
+    "image_url": "https://i.pinimg.com/originals/ec/89/03/ec890374cc0c34a6abae73a747903c60.jpg",
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "name": "Chickpeas",
+        "quantity": "2 cans"
+      },
+      {
+        "id": "coconut-milk",
+        "name": "Coconut milk",
+        "quantity": "400 ml"
+      },
+      {
+        "id": "onion",
+        "name": "Onion",
+        "quantity": "1"
+      },
+      {
+        "id": "curry-paste",
+        "name": "Mild curry paste",
+        "quantity": "2 tbsp"
+      },
+      {
+        "id": "spinach",
+        "name": "Baby spinach",
+        "quantity": "100 g"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Soften the chopped onion in a large pot."
+      },
+      {
+        "step": 2,
+        "text": "Stir in the curry paste for one minute."
+      },
+      {
+        "step": 3,
+        "text": "Add chickpeas and coconut milk and simmer for 20 minutes."
+      },
+      {
+        "step": 4,
+        "text": "Fold in the spinach until it wilts, then serve with rice."
+      }
+    ]
+  },
+  {
+    "id": "beef-tacos",
+    "title": "Weeknight Beef Tacos",
+    "description": "Crisp tacos filled with warmly spiced beef.",
+    "servings": 4,
+    "dietary_attributes": {
+      "is_vegetarian": false
+    },
+    "image_url": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/taco_with_avocado_and_beef.jpg",
+    "ingredients": [
+      {
+        "id": "ground-beef",
+        "name": "Ground beef",
+        "quantity": "500 g"
+      },
+      {
+        "id": "taco-shells",
+        "name": "Taco shells",
+        "quantity": "8"
+      },
+      {
+        "id": "taco-seasoning",
+        "name": "Taco seasoning",
+        "quantity": "2 tbsp"
+      },
+      {
+        "id": "lettuce",
+        "name": "Shredded lettuce",
+        "quantity": "1 cup"
+      },
+      {
+        "id": "cheddar",
+        "name": "Grated cheddar",
+        "quantity": "100 g"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Brown the beef in a hot skillet."
+      },
+      {
+        "step": 2,
+        "text": "Stir in the seasoning and a splash of water, then simmer for 5 minutes."
+      },
+      {
+        "step": 3,
+        "text": "Warm the taco shells in the oven."
+      },
+      {
+        "step": 4,
+        "text": "Fill the shells with beef, lettuce and cheddar."
+      }
+    ]
+  },
+  {
+    "id": "roasted-vegetable-couscous",
+    "title": "Roasted Vegetable Couscous",
+    "description": "Colorful roast vegetables over fluffy couscous.",
+    "servings": 3,
+    "dietary_attributes": {
+      "is_vegetarian": true
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Couscous_with_Roasted_Vegetables_%26_Feta.jpg",
+    "ingredients": [
+      {
+        "id": "couscous",
+        "name": "Couscous",
+        "quantity": "250 g"
+      },
+      {
+        "id": "zucchini",
+        "name": "Zucchini",
+        "quantity": "2"
+      },
+      {
+        "id": "bell-pepper",
+        "name": "Red bell pepper",
+        "quantity": "2"
+      },
+      {
+        "id": "red-onion",
+        "name": "Red onion",
+        "quantity": "1"
+      },
+      {
+        "id": "feta",
+        "name": "Feta cheese",
+        "quantity": "100 g"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oven to 200°C."
+      },
+      {
+        "step": 2,
+        "text": "Chop the vegetables, toss with oil and roast for 25 minutes."
+      },
+      {
+        "step": 3,
+        "text": "Pour boiling water over the couscous, cover and rest for 5 minutes."
+      },
+      {
+        "step": 4,
+        "text": "Fluff the couscous, top with the vegetables and crumble over the feta."
+      }
+    ]
+  },
+  {
+    "id": "turkey-meatballs",
+    "title": "Turkey Meatballs",
+    "description": "Tender herb meatballs with a simple tomato finish.",
+    "servings": 5,
+    "dietary_attributes": {
+      "is_vegetarian": false
+    },
+    "image_url": "https://irepo.primecp.com/2015/12/249665/EDR-Sicilian-Turkey-Meatballs_ExtraLarge1000_ID-1346135.jpg?v=1346135",
+    "ingredients": [
+      {
+        "id": "ground-turkey",
+        "name": "Ground turkey",
+        "quantity": "600 g"
+      },
+      {
+        "id": "breadcrumbs",
+        "name": "Breadcrumbs",
+        "quantity": "1/2 cup"
+      },
+      {
+        "id": "parsley",
+        "name": "Fresh parsley",
+        "quantity": "1/4 cup"
+      },
+      {
+        "id": "egg",
+        "name": "Egg",
+        "quantity": "1"
+      },
+      {
+        "id": "tomato-sauce",
+        "name": "Tomato sauce",
+        "quantity": "2 cups"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Mix the turkey, breadcrumbs, parsley and egg."
+      },
+      {
+        "step": 2,
+        "text": "Roll into golf-ball sized meatballs."
+      },
+      {
+        "step": 3,
+        "text": "Brown the meatballs in a pan, turning often."
+      },
+      {
+        "step": 4,
+        "text": "Pour in the tomato sauce and simmer for 15 minutes."
+      }
+    ]
+  },
+  {
+    "id": "mushroom-risotto",
+    "title": "Mushroom Risotto",
+    "description": "A slow-stirred, savory risotto for a relaxed evening.",
+    "servings": 2,
+    "dietary_attributes": {
+      "is_vegetarian": true
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Mushroom_and_Leek_Risotto_%2849535206656%29.jpg/960px-Mushroom_and_Leek_Risotto_%2849535206656%29.jpg",
+    "ingredients": [
+      {
+        "id": "arborio-rice",
+        "name": "Arborio rice",
+        "quantity": "300 g"
+      },
+      {
+        "id": "mushrooms",
+        "name": "Mushrooms",
+        "quantity": "250 g"
+      },
+      {
+        "id": "vegetable-stock",
+        "name": "Vegetable stock",
+        "quantity": "1 l"
+      },
+      {
+        "id": "parmesan",
+        "name": "Parmesan",
+        "quantity": "50 g"
+      },
+      {
+        "id": "cream",
+        "name": "Single cream",
+        "quantity": "100 ml"
+      }
+    ],
+    "cooking_instructions": [
+      {
+        "step": 1,
+        "text": "Warm the stock in a saucepan and keep it at a low simmer."
+      },
+      {
+        "step": 2,
+        "text": "Sauté the sliced mushrooms until golden, then set them aside."
+      },
+      {
+        "step": 3,
+        "text": "Toast the rice, then add the stock a ladle at a time, stirring, for about 20 minutes."
+      },
+      {
+        "step": 4,
+        "text": "Stir in the mushrooms, cream and parmesan, then rest for 2 minutes before serving."
+      }
+    ]
+  }
+]

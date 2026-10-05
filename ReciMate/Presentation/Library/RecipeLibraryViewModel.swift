@@ -23,7 +23,7 @@ final class RecipeLibraryViewModel {
         defer { isLoadInFlight = false }
         viewData = RecipeLibraryViewData(state: .loading, cards: viewData.cards)
         do {
-            let previews = try await service.loadRecipes()
+            let previews = try await service.loadRecipes(matching: .empty)
             let cards = previews.map(Self.makeCard)
             viewData = RecipeLibraryViewData(state: .loaded, cards: cards)
         } catch let recipeError as RecipeError {

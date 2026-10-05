@@ -8,7 +8,8 @@
 #if DEBUG
 
 /// A `RecipeListService` for previews that returns the sample recipes at once, with no
-/// network and no bundled data.
+/// network and no bundled data. It ignores the query; a preview with no matches
+/// passes an empty array.
 struct PreviewRecipeListService: RecipeListService {
     let previews: [RecipePreview]
 
@@ -16,7 +17,7 @@ struct PreviewRecipeListService: RecipeListService {
         self.previews = previews
     }
 
-    func loadRecipes() async throws -> [RecipePreview] {
+    func loadRecipes(matching query: RecipeSearchQuery) async throws -> [RecipePreview] {
         previews
     }
 }

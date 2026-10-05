@@ -1,11 +1,11 @@
 import Foundation
 
-/// Response of the list endpoint (`GET /recipe-list`), mocked by
-/// `Infrastructure/RecipeList/recipe-list.json`.
+/// Response of the list endpoint (`GET /recipes`), mocked by `LocalRecipeSearchServer`
+/// from `Infrastructure/RecipeSearch/recipe-catalog.json`.
 typealias RecipeListDTO = [RecipePreviewDTO]
 
 /// One item of the list endpoint.
-struct RecipePreviewDTO: Decodable, Sendable {
+struct RecipePreviewDTO: Codable, Sendable {
     let id: String
     let title: String
     let description: String
