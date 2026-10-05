@@ -241,3 +241,16 @@ iOS 27 only (the API page lists 27.0). The same WWDC session says classes held i
 releases where `@Observable` appeared (iOS 17). That back-port is from a summary
 of the session transcript; confirm it against Apple's documentation before
 relying on it.
+
+## Design system
+
+Wanted for the long term, but too early. Specs 004 and 006 built a shared token
+layer (spacing, typography, radius, sizing), and spec 007 removed it: with two
+screens the tokens were mostly one-use names. Only `Colors.swift` stays shared.
+Spacing, radius and sizing values now live in a `private extension` with a
+`Constants` enum in each view, and fonts are set directly with the system text
+styles.
+
+Revisit once more screens exist and the same values keep repeating; those
+repeats are the tokens. See
+[the plan](../specs/007-postpone-desing-system/plan.md).

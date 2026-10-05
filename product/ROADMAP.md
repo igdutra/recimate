@@ -92,7 +92,8 @@ Also the intentional failure (E2) shown through the view state and
   error frame needs a retry action (`load()` re-run, which the view model
   already allows after an error); the frame's "Back to Recipes" button is
   redundant with the native back button and is dropped or kept as a decision
-  then; new tokens are the 80pt badge circle and the 32pt loading icon.
+  then; new constants (the 80pt badge circle and the 32pt loading icon) are
+  declared inline in the view that uses them (see spec 007).
 
 **F. Polish + README.** Accessibility and visual pass (labels, Dynamic Type
 checks), final full test run, and the README sections R2–R6.
