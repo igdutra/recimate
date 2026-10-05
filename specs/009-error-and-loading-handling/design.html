@@ -1,0 +1,169 @@
+<!-- generated from specs/003-design-all-screens/design.html (frames 2, 3, 4, 10, 11) and specs/008-search-filtering/design.html (frames 1, 4, 5) on 2026-10-05, adapted to the spec 009 decisions — read-only snapshot, regenerate if those change -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReciMate Error and Loading States</title>
+<style>
+:root{--green:#2E7D4F;--ink:#1B1F1D;--mist:#EEF1EE;--muted:rgba(27,31,29,0.66);--line:rgba(27,31,29,0.12)}
+*{box-sizing:border-box}
+body{margin:0;padding:40px 32px 80px;background:#E4E8E5;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+button,input{font-family:inherit}
+h1.doc{margin:0 0 8px;font-size:34px;line-height:41px}
+p.doc{margin:0 0 32px;max-width:760px;font-size:15px;line-height:22px;color:var(--muted)}
+h2.section-heading{margin:56px 0 24px;font-size:28px;line-height:34px}
+.row{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.item h2{margin:0 0 2px;font-size:17px;line-height:22px}
+.item p{margin:0 0 10px;font-size:13px;line-height:17px;color:var(--muted);max-width:390px}
+.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* phone frame */
+.frame{width:390px;height:844px;background:#fff;color:var(--ink);overflow:hidden;position:relative;border-radius:36px;box-shadow:0 0 0 1px var(--line)}
+.page{padding:56px 20px 0}
+.navbar{display:flex;justify-content:flex-end;height:44px;align-items:center}
+.toolbtn{width:44px;height:44px;border-radius:22px;border:0;background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line),0 2px 8px rgba(27,31,29,0.10);display:flex;align-items:center;justify-content:center}
+.toolbtn.active{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(46,125,79,0.35)}
+.large-title{margin:0 0 12px;font-size:34px;line-height:41px;font-weight:700}
+
+/* native search field */
+.search{position:relative;margin-bottom:16px}
+.search .i{position:absolute;left:12px;top:12px;color:var(--muted)}
+.search input{width:100%;height:44px;border:0;border-radius:12px;background:var(--mist);padding:0 12px 0 40px;font-size:17px;color:var(--ink)}
+.search .clear{position:absolute;right:0;top:0;width:44px;height:44px;border:0;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.search.on-white input{background:#fff}
+
+/* grid and card */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--mist);border-radius:20px;overflow:hidden}
+.card .photo{height:140px;background-size:cover;background-position:center}
+.card .photo.none{background:rgba(27,31,29,0.08);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.card .body{padding:10px 12px 12px}
+.card .name{font-size:15px;line-height:20px;font-weight:600;min-height:40px}
+.card .meta{display:flex;align-items:center;justify-content:space-between;margin-top:4px;font-size:13px;color:var(--muted)}
+.card .meta .i{color:var(--green)}
+
+/* system ContentUnavailableView.search: gray symbol, bold title, secondary description, no action */
+.system-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:150px 32px 0}
+.system-empty .i{color:rgba(60,60,67,0.30);stroke-width:1.4;margin-bottom:14px}
+.system-empty h3{margin:0 0 6px;font-size:22px;line-height:28px;font-weight:700}
+.system-empty p{margin:0;font-size:16px;line-height:21px;color:rgba(60,60,67,0.60);max-width:none}
+
+/* sheet */
+.scrim{position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(27,31,29,0.45)}
+.sheet{position:absolute;left:0;top:56px;width:100%;height:788px;background:#fff;border-radius:28px 28px 0 0;padding:12px 20px 0}
+.grabber{width:36px;height:5px;border-radius:3px;background:rgba(27,31,29,0.25);margin:0 auto 8px}
+.sheet-bar{display:flex;align-items:center;justify-content:space-between;height:52px}
+.sheet-bar h3{margin:0;font-size:17px;font-weight:600}
+.textbtn{height:44px;padding:0 4px;border:0;background:transparent;color:var(--green);font-size:17px;font-weight:500}
+.textbtn.muted{color:var(--muted)}
+.done{height:44px;padding:0 20px;border-radius:22px;border:0;background:var(--green);color:#fff;font-size:17px;font-weight:600}
+.group{background:var(--mist);border-radius:16px;padding:16px;margin-top:12px}
+.group.first{margin-top:8px}
+.group-title{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:600;margin-bottom:12px}
+.group-title .i{color:var(--green)}
+.switch-row{display:flex;align-items:center;justify-content:space-between;height:44px;background:#fff;border-radius:12px;padding:0 12px;font-size:17px}
+.switch{width:51px;height:31px;border-radius:16px;border:0;padding:2px;display:flex;align-items:center;background:rgba(27,31,29,0.25);justify-content:flex-start}
+.switch.on{background:var(--green);justify-content:flex-end}
+.switch span{width:27px;height:27px;border-radius:14px;background:#fff;display:block}
+.menu-row{display:flex;align-items:center;justify-content:space-between;height:48px;background:#fff;border-radius:12px;padding:0 12px;font-size:17px}
+.menu-row .value{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--muted)}
+.field{height:44px;background:#fff;border:0;border-radius:12px;width:100%;padding:0 12px;font-size:17px;color:var(--ink)}
+.terms{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.term{height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 8px 0 12px;border-radius:18px;background:#fff;font-size:15px;font-weight:500}
+.term .i{color:var(--muted)}
+
+/* system ContentUnavailableView with actions: gray symbol, bold title, secondary description, bordered button */
+.system-error{display:flex;flex-direction:column;align-items:center;text-align:center;padding:150px 32px 0}
+.system-error.centered{padding-top:0;position:absolute;left:0;top:0;width:100%;height:100%;justify-content:center}
+.system-error .i{color:rgba(60,60,67,0.30);stroke-width:1.4;margin-bottom:14px}
+.system-error h3{margin:0 0 6px;font-size:22px;line-height:28px;font-weight:700}
+.system-error p{margin:0 0 18px;font-size:16px;line-height:21px;color:rgba(60,60,67,0.60);max-width:none}
+.bordered{height:40px;padding:0 20px;border-radius:20px;border:0;background:rgba(46,125,79,0.15);color:var(--green);font-size:17px;font-weight:600}
+
+/* ProgressView: one centered system activity indicator, drawn at a single frame */
+.spinner{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(60,60,67,0.60)}
+.spinner.below-bar{top:56px;height:calc(100% - 56px)}
+
+/* native back button (glass circle on iOS 26) */
+.back{position:absolute;left:16px;top:56px;width:44px;height:44px;border-radius:22px;border:0;background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line),0 2px 8px rgba(27,31,29,0.10);display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="chevron-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19L12 3.5z"/><path d="M12 10v4.5M12 17.2v.1"/></symbol>
+  <symbol id="activity" viewBox="0 0 24 24"><g stroke-width="2.4"><line x1="12" y1="3" x2="12" y2="7" transform="rotate(0 12 12)" opacity="1"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(30 12 12)" opacity="0.92"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(60 12 12)" opacity="0.84"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(90 12 12)" opacity="0.76"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(120 12 12)" opacity="0.68"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(150 12 12)" opacity="0.6"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(180 12 12)" opacity="0.52"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(210 12 12)" opacity="0.44"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(240 12 12)" opacity="0.36"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(270 12 12)" opacity="0.28"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(300 12 12)" opacity="0.2"/><line x1="12" y1="3" x2="12" y2="7" transform="rotate(330 12 12)" opacity="0.12"/></g></symbol>
+</svg>
+
+<h1 class="doc">ReciMate error and loading states</h1>
+<p class="doc">Read-only snapshot for spec 009. The loading, error and no-results states of the Library (including the failure modes of search) and of Details, in the current look: native toolbar, one Filters button, no chips. The error is the system <code>ContentUnavailableView</code> with one message for every error and a Try Again button; loading is the system <code>ProgressView</code>. Both sit in an overlay over the screen's content, so the title, search field and Filters button never move. The system draws the toolbar, search field and error view differently on iOS 26 (glass), so the SwiftUI will not match pixel for pixel and should not be rebuilt to. Static: nothing animates. Changes from the spec 003 frames: no custom badge circle, no "Back to Recipes" button, no Clear Filters button, no chips, one generic message instead of per-recipe wording. The empty collection frame (003, frame 5) is not drawn: it is outside the brief and lives in the backlog.</p>
+
+<h2 class="section-heading">Library</h2>
+<div class="row">
+
+<div class="item"><h2>1 Library, loading</h2><p>First load, and after Try Again. One centered activity indicator over the content area; the title, search field and Filters button are already there.</p>
+<section class="frame" aria-busy="true"><div class="page">
+  <div class="navbar"><button class="toolbtn" aria-label="Filters"><svg class="i" width="22" height="22"><use href="#sliders"/></svg></button></div>
+  <h1 class="large-title">Recipes</h1>
+  <div class="search"><svg class="i" width="20" height="20"><use href="#search"/></svg><input aria-label="Search instructions" placeholder="Search instructions"></div>
+  <div class="spinner"><svg class="i" width="36" height="36"><use href="#activity"/></svg></div>
+</div></section></div>
+<div class="item"><h2>2 Library, load failed</h2><p>The first load failed. The system error view replaces the grid. The search field and Filters button stay on screen.</p>
+<section class="frame"><div class="page">
+  <div class="navbar"><button class="toolbtn" aria-label="Filters"><svg class="i" width="22" height="22"><use href="#sliders"/></svg></button></div>
+  <h1 class="large-title">Recipes</h1>
+  <div class="search"><svg class="i" width="20" height="20"><use href="#search"/></svg><input aria-label="Search instructions" placeholder="Search instructions"></div>
+  <div class="system-error"><svg class="i" width="56" height="56"><use href="#alert"/></svg><h3>Couldn’t Load</h3><p>Something went wrong while loading.</p><button class="bordered">Try Again</button></div>
+</div></section></div>
+<div class="item"><h2>3 Library, search failed</h2><p>A search or a filter change failed, so the same error shows under the search field, which still holds the typed text, and the Filters button, which still shows its two active filters. The text can be edited or Try Again pressed. Try Again repeats the current query.</p>
+<section class="frame"><div class="page">
+  <div class="navbar"><button class="toolbtn active" aria-label="Filters, 2 active"><svg class="i" width="22" height="22"><use href="#sliders"/></svg></button></div>
+  <h1 class="large-title">Recipes</h1>
+  <div class="search"><svg class="i" width="20" height="20"><use href="#search"/></svg><input aria-label="Search instructions" value="ramekins" style="padding-right:44px"><button class="clear" aria-label="Clear search"><svg class="i" width="18" height="18" style="stroke-width:2.4"><use href="#close"/></svg></button></div>
+  <div class="system-error"><svg class="i" width="56" height="56"><use href="#alert"/></svg><h3>Couldn’t Load</h3><p>Something went wrong while loading.</p><button class="bordered">Try Again</button></div>
+</div></section></div>
+<div class="item"><h2>4 Library, retrying a failed search</h2><p>After Try Again on frame 3: the spinner, with the query unchanged. It ends as the grid (loaded), No Results (frame 5), or frame 3 again.</p>
+<section class="frame" aria-busy="true"><div class="page">
+  <div class="navbar"><button class="toolbtn active" aria-label="Filters, 2 active"><svg class="i" width="22" height="22"><use href="#sliders"/></svg></button></div>
+  <h1 class="large-title">Recipes</h1>
+  <div class="search"><svg class="i" width="20" height="20"><use href="#search"/></svg><input aria-label="Search instructions" value="ramekins" style="padding-right:44px"><button class="clear" aria-label="Clear search"><svg class="i" width="18" height="18" style="stroke-width:2.4"><use href="#close"/></svg></button></div>
+  <div class="spinner"><svg class="i" width="36" height="36"><use href="#activity"/></svg></div>
+</div></section></div>
+<div class="item"><h2>5 Library, no results (search text)</h2><p>The search finished and matched nothing: not an error. The system search view, as in spec 008. It reads the query from the search field.</p>
+<section class="frame"><div class="page">
+  <div class="navbar"><button class="toolbtn" aria-label="Filters"><svg class="i" width="22" height="22"><use href="#sliders"/></svg></button></div>
+  <h1 class="large-title">Recipes</h1>
+  <div class="search"><svg class="i" width="20" height="20"><use href="#search"/></svg><input aria-label="Search instructions" value="tofu lasagna" style="padding-right:44px"><button class="clear" aria-label="Clear search"><svg class="i" width="18" height="18" style="stroke-width:2.4"><use href="#close"/></svg></button></div>
+  <div class="system-empty"><svg class="i" width="56" height="56"><use href="#search"/></svg><h3>No Results for “tofu lasagna”</h3><p>Check the spelling or try a new search.</p></div>
+</div></section></div>
+<div class="item"><h2>6 Library, no results (filters only)</h2><p>Filters match nothing, search field empty. Same system view; the filters are cleared with Reset in the sheet.</p>
+<section class="frame"><div class="page">
+  <div class="navbar"><button class="toolbtn active" aria-label="Filters, 2 active"><svg class="i" width="22" height="22"><use href="#sliders"/></svg></button></div>
+  <h1 class="large-title">Recipes</h1>
+  <div class="search"><svg class="i" width="20" height="20"><use href="#search"/></svg><input aria-label="Search instructions" placeholder="Search instructions"></div>
+  <div class="system-empty"><svg class="i" width="56" height="56"><use href="#search"/></svg><h3>No Results</h3><p>Check the spelling or try a new search.</p></div>
+</div></section></div>
+
+</div>
+
+<h2 class="section-heading">Recipe Details</h2>
+<div class="row">
+
+<div class="item"><h2>7 Details, loading</h2><p>Opening a recipe, and after Try Again. The native back button and one centered activity indicator.</p>
+<section class="frame" aria-busy="true">
+  <button class="back" aria-label="Back"><svg class="i" width="20" height="20" style="stroke-width:2.4"><use href="#chevron-left"/></svg></button>
+  <div class="spinner"><svg class="i" width="36" height="36"><use href="#activity"/></svg></div>
+</section></div>
+<div class="item"><h2>8 Details, load failed</h2><p>The intentional failure (E2): “Beef Tacos (Fails: Not Found)”, which has no detail, or “Creamy Tomato Pasta (Fails: Bad Data)”, whose detail is malformed. The same error view as the Library, with the message for the error kind (shown: Creamy Tomato Pasta; Beef Tacos reads “We couldn’t find what you were looking for.”). Try Again repeats the load and fails again for these recipes; the native back button is the way out.</p>
+<section class="frame">
+  <button class="back" aria-label="Back"><svg class="i" width="20" height="20" style="stroke-width:2.4"><use href="#chevron-left"/></svg></button>
+  <div class="system-error centered"><svg class="i" width="56" height="56"><use href="#alert"/></svg><h3>Couldn’t Load</h3><p>The data we received couldn’t be read.</p><button class="bordered">Try Again</button></div>
+</section></div>
+
+</div>
+</body>
+</html>

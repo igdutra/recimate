@@ -70,6 +70,14 @@ what failed in the field, such as the `reason` of an `invalidData` or the cause
 behind an `unavailable`, without the services validating or masking the
 backend's data. Not part of the challenge; nothing in the data layer logs today.
 
+## Forcing a Library failure
+
+A debug-only way to make the Library's load or search fail in the running app, such
+as a launch argument (`-simulateLibraryFailure`) read at the composition root, which
+wraps the client in one that throws. With the bundled data the Library never fails,
+so its error state is visible only in previews and view model tests. Details has two
+recipes that fail on purpose (spec 009), so its error state can be seen in the app.
+
 ## Loading and empty-collection states
 
 The Library's loading state (placeholders or a spinner while the first load runs)
