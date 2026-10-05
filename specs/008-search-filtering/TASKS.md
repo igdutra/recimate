@@ -8,7 +8,7 @@ Tick each item when done. Steps follow [SPEC.md](SPEC.md).
 - [x] 4. `recipe-catalog.json`, `Codable` DTOs, `LocalRecipeSearchServer`, client routing, playground; mock-only tests in `ReciMateTests/API/Mock/`
 - [x] 5. `RecipeListService.loadRecipes(matching:)` and `RemoteRecipeListService` pass the query; spy, preview service, tests; delete `recipe-list.json`; end-to-end catalog tests
 - [x] 6. `FiltersViewModel` and `FiltersViewModelTests`
-- [ ] 7. `RecipeLibraryViewModel` on search (sequence guard, state rules, owned `FiltersViewModel`); update tests
+- [x] 7. `RecipeLibraryViewModel` on search (sequence guard, state rules, owned `FiltersViewModel`); update tests
 - [ ] 8. Views: Library, `FiltersSheetView` + chips layout, `RootView` wiring, previews for every listed state
 - [ ] 9. Simulator pass; record the system no-results wording
 - [ ] 10. Full suite; greps for retired names

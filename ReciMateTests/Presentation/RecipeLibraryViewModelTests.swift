@@ -10,7 +10,7 @@ struct RecipeLibraryViewModelTests {
     @Test func init_startsLoadingWithNoCards() {
         let (sut, _) = makeSUT()
 
-        #expect(sut.viewData == RecipeLibraryViewData(state: .loading, cards: []))
+        #expect(sut.viewData == RecipeLibraryViewData(state: .loading, cards: [], activeFilterCount: 0))
     }
 
     // MARK: - Happy path
@@ -43,7 +43,7 @@ struct RecipeLibraryViewModelTests {
 
         await load(sut, on: spy, completingWith: [])
 
-        #expect(sut.viewData == RecipeLibraryViewData(state: .loaded, cards: []))
+        #expect(sut.viewData == RecipeLibraryViewData(state: .loaded, cards: [], activeFilterCount: 0))
     }
 
     // MARK: - Failure modes
@@ -113,6 +113,223 @@ struct RecipeLibraryViewModelTests {
 
         #expect(spy.requestCount == 2)
         #expect(sut.viewData.state == .loaded)
+    }
+
+    // MARK: - Search queries
+
+    @Test func load_searchesWithTheEmptyQuery() async {
+        let (sut, spy) = makeSUT()
+
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        #expect(spy.requestedQueries == [.empty])
+    }
+
+    @Test func didChangeSearch_searchesWithTheTypedText() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        sut.didChangeSearch("ramekins")
+        await spy.waitUntilRequested(count: 2)
+
+        #expect(spy.requestedQueries.last == RecipeSearchQuery(instructionText: "ramekins"))
+        await finishSearch(on: spy, at: 1, with: [.petitGateau])
+    }
+
+    @Test func didChangeSearch_withTheSameText_doesNotSearchAgain() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("ramekins")
+        await spy.waitUntilRequested(count: 2)
+        await finishSearch(on: spy, at: 1, with: [.petitGateau])
+
+        sut.didChangeSearch("ramekins")
+        await Task.yield()
+
+        #expect(spy.requestCount == 2)
+    }
+
+    @Test func clearingTheText_searchesWithTheEmptyQueryAgain() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau, .lemonHerbChicken])
+        sut.didChangeSearch("ramekins")
+        await spy.waitUntilRequested(count: 2)
+        await finishSearch(on: spy, at: 1, with: [.petitGateau])
+
+        sut.didChangeSearch("")
+        await spy.waitUntilRequested(count: 3)
+        await finishSearch(on: spy, at: 2, with: [.petitGateau, .lemonHerbChicken])
+
+        #expect(spy.requestedQueries.last == .empty)
+        #expect(sut.viewData.cards.count == 2)
+    }
+
+    @Test func filterChange_searchesWithTheFiltersAndKeepsTheText() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("bake")
+        await spy.waitUntilRequested(count: 2)
+        await finishSearch(on: spy, at: 1, with: [.petitGateau])
+
+        sut.filtersViewModel.setVegetarianOnly(true)
+        await spy.waitUntilRequested(count: 3)
+        await finishSearch(on: spy, at: 2, with: [.petitGateau])
+
+        #expect(spy.requestedQueries.last == RecipeSearchQuery(instructionText: "bake", onlyVegetarian: true))
+    }
+
+    @Test func typingAfterAFilterChange_keepsTheFilters() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.filtersViewModel.chooseServings(.count(4))
+        sut.filtersViewModel.submitIncludedTerm("eggs")
+        await spy.waitUntilRequested(count: 3)
+
+        sut.didChangeSearch("bake")
+        await spy.waitUntilRequested(count: 4)
+
+        #expect(spy.requestedQueries.last == RecipeSearchQuery(
+            instructionText: "bake", servings: 4, includedIngredients: ["eggs"]
+        ))
+        await spy.failPendingRequests()
+    }
+
+    @Test func filtersReset_searchesWithoutFiltersAndKeepsTheText() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("bake")
+        await spy.waitUntilRequested(count: 2)
+        sut.filtersViewModel.setVegetarianOnly(true)
+        await spy.waitUntilRequested(count: 3)
+
+        sut.filtersViewModel.reset()
+        await spy.waitUntilRequested(count: 4)
+
+        #expect(spy.requestedQueries.last == RecipeSearchQuery(instructionText: "bake"))
+        await spy.failPendingRequests()
+    }
+
+    // MARK: - Overlapping searches
+
+    @Test func overlappingSearches_showTheLatestWhateverTheReplyOrder() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("r")
+        await spy.waitUntilRequested(count: 2)
+        sut.didChangeSearch("ra")
+        await spy.waitUntilRequested(count: 3)
+
+        await spy.complete(with: [.lemonHerbChicken], at: 2)
+        await spy.complete(with: [.petitGateau], at: 1)
+        await settle()
+
+        #expect(sut.viewData.cards.map(\.id) == ["lemon-herb-chicken"])
+        #expect(sut.viewData.state == .loaded)
+    }
+
+    @Test func outdatedSearchFailure_isNotAnError() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("r")
+        await spy.waitUntilRequested(count: 2)
+        sut.didChangeSearch("ra")
+        await spy.waitUntilRequested(count: 3)
+
+        await spy.fail(with: RecipeError.unavailable, at: 1)
+        await settle()
+        #expect(sut.viewData.state == .loaded)
+
+        await spy.complete(with: [.lemonHerbChicken], at: 2)
+        await settle()
+        #expect(sut.viewData.state == .loaded)
+        #expect(sut.viewData.cards.map(\.id) == ["lemon-herb-chicken"])
+    }
+
+    @Test func cancelledSearchFailure_isNotAnError() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        sut.didChangeSearch("r")
+        await spy.waitUntilRequested(count: 2)
+
+        await spy.fail(with: CancellationError(), at: 1)
+        await settle()
+
+        #expect(sut.viewData.state == .loaded)
+        #expect(sut.viewData.cards.map(\.id) == ["petit-gateau"])
+    }
+
+    // MARK: - State during a new search
+
+    @Test func newSearch_keepsLoadedStateAndOldCardsUntilTheResultArrives() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau, .lemonHerbChicken])
+
+        sut.didChangeSearch("ramekins")
+        await spy.waitUntilRequested(count: 2)
+
+        #expect(sut.viewData.state == .loaded)
+        #expect(sut.viewData.cards.map(\.id) == ["petit-gateau", "lemon-herb-chicken"])
+
+        await finishSearch(on: spy, at: 1, with: [.petitGateau])
+        #expect(sut.viewData.cards.map(\.id) == ["petit-gateau"])
+    }
+
+    @Test func emptyResult_setsHasNoResults() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+        #expect(!sut.viewData.hasNoResults)
+
+        sut.didChangeSearch("tofu lasagna")
+        await spy.waitUntilRequested(count: 2)
+        await finishSearch(on: spy, at: 1, with: [])
+
+        #expect(sut.viewData.hasNoResults)
+    }
+
+    @Test func hasNoResults_isFalseWhileLoadingAndAfterAnError() async {
+        let (sut, spy) = makeSUT()
+        #expect(!sut.viewData.hasNoResults)
+
+        await load(sut, on: spy, failingWith: RecipeError.unavailable)
+
+        #expect(!sut.viewData.hasNoResults)
+    }
+
+    @Test func searchFailure_setsErrorAndANextSuccessfulSearchClearsIt() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        sut.didChangeSearch("r")
+        await spy.waitUntilRequested(count: 2)
+        await spy.fail(with: RecipeError.notFound, at: 1)
+        await settle()
+        #expect(sut.viewData.state == .error(.notFound))
+
+        sut.didChangeSearch("ra")
+        await spy.waitUntilRequested(count: 3)
+        await finishSearch(on: spy, at: 2, with: [.lemonHerbChicken])
+
+        #expect(sut.viewData.state == .loaded)
+        #expect(sut.viewData.cards.map(\.id) == ["lemon-herb-chicken"])
+    }
+
+    // MARK: - Active filter count
+
+    @Test func activeFilterCount_followsTheFiltersNotTheText() async {
+        let (sut, spy) = makeSUT()
+        await load(sut, on: spy, completingWith: [.petitGateau])
+
+        sut.didChangeSearch("bake")
+        #expect(sut.viewData.activeFilterCount == 0)
+
+        sut.filtersViewModel.setVegetarianOnly(true)
+        sut.filtersViewModel.chooseServings(.count(2))
+        sut.filtersViewModel.submitIncludedTerm("cream")
+        #expect(sut.viewData.activeFilterCount == 3)
+
+        sut.filtersViewModel.reset()
+        #expect(sut.viewData.activeFilterCount == 0)
+        await spy.failPendingRequests()
     }
 
     // MARK: - Card mapping
@@ -187,5 +404,16 @@ private extension RecipeLibraryViewModelTests {
         let loadTask = await startLoad(of: sut, on: spy)
         await spy.fail(with: error)
         await loadTask.value
+    }
+
+    /// Completes a search that is the latest one and waits for the view model to present it.
+    func finishSearch(on spy: RecipeListServiceSpy, at requestIndex: Int, with previews: [RecipePreview]) async {
+        await spy.complete(with: previews, at: requestIndex)
+        await settle()
+    }
+
+    /// Gives the view model's tasks turns to react to what the spy just finished.
+    func settle() async {
+        for _ in 0..<10 { await Task.yield() }
     }
 }

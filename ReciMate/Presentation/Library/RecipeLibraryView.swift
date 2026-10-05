@@ -6,6 +6,14 @@ import SwiftUI
 struct RecipeLibraryViewData: Equatable {
     let state: ViewState
     let cards: [RecipeCardViewData]
+    /// How many filters are on (search text is not a filter); drives the Filters button.
+    let activeFilterCount: Int
+
+    /// A finished search with nothing to show, whether the text, the filters or both
+    /// caused it.
+    var hasNoResults: Bool {
+        state.isLoaded && cards.isEmpty
+    }
 }
 
 // MARK: - RecipeLibraryView
@@ -36,9 +44,6 @@ struct RecipeLibraryView: View {
                 .searchable(text: $searchText, prompt: "Search recipes")
                 .onChange(of: searchText) { _, newSearchText in
                     viewModel.didChangeSearch(newSearchText)
-                }
-                .onSubmit(of: .search) {
-                    viewModel.didSubmitSearch()
                 }
                 .navigationTitle("Recipes")
                 .toolbar {
