@@ -46,7 +46,16 @@ Show the part of the instructions that matched (the step, or a snippet around th
 text) on a result card, so it is clear why a recipe was found. Needs the list
 response to carry a matched snippet, which makes the list and search shapes differ
 (the drift the spec 008 naming note discusses), and a card layout for it. Worth it
-mostly for instruction matches once title search exists.
+mostly for instruction matches once title search exists. Spec 010 covers the
+"why is this here?" part more cheaply with a "Found in the steps" caption; the
+snippet would add which step.
+
+## Multi-word search
+
+Match when each word of the search text appears somewhere in the title or steps,
+so "lemon chicken" finds "Lemon Herb Chicken". Spec 010 keeps the simple phrase
+"contains". With words, a recipe can match partly in the title and partly in the
+steps, so the "Found in the steps" caption needs a rule for mixed matches.
 
 ## Features that need new recipe data
 
@@ -118,6 +127,13 @@ tokens; tokens do not enforce one servings value, so that needs code. Open risks
 test first: whether active tokens stay visible after search is dismissed, and where
 the iOS 26 iPhone search field sits. On iOS 26, `searchToolbarBehavior(.minimized)`
 collapses the field into a toolbar button.
+
+Before scheduling it, check whether it brings any benefit over the current UI.
+Tokens would repeat the Filters sheet in a second place, not add a capability: every
+token above is already one tap away behind the Filters button, which shows how many
+filters are on. They also do not help the field find titles; spec 010 solved that
+with a broader text match. Worth it only if testing shows people reach for filters
+from the search field and miss the button.
 
 ## Servings ranges
 

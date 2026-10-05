@@ -6,8 +6,12 @@ import Foundation
 /// Assumption: the base URL carries no query and no fragment.
 enum RecipeEndpoint: Sendable {
     /// `GET /recipes`, the collection, with optional query items, each omitted when
-    /// unset: `vegetarian=true`, `servings=<n>`, repeated `include=<term>`, repeated
-    /// `exclude=<term>` and `instructions=<text>`. With no filters it lists every recipe.
+    /// unset: `vegetarian=true`,
+    /// `servings=<n>`,
+    ///  repeated `include=<term>`,
+    ///  repeated`exclude=<term>`
+    ///  and `instructions=<text>`.
+    ///  With no filters it lists every recipe.
     case list(query: RecipeSearchQuery)
     /// `GET /recipes/{id}`, one member of the collection.
     case details(id: String)
