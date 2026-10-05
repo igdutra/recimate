@@ -96,6 +96,9 @@ private struct RecipeDetailsPage: View {
             }
         }
         .ignoresSafeArea(edges: .top)
+        // The photo is meant to sit edge to edge under the status bar; without this the
+        // system draws a pale scroll-edge fade over it for the first moment after load.
+        .scrollEdgeEffectHidden(true, for: .top)
     }
 }
 
