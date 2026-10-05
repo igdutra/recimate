@@ -31,7 +31,7 @@ F Polish + README
 | A | Foundation + Data Contract | D1, D2 | 001 | done |
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
 | C | Recipe Library | V1, V2, V3 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded state done (004); error state in milestone E's shared error pass |
-| D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008 | in discovery |
+| D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008 | built; simulator walk pending |
 | E | Recipe Details | E2, E1 (error half, Library and Details) | 006 (loaded state) | loaded state done (006); shared error pass pending, no spec yet |
 | F | Polish + README | R1–R6, P2 | | not started |
 

@@ -10,6 +10,6 @@ Tick each item when done. Steps follow [SPEC.md](SPEC.md).
 - [x] 6. `FiltersViewModel` and `FiltersViewModelTests`
 - [x] 7. `RecipeLibraryViewModel` on search (sequence guard, state rules, owned `FiltersViewModel`); update tests
 - [x] 8. Views: Library, `FiltersSheetView` + chips layout, `RootView` wiring, previews for every listed state
-- [ ] 9. Simulator pass; record the system no-results wording
-- [ ] 10. Full suite; greps for retired names
-- [ ] 11. Final notes, ROADMAP D, backlog chips entry with removal commit hash
+- [ ] 9. Simulator pass; record the system no-results wording (launch + Library done; typing, sheet and no-results wording blocked, see notes)
+- [x] 10. Full suite; greps for retired names
+- [x] 11. Final notes, ROADMAP D, backlog chips entry with removal commit hash
