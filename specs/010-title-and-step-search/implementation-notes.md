@@ -14,4 +14,11 @@
 
 - Simulator step 8 (typing "pet", "roast", "tofu lasagna", filter combinations, Clear Filters, VoiceOver) was not run: there is no tool here to type or tap in the simulator. Only the launch was checked by screenshot (the field reads "Search titles and steps", AC6). The same cases are covered by `RecipeLibraryViewModelTests`, `LocalRecipeSearchServerTests` and `RecipeCatalogFixtureTests`; the previews were added but not opened in Xcode.
 - Existing tests that mapped `RecipeLibraryViewModel.makeCard` as a function reference now use a closure, because the new defaulted `searchedText` parameter changes its type.
-- Searching showed no loading state: spec 009 kept the loaded state and the old cards during a search so the grid would not flicker. Found while validating the simulator. `runSearch` now sets `.loading` first (the old cards stay in the view data underneath), so typing and filter changes show the same spinner overlay as the first load. `hasNoResults` needs `.loaded`, so no-results hides while searching. Three tests that expected `.loaded` while a search was in flight now expect `.loading`.
+
+## While testing
+
+Found while validating the simulator; not in the spec.
+
+- **Searching showed no loading state.** Spec 009 kept the loaded state and the old cards during a search to avoid grid flicker. `runSearch` now sets `.loading` first (the old cards stay in the view data underneath), so typing and filter changes show the same spinner overlay as the first load. `hasNoResults` needs `.loaded`, so no-results hides while searching. Three tests that expected `.loaded` while a search was in flight now expect `.loading`. (Commit `7a7af3e`.)
+- **Clearing the search fetched everything again.** The view model now caches successful results in memory by query (`cachedPreviews`, `RecipeSearchQuery` is now `Hashable`). A repeated query is presented at once, without the debounce or the spinner, and it drops any search still in flight. Failures are not cached. The test that expected a new request after clearing the text was replaced by cache tests (clearing the text, turning a filter off, a hit dropping an in-flight search, a new query still searching, a failure not cached).
+- **The cache is rudimentary on purpose**, to test the idea: no TTL, no refresh, no invalidation, no size limit, not persisted. A production app would combine a time to live, a refresh strategy and a size cap, and test that combination. Written up in the README, "Search result cache".

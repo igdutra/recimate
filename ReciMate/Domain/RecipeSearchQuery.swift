@@ -4,7 +4,7 @@ import Foundation
 /// A value type; the rules of the Filters sheet (what a term is, that a term can
 /// never sit in both lists) live in its mutating helpers so they are testable
 /// without a view.
-struct RecipeSearchQuery: Equatable, Sendable {
+struct RecipeSearchQuery: Hashable, Sendable {
     /// Matched against the title and every cooking step (the search field). Not a
     /// filter: it never counts as active and `resetFilters()` keeps it.
     var searchText: String

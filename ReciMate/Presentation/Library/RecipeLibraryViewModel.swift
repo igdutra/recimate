@@ -19,6 +19,11 @@ final class RecipeLibraryViewModel {
     /// so a slow reply that arrives late, or work that was cancelled, never shows.
     @ObservationIgnored private var latestSearchNumber = 0
     @ObservationIgnored private var searchTask: Task<Void, Never>?
+    /// Successful results by the query that produced them, so going back to a query
+    /// already searched (clearing the text, turning a filter off) is instant. Rudimentary
+    /// on purpose: no expiry, no size limit, never invalidated, lost with the view model.
+    /// Failures are never stored. See "Search result cache" in the README.
+    @ObservationIgnored private var cachedPreviews: [RecipeSearchQuery: [RecipePreview]] = [:]
     /// How long typing must pause before a search starts. Tests pass `.zero`.
     @ObservationIgnored private let searchDebounce: Duration
 
@@ -83,6 +88,12 @@ final class RecipeLibraryViewModel {
     /// search anyway.
     private func startSearch(debounce: Duration) {
         let searchNumber = beginSearch()
+        // A query searched before is presented at once: no debounce, no spinner. Taking the
+        // number above already dropped any search still in flight.
+        if let previews = cachedPreviews[query] {
+            present(previews, for: query)
+            return
+        }
         searchTask = Task {
             do {
                 try await Task.sleep(for: debounce)
@@ -105,18 +116,23 @@ final class RecipeLibraryViewModel {
             let searchedQuery = query
             let previews = try await service.loadRecipes(matching: searchedQuery)
             guard isCurrent(searchNumber) else { return }
-            viewData = RecipeLibraryViewData(
-                state: .loaded,
-                cards: previews.map { Self.makeCard(from: $0, searchedText: searchedQuery.searchText) },
-                activeFilterCount: query.activeFilterCount,
-                searchedText: searchedQuery.searchText,
-                searchedWithFilters: searchedQuery.hasFilters
-            )
+            cachedPreviews[searchedQuery] = previews
+            present(previews, for: searchedQuery)
         } catch {
             guard isCurrent(searchNumber), !(error is CancellationError) else { return }
             let recipeError = error as? RecipeError ?? .unavailable
             viewData = makeViewData(state: .error(recipeError), cards: viewData.cards)
         }
+    }
+
+    private func present(_ previews: [RecipePreview], for searchedQuery: RecipeSearchQuery) {
+        viewData = RecipeLibraryViewData(
+            state: .loaded,
+            cards: previews.map { Self.makeCard(from: $0, searchedText: searchedQuery.searchText) },
+            activeFilterCount: query.activeFilterCount,
+            searchedText: searchedQuery.searchText,
+            searchedWithFilters: searchedQuery.hasFilters
+        )
     }
 
     private func isCurrent(_ searchNumber: Int) -> Bool {
