@@ -23,14 +23,17 @@ final class RecipeDetailsViewModel {
         guard !viewData.state.isLoaded, !isLoadInFlight else { return }
         isLoadInFlight = true
         defer { isLoadInFlight = false }
-        viewData = RecipeDetailsViewData(state: .loading, content: .placeholder)
+        // `content` is still `.placeholder` here: the guard lets only a first load or a
+        // retry after an error through, and neither ever had content.
+        viewData.state = .loading
         do {
             let recipe = try await service.loadRecipe(id: recipeID)
-            viewData = RecipeDetailsViewData(state: .loaded, content: Self.makeContent(from: recipe))
+            viewData.content = Self.makeContent(from: recipe)
+            viewData.state = .loaded
         } catch let recipeError as RecipeError {
-            viewData = RecipeDetailsViewData(state: .error(recipeError), content: .placeholder)
+            viewData.state = .error(recipeError)
         } catch {
-            viewData = RecipeDetailsViewData(state: .error(.unavailable), content: .placeholder)
+            viewData.state = .error(.unavailable)
         }
     }
 

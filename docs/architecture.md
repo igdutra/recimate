@@ -1,10 +1,10 @@
 # Architecture
 
-Three modules: `API`, `Domain` and `Presentation`. `Presentation` and `API` never see each other; both depend on `Domain` only. `ReciMateApp`, the composition root, is the one place that builds `API` types and hands them to the view models as Domain interfaces.
+Three modules: `API`, `Domain` and `Presentation`. `Presentation` and `API` never see each other; both depend on `Domain` only. `ReciMateApp`, the composition root, is the one place that builds `API` types; it forwards them as Domain interfaces to the views, and each view creates the view model it owns.
 
 Inside `API`, the services reach their data source only through `RecipeAPIClient`, so the bundled-JSON `LocalRecipeAPIClient` can be swapped for a network client without touching a service.
 
-Arrows: thick = creates (composition root), solid = uses, dotted = implements, thin grey = uses a model.
+Arrows: thick = creates, solid = uses, dotted = implements, thin grey = uses a model.
 
 ```mermaid
 flowchart TB
@@ -12,6 +12,7 @@ flowchart TB
 
     subgraph Presentation
         direction LR
+        Root[RootView]
         LibraryView[RecipeLibraryView]
         LibraryVM[RecipeLibraryViewModel]
         FiltersView[FiltersSheetView]
@@ -45,9 +46,9 @@ flowchart TB
         end
     end
 
-    %% Composition root: creates (0-4)
-    App ==> LibraryVM
-    App ==> DetailsVM
+    %% Creates (0-4, and 7)
+    App ==> Root
+    Root ==> LibraryVM
     App ==> RemoteList
     App ==> RemoteDetails
     App ==> LocalClient
@@ -55,7 +56,7 @@ flowchart TB
     %% Presentation (5-10)
     LibraryView --> LibraryVM
     FiltersView --> FiltersVM
-    DetailsView --> DetailsVM
+    DetailsView ==> DetailsVM
     LibraryVM -->|owns| FiltersVM
     LibraryVM --> ListService
     DetailsVM --> DetailsService
@@ -91,11 +92,11 @@ flowchart TB
     classDef api fill:#fce7f3,stroke:#be185d,color:#1f2937
 
     class App root
-    class LibraryView,LibraryVM,FiltersView,FiltersVM,DetailsView,DetailsVM presentation
+    class Root,LibraryView,LibraryVM,FiltersView,FiltersVM,DetailsView,DetailsVM presentation
     class ListService,DetailsService,APIClient protocol
     class Preview,Details,Query,Error model
     class RemoteList,RemoteDetails,LocalClient api
 
-    linkStyle 0,1,2,3,4 stroke:#b45309,stroke-width:2.5px
+    linkStyle 0,1,2,3,4,7 stroke:#b45309,stroke-width:2.5px
     linkStyle 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30 stroke:#9ca3af,stroke-width:1px
 ```

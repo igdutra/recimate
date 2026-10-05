@@ -12,7 +12,9 @@ enum ServingsChoice: Hashable, Sendable {
     static let all: [ServingsChoice] = [.any] + (1...8).map(ServingsChoice.count)
 }
 
-/// Everything the Filters sheet shows, replaced as a whole on every change.
+/// Everything the Filters sheet shows. Unlike the other screens' view data, it is derived
+/// in full from one value, the filters, so it is rebuilt from them on every change: one
+/// action can move several fields (a term added to one list leaves the other).
 struct FiltersSheetViewData: Equatable {
     let isVegetarianOnly: Bool
     let servingsChoice: ServingsChoice
@@ -26,13 +28,14 @@ struct FiltersSheetViewData: Equatable {
 /// The filters of the brief. Changes apply as they happen, so there is no Apply
 /// button; Done only closes the sheet.
 struct FiltersSheetView: View {
-    @State private var viewModel: FiltersViewModel
+    /// Not `@State`: the Library view model owns it and outlives the sheet.
+    private let viewModel: FiltersViewModel
     @State private var includeDraft = ""
     @State private var excludeDraft = ""
     private let router: AppRouter
 
     init(viewModel: FiltersViewModel, router: AppRouter) {
-        _viewModel = State(initialValue: viewModel)
+        self.viewModel = viewModel
         self.router = router
     }
 

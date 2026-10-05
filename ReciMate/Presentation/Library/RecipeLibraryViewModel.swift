@@ -43,7 +43,7 @@ final class RecipeLibraryViewModel {
         guard !viewData.state.isLoaded, !isLoadInFlight else { return }
         isLoadInFlight = true
         defer { isLoadInFlight = false }
-        viewData = makeViewData(state: .loading, cards: viewData.cards)
+        viewData.state = .loading
         let searchNumber = beginSearch()
         await runSearch(number: searchNumber)
     }
@@ -64,7 +64,7 @@ final class RecipeLibraryViewModel {
         updatedQuery.instructionText = query.instructionText
         query = updatedQuery
         // The button reflects the filters at once; the recipes follow with the result.
-        viewData = makeViewData(state: viewData.state, cards: viewData.cards)
+        viewData.activeFilterCount = query.activeFilterCount
         startSearch(debounce: .zero)
     }
 
@@ -109,7 +109,7 @@ final class RecipeLibraryViewModel {
     /// result replaces them. A cancelled or outdated search presents nothing, not even
     /// an error.
     private func runSearch(number searchNumber: Int) async {
-        viewData = makeViewData(state: .loading, cards: viewData.cards)
+        viewData.state = .loading
         do {
             // The query as sent: later keystrokes or filter changes must not leak into
             // what this result says it searched.
@@ -121,32 +121,21 @@ final class RecipeLibraryViewModel {
         } catch {
             guard isCurrent(searchNumber), !(error is CancellationError) else { return }
             let recipeError = error as? RecipeError ?? .unavailable
-            viewData = makeViewData(state: .error(recipeError), cards: viewData.cards)
+            viewData.state = .error(recipeError)
         }
     }
 
+    /// A result changes what was searched and what it found; the filter count already
+    /// follows the live filters (`didChangeFilters`).
     private func present(_ previews: [RecipePreview], for searchedQuery: RecipeSearchQuery) {
-        viewData = RecipeLibraryViewData(
-            state: .loaded,
-            cards: previews.map { Self.makeCard(from: $0, searchedText: searchedQuery.searchText) },
-            activeFilterCount: query.activeFilterCount,
-            searchedText: searchedQuery.searchText,
-            searchedWithFilters: searchedQuery.hasFilters
-        )
+        viewData.cards = previews.map { Self.makeCard(from: $0, searchedText: searchedQuery.searchText) }
+        viewData.searchedText = searchedQuery.searchText
+        viewData.searchedWithFilters = searchedQuery.hasFilters
+        viewData.state = .loaded
     }
 
     private func isCurrent(_ searchNumber: Int) -> Bool {
         searchNumber == latestSearchNumber && !Task.isCancelled
-    }
-
-    private func makeViewData(state: ViewState, cards: [RecipeCardViewData]) -> RecipeLibraryViewData {
-        RecipeLibraryViewData(
-            state: state,
-            cards: cards,
-            activeFilterCount: query.activeFilterCount,
-            searchedText: viewData.searchedText,
-            searchedWithFilters: viewData.searchedWithFilters
-        )
     }
 
     // MARK: - Mapping

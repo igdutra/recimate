@@ -34,7 +34,7 @@ No Swift Packages are used; the app needs only the system frameworks.
 ![Architecture dependency diagram](docs/assets/architecture.png)
 
 - Three modules: `Presentation`, `Domain` and `API`. `Presentation` and `API` never see each other; both depend on `Domain` only.
-- `ReciMateApp`, the composition root, is the one place that builds `API` types and hands them to the view models as Domain protocols.
+- `ReciMateApp`, the composition root, is the one place that builds `API` types; it forwards them as Domain protocols to the views, and each view creates the view model it owns.
 - Inside `API`, the services reach their data only through `RecipeAPIClient`, which knows nothing about recipes.
 - The three live in one app target on purpose: at this size, separate targets would add setup without adding safety.
 - Because no module reaches into another, each can be split into its own framework or Swift package with little more than moving files.
@@ -124,7 +124,7 @@ Seven choices made on purpose. The reasoning, the rejected options and the rest 
 - **Native controls first**
   - `.searchable`, `ContentUnavailableView`, a `Form` sheet, a segmented `Picker` and the system back button: iOS 26 draws them in its own style, and none is rebuilt by hand.
 - **Views get finished view data**
-  - Immutable, `Equatable` and already formatted, built once per load by a static mapper on the view model, so views hold no logic and SwiftUI skips unchanged cards.
+  - `Equatable`, already formatted and written only by the view model, built once per load by a static mapper, so views hold no logic and SwiftUI skips unchanged cards.
 
 
 ## Assumptions and limitations

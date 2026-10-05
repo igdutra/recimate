@@ -6,8 +6,10 @@ import Foundation
 enum RecipeError: Error, Equatable, Sendable {
     /// The recipe does not exist.
     case notFound
-    /// The data arrived but does not decode. `reason` is the decoder's description
-    /// of what was wrong (the missing key, the wrong type, the path to it).
+    /// The data arrived but does not decode. `reason` is `String(describing:)` of the
+    /// `DecodingError`: the missing key, the wrong type and its path, or "not valid JSON".
+    /// Not `localizedDescription`, which says only "couldn't be read". A `String`, not the
+    /// error itself, keeps this type `Equatable` and `Sendable`. Never shown to the person.
     case invalidData(reason: String)
     /// Anything else went wrong. The cause is not the data, so retrying makes sense.
     case unavailable

@@ -2,17 +2,18 @@ import SwiftUI
 
 // MARK: - View data
 
-/// Everything the Library screen shows, replaced as a whole on every change.
+/// Everything the Library screen shows. The view model changes the fields that changed;
+/// views only read it (`private(set)` on the view model).
 struct RecipeLibraryViewData: Equatable {
-    let state: ViewState
-    let cards: [RecipeCardViewData]
+    var state: ViewState
+    var cards: [RecipeCardViewData]
     /// How many filters are on (search text is not a filter); drives the Filters button.
-    let activeFilterCount: Int
+    var activeFilterCount: Int
     /// The trimmed text of the search that produced `cards`, not the live field, which
     /// may already hold newer text that has not been searched yet.
-    let searchedText: String
+    var searchedText: String
     /// Whether that search had filters on, not the live filters.
-    let searchedWithFilters: Bool
+    var searchedWithFilters: Bool
 
     /// A finished search with nothing to show, whether the text, the filters or both
     /// caused it.
@@ -44,13 +45,14 @@ enum NoResultsCause: Equatable {
 // MARK: - RecipeLibraryView
 
 struct RecipeLibraryView: View {
-    @State private var viewModel: RecipeLibraryViewModel
+    /// Not `@State`: the composition root owns it, because the Filters sheet shares it.
+    private let viewModel: RecipeLibraryViewModel
     @State private var searchText: String
     private let router: AppRouter
 
     /// `searchText` is only for previews, to show the field already filled.
     init(viewModel: RecipeLibraryViewModel, router: AppRouter, searchText: String = "") {
-        _viewModel = State(initialValue: viewModel)
+        self.viewModel = viewModel
         _searchText = State(initialValue: searchText)
         self.router = router
     }

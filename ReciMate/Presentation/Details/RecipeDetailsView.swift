@@ -3,10 +3,11 @@ import SwiftUI
 // MARK: - View data
 
 /// What the Details screen shows: where its data is, and the page once loaded.
+/// The view model changes the fields that changed; views only read it.
 struct RecipeDetailsViewData: Equatable {
-    let state: ViewState
-    /// `.placeholder` until loaded, and again after an error; the state overlay covers it.
-    let content: RecipeDetailsContentViewData
+    var state: ViewState
+    /// `.placeholder` until loaded; the state overlay covers it.
+    var content: RecipeDetailsContentViewData
 }
 
 /// The loaded page, already formatted for display.
@@ -49,10 +50,14 @@ struct StepRowViewData: Identifiable, Equatable {
 // MARK: - RecipeDetailsView
 
 struct RecipeDetailsView: View {
+    /// Owned by this view and created from the collaborators it is given. `State` keeps the
+    /// first instance; one built by a later `init` of this view is discarded, which is cheap
+    /// because the view model's `init` only stores its arguments (loading starts in `.task`).
+    /// A new route is a new view, so `recipeID` never changes under a kept view model.
     @State private var viewModel: RecipeDetailsViewModel
 
-    init(viewModel: RecipeDetailsViewModel) {
-        _viewModel = State(initialValue: viewModel)
+    init(recipeID: String, service: any RecipeDetailsService) {
+        _viewModel = State(initialValue: RecipeDetailsViewModel(recipeID: recipeID, service: service))
         Self.styleSegmentedControl()
     }
 
@@ -302,49 +307,43 @@ struct StepRowView: View {
 
 #Preview("Details, loaded") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(recipeID: "petit-gateau", service: PreviewRecipeDetailsService()))
+        RecipeDetailsView(recipeID: "petit-gateau", service: PreviewRecipeDetailsService())
     }
 }
 
 #Preview("Details, long title and step, not vegetarian") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(recipeID: "long", service: PreviewRecipeDetailsService(recipe: .previewSamples[1])))
+        RecipeDetailsView(recipeID: "long", service: PreviewRecipeDetailsService(recipe: .previewSamples[1]))
     }
 }
 
 #Preview("Details, no image") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(recipeID: "no-image", service: PreviewRecipeDetailsService(recipe: .previewSamples[2])))
+        RecipeDetailsView(recipeID: "no-image", service: PreviewRecipeDetailsService(recipe: .previewSamples[2]))
     }
 }
 
 #Preview("Details, failing image") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(recipeID: "failing-image", service: PreviewRecipeDetailsService(recipe: .previewSamples[3])))
+        RecipeDetailsView(recipeID: "failing-image", service: PreviewRecipeDetailsService(recipe: .previewSamples[3]))
     }
 }
 
 #Preview("Details, loading") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(
-            recipeID: "petit-gateau",
-            service: PreviewRecipeDetailsService(outcome: .loading)
-        ))
+        RecipeDetailsView(recipeID: "petit-gateau", service: PreviewRecipeDetailsService(outcome: .loading))
     }
 }
 
 #Preview("Details, error") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(
-            recipeID: "beef-tacos",
-            service: PreviewRecipeDetailsService(outcome: .failed(.notFound))
-        ))
+        RecipeDetailsView(recipeID: "beef-tacos", service: PreviewRecipeDetailsService(outcome: .failed(.notFound)))
     }
 }
 
 #Preview("Details, large Dynamic Type") {
     NavigationStack {
-        RecipeDetailsView(viewModel: RecipeDetailsViewModel(recipeID: "petit-gateau", service: PreviewRecipeDetailsService(recipe: .previewSamples[1])))
+        RecipeDetailsView(recipeID: "petit-gateau", service: PreviewRecipeDetailsService(recipe: .previewSamples[1]))
     }
     .dynamicTypeSize(.accessibility3)
 }

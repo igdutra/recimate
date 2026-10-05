@@ -8,6 +8,7 @@
 import SwiftUI
 
 /// Compositon Root:  The only place an `API/` type is built; `Presentation/` sees `Domain` only.
+/// It builds the services and forwards them; each view model is created by the view that owns it.
 @main
 struct ReciMateApp: App {
     /// Placeholder. `LocalRecipeAPIClient` ignores scheme and host, so this is
@@ -20,20 +21,18 @@ struct ReciMateApp: App {
         WindowGroup {
             RootView(
                 router: router,
-                libraryViewModel: Self.makeLibraryViewModel(),
-                makeDetailsViewModel: Self.makeDetailsViewModel
+                listService: Self.makeListService(),
+                detailsService: Self.makeDetailsService()
             )
         }
     }
 
-    static func makeLibraryViewModel() -> RecipeLibraryViewModel {
-        let service = RemoteRecipeListService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
-        return RecipeLibraryViewModel(service: service)
+    static func makeListService() -> any RecipeListService {
+        RemoteRecipeListService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
     }
 
-    static func makeDetailsViewModel(recipeID: String) -> RecipeDetailsViewModel {
-        let service = RemoteRecipeDetailsService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
-        return RecipeDetailsViewModel(recipeID: recipeID, service: service)
+    static func makeDetailsService() -> any RecipeDetailsService {
+        RemoteRecipeDetailsService(baseURL: apiBaseURL, client: LocalRecipeAPIClient())
     }
 }
 
@@ -44,14 +43,14 @@ struct ReciMateApp: App {
 #Preview("Root, local client") {
     RootView(
         router: AppRouter(),
-        libraryViewModel: ReciMateApp.makeLibraryViewModel(),
-        makeDetailsViewModel: ReciMateApp.makeDetailsViewModel
+        listService: ReciMateApp.makeListService(),
+        detailsService: ReciMateApp.makeDetailsService()
     )
 }
 
 #Preview("Details, local client") {
     NavigationStack {
-        RecipeDetailsView(viewModel: ReciMateApp.makeDetailsViewModel(recipeID: "petit-gateau"))
+        RecipeDetailsView(recipeID: "petit-gateau", service: ReciMateApp.makeDetailsService())
     }
 }
 #endif
