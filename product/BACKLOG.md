@@ -34,10 +34,19 @@ test; with a plain `Task` the request registers one main-actor turn later.
 
 ## Search by title / description
 
-Free-text search over recipe title and description. The brief only asks for
-search within instruction text (S6), so this is extra scope. Spec 008's search
-field searches instructions only, and its prompt says so. If wanted, it needs its
-own requirement ID before moving to the roadmap.
+Free-text search over recipe description. Title search was promoted to the
+roadmap (milestone D follow-up): the brief asks for instruction search (S6) on the
+endpoint, but a search field that cannot find a recipe by name fails the stated
+"logical and intuitive user experience" criterion, which needs no new ID. Only
+description search is still backlog.
+
+## Matching step in search results
+
+Show the part of the instructions that matched (the step, or a snippet around the
+text) on a result card, so it is clear why a recipe was found. Needs the list
+response to carry a matched snippet, which makes the list and search shapes differ
+(the drift the spec 008 naming note discusses), and a card layout for it. Worth it
+mostly for instruction matches once title search exists.
 
 ## Features that need new recipe data
 
