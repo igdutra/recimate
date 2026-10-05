@@ -14,8 +14,10 @@ struct LocalRecipeSearchServerTests {
     @Test(arguments: [
         RecipeSearchQuery.empty,
         RecipeSearchQuery(instructionText: "mac & cheese"),
+        RecipeSearchQuery(searchText: "pétit & gâteau"),
         RecipeSearchQuery(onlyVegetarian: true, servings: 2),
         RecipeSearchQuery(
+            searchText: "roast",
             instructionText: "bake",
             onlyVegetarian: true,
             servings: 6,
@@ -39,6 +41,16 @@ struct LocalRecipeSearchServerTests {
         (RecipeSearchQuery(instructionText: "brown the beef"), ["stew"]),
         (RecipeSearchQuery(instructionText: "gently serve"), []),
         (RecipeSearchQuery(instructionText: "crème"), []),
+        // Search text: a phrase against the title or any step, ignoring case and accents.
+        (RecipeSearchQuery(searchText: "STEW"), ["stew"]),
+        (RecipeSearchQuery(searchText: "  brea "), ["bread"]),
+        (RecipeSearchQuery(searchText: "ramekins"), ["soup"]),
+        (RecipeSearchQuery(searchText: "s"), ["soup", "stew"]),
+        (RecipeSearchQuery(searchText: "nothing here"), []),
+        (RecipeSearchQuery(searchText: "brown beef"), []),
+        // Search text and instruction text are both conditions.
+        (RecipeSearchQuery(searchText: "stew", instructionText: "stock"), ["stew"]),
+        (RecipeSearchQuery(searchText: "stew", instructionText: "ramekins"), []),
         // Include: AND, contains on names, ignoring case and accents.
         (RecipeSearchQuery(includedIngredients: ["cream"]), ["soup", "bread"]),
         (RecipeSearchQuery(includedIngredients: ["CREME FRAICHE"]), ["stew"]),
@@ -65,6 +77,20 @@ struct LocalRecipeSearchServerTests {
 
     @Test func search_withNoFilters_returnsEveryRecipeInCatalogOrder() throws {
         #expect(try searchedIDs(for: .empty) == ["soup", "stew", "bread", "bare"])
+    }
+
+    // MARK: - Ranking
+
+    @Test func search_withSearchText_listsTitleMatchesFirstThenStepOnlyMatches() throws {
+        // "roast" is in a step of `chicken` and `salmon`, which come before `couscous`
+        // (title match) in catalog order.
+        #expect(try searchedIDs(for: RecipeSearchQuery(searchText: "roast"), catalogData: Self.rankingCatalogData)
+                == ["couscous", "chicken", "salmon"])
+    }
+
+    @Test func search_withInstructionTextOnly_keepsCatalogOrder() throws {
+        #expect(try searchedIDs(for: RecipeSearchQuery(instructionText: "roast"), catalogData: Self.rankingCatalogData)
+                == ["chicken", "salmon", "couscous"])
     }
 
     // MARK: - Recipes with no data (AC14)
@@ -107,8 +133,8 @@ struct LocalRecipeSearchServerTests {
 // MARK: - Helpers
 
 private extension LocalRecipeSearchServerTests {
-    func searchedIDs(for query: RecipeSearchQuery) throws -> [String] {
-        let server = LocalRecipeSearchServer(catalogData: Self.catalogData)
+    func searchedIDs(for query: RecipeSearchQuery, catalogData: Data = Self.catalogData) throws -> [String] {
+        let server = LocalRecipeSearchServer(catalogData: catalogData)
         let url = RecipeEndpoint.list(query: query).url(baseURL: baseURL)
         let previews = try JSONDecoder().decode([RecipePreviewDTO].self, from: server.response(for: url))
         return previews.map(\.id)
@@ -133,6 +159,22 @@ private extension LocalRecipeSearchServerTests {
             steps: ["Knead the dough."]
         ),
         makeCatalogRecord(id: "bare", title: "Bare", servings: 3, isVegetarian: true, ingredients: nil, steps: nil),
+    ])
+
+    /// Step matches come before the title match in catalog order, to observe ranking.
+    static let rankingCatalogData = makeJSONData([
+        makeCatalogRecord(
+            id: "chicken", title: "Chicken", servings: 4, isVegetarian: false,
+            ingredients: ["Chicken"], steps: ["Roast for an hour."]
+        ),
+        makeCatalogRecord(
+            id: "salmon", title: "Salmon", servings: 2, isVegetarian: false,
+            ingredients: ["Salmon"], steps: ["Roast until flaky."]
+        ),
+        makeCatalogRecord(
+            id: "couscous", title: "Roasted Couscous", servings: 4, isVegetarian: true,
+            ingredients: ["Couscous"], steps: ["Roast the vegetables."]
+        ),
     ])
 
     static func makeCatalogRecord(

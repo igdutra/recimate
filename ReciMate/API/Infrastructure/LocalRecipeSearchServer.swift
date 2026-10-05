@@ -8,13 +8,15 @@ import Foundation
 /// Matching rules (documented in the spec 008 notes):
 /// - Instruction text: one phrase, case- and diacritic-insensitive "contains",
 ///   against any single step.
+/// - Search text (`q`): the same phrase rule against the title or any single step.
 /// - Include terms: AND. Exclude terms: a recipe is dropped if any matches. Both
 ///   are "contains" on ingredient names, ignoring case and accents.
 /// - The same term included and excluded matches nothing (it falls out of the rules).
 /// - A recipe with no ingredient or step data fails an include filter and passes an
 ///   exclude filter.
 /// - Servings is exact; a value below 1 matches nothing.
-/// - Vegetarian off is no filter. Results keep catalog order.
+/// - Vegetarian off is no filter. Results keep catalog order, except that with search
+///   text the recipes whose title matches come first (each group in catalog order).
 struct LocalRecipeSearchServer: Sendable {
     let catalogData: Data
 
@@ -23,7 +25,14 @@ struct LocalRecipeSearchServer: Sendable {
     func response(for url: URL) throws -> Data {
         let catalog = try JSONDecoder().decode([CatalogRecipe].self, from: catalogData)
         let query = Self.query(from: url)
-        let previews = catalog.filter { $0.matches(query) }.map(\.preview)
+        var matches = catalog.filter { $0.matches(query) }
+        if !SearchTextMatching.folded(query.searchText).isEmpty {
+            // Ranking belongs to the search engine: a stable partition, titles first.
+            let titleMatches = matches.filter { $0.matchesTitle(query.searchText) }
+            let stepOnlyMatches = matches.filter { !$0.matchesTitle(query.searchText) }
+            matches = titleMatches + stepOnlyMatches
+        }
+        let previews = matches.map(\.preview)
         return try JSONEncoder().encode(previews)
     }
 
@@ -40,6 +49,7 @@ struct LocalRecipeSearchServer: Sendable {
                 .filter { !$0.isEmpty }
         }
         return RecipeSearchQuery(
+            searchText: values(named: "q").first ?? "",
             instructionText: values(named: "instructions").first ?? "",
             onlyVegetarian: values(named: "vegetarian").first == "true",
             servings: values(named: "servings").first.flatMap { Int($0) },
@@ -70,9 +80,18 @@ private struct CatalogRecipe: Decodable {
         cookingInstructions = try container.decodeIfPresent([CookingInstructionDTO].self, forKey: .cookingInstructions) ?? []
     }
 
+    func matchesTitle(_ text: String) -> Bool {
+        SearchTextMatching.text(preview.title, contains: text)
+    }
+
     func matches(_ query: RecipeSearchQuery) -> Bool {
         if query.onlyVegetarian, !preview.dietaryAttributes.isVegetarian { return false }
         if let servings = query.servings, servings < 1 || preview.servings != servings { return false }
+        if !SearchTextMatching.folded(query.searchText).isEmpty,
+           !matchesTitle(query.searchText),
+           !cookingInstructions.contains(where: { SearchTextMatching.text($0.text, contains: query.searchText) }) {
+            return false
+        }
         if !SearchTextMatching.folded(query.instructionText).isEmpty,
            !cookingInstructions.contains(where: { SearchTextMatching.text($0.text, contains: query.instructionText) }) {
             return false

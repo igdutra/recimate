@@ -34,8 +34,8 @@ test; with a plain `Task` the request registers one main-actor turn later.
 
 ## Search by title / description
 
-Free-text search over recipe description. Title search was promoted to the
-roadmap (milestone D follow-up): the brief asks for instruction search (S6) on the
+Free-text search over recipe description. Title search is done (spec 010, milestone
+D follow-up); it was promoted to the roadmap because the brief asks for instruction search (S6) on the
 endpoint, but a search field that cannot find a recipe by name fails the stated
 "logical and intuitive user experience" criterion, which needs no new ID. Only
 description search is still backlog.

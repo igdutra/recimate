@@ -21,6 +21,7 @@ struct RecipeEndpointTests {
         (RecipeSearchQuery(onlyVegetarian: true), "?vegetarian=true"),
         (RecipeSearchQuery(servings: 4), "?servings=4"),
         (RecipeSearchQuery(instructionText: "ramekins"), "?instructions=ramekins"),
+        (RecipeSearchQuery(searchText: "pet"), "?q=pet"),
         (RecipeSearchQuery(includedIngredients: ["eggs"]), "?include=eggs"),
         (RecipeSearchQuery(excludedIngredients: ["nuts"]), "?exclude=nuts"),
     ])
@@ -40,6 +41,18 @@ struct RecipeEndpointTests {
 
         #expect(RecipeEndpoint.list(query: query).url(baseURL: baseURL).absoluteString
                 == "https://api.recimate.example/recipes?vegetarian=true&servings=2&include=cream&include=tomato&exclude=mushrooms&exclude=nuts&instructions=bake")
+    }
+
+    @Test func list_url_sendsSearchTextAndInstructionTextTogether() {
+        let query = RecipeSearchQuery(searchText: "roast", instructionText: "bake")
+
+        #expect(RecipeEndpoint.list(query: query).url(baseURL: baseURL).absoluteString
+                == "https://api.recimate.example/recipes?instructions=bake&q=roast")
+    }
+
+    @Test func list_url_dropsBlankSearchText() {
+        #expect(RecipeEndpoint.list(query: RecipeSearchQuery(searchText: "  \n")).url(baseURL: baseURL).absoluteString
+                == "https://api.recimate.example/recipes")
     }
 
     @Test func list_url_dropsBlankValues() {

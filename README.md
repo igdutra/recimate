@@ -4,7 +4,7 @@
 
 # ReciMate 🍋👨‍🍳 — Your recipe companion
 
-ReciMate is a native iOS recipe browser application built with Swift and SwiftUI. It demonstrates modern iOS development practices through a clean recipe search and filtering interface powered by local JSON data, with support for dietary preferences, ingredient filtering, and instruction search. The app serves as a showcase of SwiftUI idioms, MVVM architecture, and thoughtful error handling in a production-ready iOS application.
+ReciMate is a native iOS recipe browser application built with Swift and SwiftUI. It demonstrates modern iOS development practices through a clean recipe search and filtering interface powered by local JSON data, with support for dietary preferences, ingredient filtering, and title and instruction search. The app serves as a showcase of SwiftUI idioms, MVVM architecture, and thoughtful error handling in a production-ready iOS application.
 
 ## AI workflow
 

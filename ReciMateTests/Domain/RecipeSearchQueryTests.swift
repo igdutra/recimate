@@ -111,6 +111,13 @@ struct RecipeSearchQueryTests {
         #expect(!query.hasFilters)
     }
 
+    @Test func activeFilterCount_ignoresTitleAndStepSearchText() {
+        let query = RecipeSearchQuery(searchText: "pet", instructionText: "ramekins")
+
+        #expect(query.activeFilterCount == 0)
+        #expect(!query.hasFilters)
+    }
+
     // MARK: - Reset
 
     @Test func resetFilters_clearsEveryFilterAndKeepsTheText() {
@@ -121,6 +128,14 @@ struct RecipeSearchQueryTests {
         query.resetFilters()
 
         #expect(query == RecipeSearchQuery(instructionText: "ramekins"))
+    }
+
+    @Test func resetFilters_keepsTheSearchText() {
+        var query = RecipeSearchQuery(searchText: "pet", onlyVegetarian: true, servings: 4)
+
+        query.resetFilters()
+
+        #expect(query == RecipeSearchQuery(searchText: "pet"))
     }
 
     // MARK: - Text matching

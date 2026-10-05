@@ -9,6 +9,8 @@ struct RecipeCardViewData: Identifiable, Equatable {
     let servingsLabel: String
     let isVegetarian: Bool
     let imageURL: URL?
+    /// The search found this recipe in its steps and not in its title.
+    let isStepOnlyMatch: Bool
 }
 
 // MARK: - RecipeCardView
@@ -46,6 +48,17 @@ struct RecipeCardView: View {
             }
             // Same height with or without the leaf, so cards in a row match.
             .frame(minHeight: VegetarianMarkView.iconSize)
+            if card.isStepOnlyMatch {
+                HStack(spacing: 4) {
+                    Image(systemName: "list.bullet")
+                        .font(.footnote)
+                        .foregroundStyle(Color.accentColor)
+                        .accessibilityHidden(true)
+                    Text("Found in the steps")
+                        .font(.footnote)
+                        .foregroundStyle(Color.inkSecondary)
+                }
+            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -65,5 +78,12 @@ struct RecipeCardView: View {
         }
     }
     .padding(20)
+}
+
+#Preview("Card, found in the steps") {
+    // "roast" is not in this title, so the card shows the caption.
+    RecipeCardView(card: RecipeLibraryViewModel.makeCard(from: RecipePreview.previewSamples[2], searchedText: "roast"))
+        .frame(width: 180)
+        .padding(20)
 }
 #endif

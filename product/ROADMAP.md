@@ -31,7 +31,7 @@ F Polish + README
 | A | Foundation + Data Contract | D1, D2 | 001 | done |
 | B | Recipe Data Layer | D3, E3 (data side), P1 | 002 | done |
 | C | Recipe Library | V1, V2, V3 | 003 (design prototype for C, D, E), 004 (loaded state) | loaded, loading and error states done (004, 009) |
-| D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008; follow-up spec pending (see D below) | built; simulator walk pending; follow-up not started |
+| D | Search + Filtering | S1–S6, E3 (filter side), E1 (no-results half) | 008, 010 | built; simulator walk pending; follow-up (010) built, typed simulator check pending |
 | E | Recipe Details | E2, E1 (error half, Library and Details) | 006 (loaded state), 009 (loading and error) | loaded state done (006); loading and error states done (009) |
 | F | Polish + README | R1–R6, P2 | | not started |
 
@@ -77,14 +77,14 @@ plus the minimal UI that drives it (spec 008):
   recipes with unknown ingredient data, what "servings" means) are decided and
   documented (E3).
 - The Library's no-results state (E1), using the system `ContentUnavailableView.search`.
-- **Follow-up spec, before F (no number yet): the search field finds titles too.**
+- **Follow-up spec 010 (built): the search field finds titles too.**
   Spec 008 made the field search instruction text only, a literal reading of S6.
   Trying it showed the cost: typing a recipe's name ("Pet") shows "No Results" while
   the recipe is on screen, which fails "logical and intuitive user experience", a
   stated judging criterion. The fix is one field that matches the title or any
   instruction step. The endpoint keeps its `instructions` filter exactly as S6 says
   and gains one combined text parameter that the field uses; the prompt, the
-  matching rule, the fake server, the tests and the notes follow. Small. Order:
+  matching rule, the fake server, the tests and the notes follow. Small. Done
   after the shared error pass (milestone E, mandatory), before F.
 - Nothing else. Chips, search tokens, servings ranges, an Apply button with a
   result count, showing the matching step in results, description search and

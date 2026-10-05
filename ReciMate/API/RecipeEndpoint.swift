@@ -10,7 +10,8 @@ enum RecipeEndpoint: Sendable {
     /// `servings=<n>`,
     ///  repeated `include=<term>`,
     ///  repeated`exclude=<term>`
-    ///  and `instructions=<text>`.
+    ///  `instructions=<text>` (cooking steps only)
+    ///  and `q=<text>` (title or any cooking step).
     ///  With no filters it lists every recipe.
     case list(query: RecipeSearchQuery)
     /// `GET /recipes/{id}`, one member of the collection.
@@ -32,11 +33,18 @@ enum RecipeEndpoint: Sendable {
     // MARK: - Query
 
     /// Blank values are dropped here, in one place, so a blank search field or an
-    /// empty term never reaches the server. `URLComponents` percent-encodes spaces,
-    /// accents and `&` inside a value. Limitation: it leaves a `+` as is, which a
-    /// real server could read as a space.
+    /// empty term never reaches the server. `appending(queryItems:)` percent-encodes
+    /// spaces, accents and `&` inside a value. Limitation: it leaves a `+` as is,
+    /// which a real server could read as a space.
     private static func listURL(for query: RecipeSearchQuery, baseURL: URL) -> URL {
         let collectionURL = baseURL.appending(component: "recipes")
+        let items = queryItems(for: query)
+        // With no items `appending(queryItems:)` would leave a trailing `?`.
+        guard !items.isEmpty else { return collectionURL }
+        return collectionURL.appending(queryItems: items)
+    }
+
+    private static func queryItems(for query: RecipeSearchQuery) -> [URLQueryItem] {
         var queryItems: [URLQueryItem] = []
         if query.onlyVegetarian {
             queryItems.append(URLQueryItem(name: "vegetarian", value: "true"))
@@ -53,11 +61,10 @@ enum RecipeEndpoint: Sendable {
         for text in trimmedNonBlank([query.instructionText]) {
             queryItems.append(URLQueryItem(name: "instructions", value: text))
         }
-        guard !queryItems.isEmpty,
-              var components = URLComponents(url: collectionURL, resolvingAgainstBaseURL: false)
-        else { return collectionURL }
-        components.queryItems = queryItems
-        return components.url ?? collectionURL
+        for text in trimmedNonBlank([query.searchText]) {
+            queryItems.append(URLQueryItem(name: "q", value: text))
+        }
+        return queryItems
     }
 
     private static func trimmedNonBlank(_ values: [String]) -> [String] {

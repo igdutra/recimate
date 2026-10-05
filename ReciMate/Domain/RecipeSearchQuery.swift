@@ -1,12 +1,15 @@
 import Foundation
 
-/// What the person asked for: instruction text plus the four filters of the brief.
+/// What the person asked for: search text plus the four filters of the brief.
 /// A value type; the rules of the Filters sheet (what a term is, that a term can
 /// never sit in both lists) live in its mutating helpers so they are testable
 /// without a view.
 struct RecipeSearchQuery: Equatable, Sendable {
-    /// Matched against the cooking steps. Search text is not a filter: it never
-    /// counts as active and `resetFilters()` keeps it.
+    /// Matched against the title and every cooking step (the search field). Not a
+    /// filter: it never counts as active and `resetFilters()` keeps it.
+    var searchText: String
+    /// Matched against the cooking steps only (S6, the `instructions` query item).
+    /// Not used by the UI. Not a filter either.
     var instructionText: String
     /// Off means "no filter", never "non-vegetarian only".
     var onlyVegetarian: Bool
@@ -19,12 +22,14 @@ struct RecipeSearchQuery: Equatable, Sendable {
     static let empty = RecipeSearchQuery()
 
     init(
+        searchText: String = "",
         instructionText: String = "",
         onlyVegetarian: Bool = false,
         servings: Int? = nil,
         includedIngredients: [String] = [],
         excludedIngredients: [String] = []
     ) {
+        self.searchText = searchText
         self.instructionText = instructionText
         self.onlyVegetarian = onlyVegetarian
         self.servings = servings

@@ -44,7 +44,7 @@ struct LocalRecipeAPIClient: RecipeAPIClient {
     }
 }
 
-// MARK: Playground
+// MARK: - Playground
 
 // Verify that integration works!
 #Playground("Recipe data layer") {

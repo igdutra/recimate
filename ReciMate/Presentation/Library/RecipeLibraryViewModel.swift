@@ -5,7 +5,9 @@ import Observation
 @Observable
 final class RecipeLibraryViewModel {
     let filtersViewModel: FiltersViewModel
-    private(set) var viewData = RecipeLibraryViewData(state: .loading, cards: [], activeFilterCount: 0)
+    private(set) var viewData = RecipeLibraryViewData(
+        state: .loading, cards: [], activeFilterCount: 0, searchedText: "", searchedWithFilters: false
+    )
 
     @ObservationIgnored private let service: any RecipeListService
     /// The one query the screen is showing: the search text plus the sheet's filters.
@@ -45,19 +47,26 @@ final class RecipeLibraryViewModel {
     /// typing pauses (debounce, not throttle: nobody wants the results for every prefix).
     func didChangeSearch(_ searchText: String) {
         let trimmedText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmedText != query.instructionText else { return }
-        query.instructionText = trimmedText
+        guard trimmedText != query.searchText else { return }
+        query.searchText = trimmedText
         startSearch(debounce: searchDebounce)
     }
 
     /// The sheet reports the filters only; the search text stays as typed.
     private func didChangeFilters(_ filters: RecipeSearchQuery) {
         var updatedQuery = filters
+        updatedQuery.searchText = query.searchText
         updatedQuery.instructionText = query.instructionText
         query = updatedQuery
         // The button reflects the filters at once; the recipes follow with the result.
         viewData = makeViewData(state: viewData.state, cards: viewData.cards)
         startSearch(debounce: .zero)
+    }
+
+    /// Turns every filter off; the search text stays. The filters view model reports the
+    /// change through `onChange`, which searches again.
+    func clearFilters() {
+        filtersViewModel.reset()
     }
 
     // MARK: - Searching
@@ -89,9 +98,18 @@ final class RecipeLibraryViewModel {
     /// not even an error.
     private func runSearch(number searchNumber: Int) async {
         do {
-            let previews = try await service.loadRecipes(matching: query)
+            // The query as sent: later keystrokes or filter changes must not leak into
+            // what this result says it searched.
+            let searchedQuery = query
+            let previews = try await service.loadRecipes(matching: searchedQuery)
             guard isCurrent(searchNumber) else { return }
-            viewData = makeViewData(state: .loaded, cards: previews.map(Self.makeCard))
+            viewData = RecipeLibraryViewData(
+                state: .loaded,
+                cards: previews.map { Self.makeCard(from: $0, searchedText: searchedQuery.searchText) },
+                activeFilterCount: query.activeFilterCount,
+                searchedText: searchedQuery.searchText,
+                searchedWithFilters: searchedQuery.hasFilters
+            )
         } catch {
             guard isCurrent(searchNumber), !(error is CancellationError) else { return }
             let recipeError = error as? RecipeError ?? .unavailable
@@ -104,19 +122,30 @@ final class RecipeLibraryViewModel {
     }
 
     private func makeViewData(state: ViewState, cards: [RecipeCardViewData]) -> RecipeLibraryViewData {
-        RecipeLibraryViewData(state: state, cards: cards, activeFilterCount: query.activeFilterCount)
+        RecipeLibraryViewData(
+            state: state,
+            cards: cards,
+            activeFilterCount: query.activeFilterCount,
+            searchedText: viewData.searchedText,
+            searchedWithFilters: viewData.searchedWithFilters
+        )
     }
 
     // MARK: - Mapping
 
     /// Builds a card's view data from a domain preview, once per recipe per load.
-    static func makeCard(from preview: RecipePreview) -> RecipeCardViewData {
-        RecipeCardViewData(
+    /// A card is a step-only match when the searched text is not blank and the title does
+    /// not contain it. Assumption: this is the same rule the fake server uses; a real
+    /// backend with its own matching would have to return where the text matched.
+    static func makeCard(from preview: RecipePreview, searchedText: String = "") -> RecipeCardViewData {
+        let hasSearchedText = !SearchTextMatching.folded(searchedText).isEmpty
+        return RecipeCardViewData(
             id: preview.id,
             title: preview.title,
             servingsLabel: ServingsLabelFormatter.label(forServingCount: preview.servings),
             isVegetarian: preview.dietaryAttributes.isVegetarian,
-            imageURL: preview.imageURL
+            imageURL: preview.imageURL,
+            isStepOnlyMatch: hasSearchedText && !SearchTextMatching.text(preview.title, contains: searchedText)
         )
     }
 }

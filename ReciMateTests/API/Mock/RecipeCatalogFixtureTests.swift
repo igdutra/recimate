@@ -37,6 +37,18 @@ struct RecipeCatalogFixtureTests {
         ),
         (RecipeSearchQuery(instructionText: "ramekins"), ["petit-gateau"]),
         (RecipeSearchQuery(instructionText: "RAMEKINS"), ["petit-gateau"]),
+        (
+            RecipeSearchQuery(searchText: "roast"),
+            ["roasted-vegetable-couscous", "lemon-herb-chicken", "sheet-pan-salmon"]
+        ),
+        (
+            RecipeSearchQuery(instructionText: "roast"),
+            ["lemon-herb-chicken", "sheet-pan-salmon", "roasted-vegetable-couscous"]
+        ),
+        (RecipeSearchQuery(searchText: "Pet"), ["petit-gateau"]),
+        (RecipeSearchQuery(searchText: "gateau"), ["petit-gateau"]),
+        (RecipeSearchQuery(searchText: "ramekins"), ["petit-gateau"]),
+        (RecipeSearchQuery(searchText: "lemon chicken"), []),
         (RecipeSearchQuery(servings: 2), ["creamy-tomato-pasta", "mushroom-risotto"]),
         (RecipeSearchQuery(onlyVegetarian: true, servings: 2), ["creamy-tomato-pasta", "mushroom-risotto"]),
         (RecipeSearchQuery(onlyVegetarian: true, servings: 5), []),
