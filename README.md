@@ -3,7 +3,7 @@
 ReciMate is a native iOS recipe browser built with Swift and SwiftUI. It loads recipes from a local JSON mock API and lets you search titles and cooking steps, and filter by vegetarian, servings, and ingredients to include or exclude. Built with MVVM, clear layer boundaries and explicit loading, error and no-results states.
 
 <p align="center">
-  <img src="docs/app-icon.png" alt="ReciMate app icon" width="120">
+  <img src="docs/assets/app-icon.png" alt="ReciMate app icon" width="120">
 </p>
 
 
@@ -31,7 +31,7 @@ No Swift Packages are used; the app needs only the system frameworks.
 
 ## Architecture overview
 
-![Architecture dependency diagram](docs/architecture.png)
+![Architecture dependency diagram](docs/assets/architecture.png)
 
 - Three modules: `Presentation`, `Domain` and `API`. `Presentation` and `API` never see each other; both depend on `Domain` only.
 - `ReciMateApp`, the composition root, is the one place that builds `API` types and hands them to the view models as Domain protocols.
@@ -40,6 +40,24 @@ No Swift Packages are used; the app needs only the system frameworks.
 - Because no module reaches into another, each can be split into its own framework or Swift package with little more than moving files.
 
 The diagram is a dependency diagram drawn from the code itself: every arrow is a type that creates, owns, implements or uses another. Its Mermaid source is in [`docs/architecture.md`](docs/architecture.md).
+
+### Clean Architecture, sized to the app
+
+A full Clean Architecture stack has a layer for each job:
+
+```
+Infrastructure → Data Source → Repository → Use Case → View Model → View
+  bytes            DTO           domain       rules       view data
+```
+
+ReciMate gets the same isolation with fewer layers:
+
+```
+RecipeAPIClient → RemoteRecipeListService → RecipeLibraryViewModel → RecipeLibraryView
+  bytes             DTO → domain              view data
+```
+
+Each layer sits behind a protocol, so everything below the views can be unit tested on its own, with only the layers this app needs. The data source and repository are one service, and there are no use cases because there is no business rule to hold yet. A second data source or a real rule would bring those layers back. There is no silver-bullet architecture, only the right size for the case.
 
 ### Swapping the mock for a real network
 
@@ -90,37 +108,40 @@ The response shapes live in the API layer as DTOs (`RecipePreviewDTO`, `RecipeDe
 
 ## Architecture decisions
 
-The reasoning, the alternatives and when each would go the other way: [`docs/decisions.md`](docs/decisions.md).
+Seven choices made on purpose. The reasoning, the rejected options and the rest of the list are in [`docs/decisions.md`](docs/decisions.md).
 
-- **Transport types stay out of the domain.** DTOs and mappers live in `API`; `Domain` holds plain types with no `Codable`, so the views never depend on the JSON's shape.
-- **The view state does not carry the data.** `ViewState` is `loading`, `loaded` or `error`, and the data sits beside it, so the grid keeps its cards and scroll position while a new search runs.
-- **Navigation goes through a router the views own.** `AppRouter` is injected at the composition root (never `@Environment`), which keeps navigation out of the view models.
-- **One search field finds titles and steps.** Following Apple's HIG and NN/g, the field searches broadly with no scope picker, and a card found only by its steps says "Found in the steps".
-- **Searches are debounced, cancelled and cached.** Typing waits 0.3 seconds, an older search never overwrites a newer one, and a query already seen shows its result at once.
+- **Strict Swift 6 concurrency, no escape hatches**
+  - The app builds in Swift 6 language mode, where the compiler rejects any possible data race, and nothing switches that check off: no `@unchecked Sendable`, `nonisolated(unsafe)` or `@preconcurrency`.
+  - View models run on the main actor; each service reads and decodes its JSON in one `@concurrent` method, off the main actor, so parsing never blocks the UI.
+- **One search field for titles and steps**
+  - No scope picker, following Apple's HIG and NN/g; a card found only by its steps says so. Typing is debounced, and a stale reply never overwrites a newer one.
+- **The view state does not carry the data**
+  - `ViewState` (`loading`, `loaded`, `error`) sits beside the data, so the grid keeps its cards and scroll position while a new search runs.
+- **Navigation goes through a router the views own**
+  - `AppRouter` is injected by initializer at the composition root, never through `@Environment`, off-loading the viewModel with one less responsibility.
+- **Backend data is trusted, not validated**
+  - `invalidData` means only "does not decode": rule checks were built, then removed, because they hid what the server sent. Each error kind gets its own message and Try Again.
+- **Native controls first**
+  - `.searchable`, `ContentUnavailableView`, a `Form` sheet, a segmented `Picker` and the system back button: iOS 26 draws them in its own style, and none is rebuilt by hand.
+- **Views get finished view data**
+  - Immutable, `Equatable` and already formatted, built once per load by a static mapper on the view model, so views hold no logic and SwiftUI skips unchanged cards.
 
-## Assumptions and tradeoffs
 
-- **Matching** ignores case and accents and uses "contains". Include terms must all match (AND); a recipe with any excluded term is dropped. Ingredients match by name.
-- **Conflicting filters:** the same ingredient included and excluded returns nothing, not an error. The Filters sheet prevents it: adding a term to one list removes it from the other.
-- **Empty input:** blank or whitespace-only text and terms are dropped before the request is built. Vegetarian off means no filter, never "non-vegetarian only". Servings is an exact match.
-- **Malformed data:** a broken or missing detail is our data's fault, so it shows an error with Try Again, not an empty screen. Missing photos, quantities or steps are valid and are shown as absent.
-- **Errors:** one message per error kind, worded to fit either screen. The decoder's technical reason is kept on the error for debugging, never shown.
-- **"Found in the steps"** is decided in the app, because the card already has the title. A real backend with smarter matching (stemming, synonyms) would have to return where the match was.
+## Assumptions and limitations
 
-Each spec's full list lives in `specs/<slug>/implementation-notes.md`.
+- **Matching** ignores case and accents and uses "contains"; include terms must all match, any exclude term drops a recipe, and the same term in both returns nothing.
+- **Bad data is an error, not an empty screen:** a broken or missing detail shows Try Again; missing photos or quantities are valid.
+- **The mock waits one second** on every request, so the loading state can be seen.
+- **The search cache** is a plain in-memory dictionary, with no expiry or size limit.
+- **Not built yet:** dark mode, an accessibility pass and view tests (see [`product/BACKLOG.md`](product/BACKLOG.md)).
 
-## Known limitations
-
-- The mock API waits one second on every request, to make the loading state visible.
-- The search cache is a plain in-memory dictionary: no expiry, refresh, invalidation or size limit. Fine for static local data, not for a real backend ([details](docs/decisions.md#search-result-cache)).
-- A `+` in a query value is not percent-encoded, so a real server could read it as a space.
-- Search is one phrase: no multi-word matching, ranking beyond "titles first", or highlighting of the matching step.
-- The servings picker offers 1 to 8; a backend with larger servings counts would need a different control.
-- Light mode only; no accessibility pass, UI tests or snapshot tests yet. Navigation has no unit tests (planned with ViewInspector). These and other extras are in [`product/BACKLOG.md`](product/BACKLOG.md).
+The full list: [`docs/assumptions-and-limitations.md`](docs/assumptions-and-limitations.md).
 
 ## Code organization
 
-Files are condensed for simplicity. A view's view data lives in the view's file, and the mapping from a domain type to view data is a static function on the view model, tested with it. Under `Presentation/Library/`, a card's small views sit together in `Components/RecipeCard/`. The Details screen follows the same shape in `Presentation/Details/`: its view data types and small row views sit in `RecipeDetailsView.swift`, and the servings label shared with the Library is `Shared/ServingsLabelFormatter.swift`. Depending on the project, each of these types can deserve its own file (a bigger team, a larger view data type, a mapper shared by several screens); here, fewer files made the code easier to read.
+- One folder per layer: `API/`, `Domain/`, `Presentation/`, and `ReciMateApp.swift` as the composition root.
+- A screen's view data and small row views live in the view's file; the domain-to-view-data mapping is a static function on its view model, tested with it.
+- Fewer, fuller files on purpose: at this size they read more easily. A bigger team or a shared mapper would earn its own file.
 
 ## AI workflow
 
@@ -145,8 +166,8 @@ Build and test commands for the agent live in [`CLAUDE.md`](CLAUDE.md).
 A clean build takes 2.6 seconds and an incremental build 0.3 seconds[^build-summary] (Xcode 26.5, iPhone 17 simulator). The layers meet only at protocols, which keeps changes local and the project quick to build.
 
 <p>
-  <img src="docs/build-clean.png" alt="Clean build timing summary, 2.6 seconds" width="380">
-  <img src="docs/build-incremental.png" alt="Incremental build, 0.3 seconds" width="420">
+  <img src="docs/assets/build-clean.png" alt="Clean build timing summary, 2.6 seconds" width="380">
+  <img src="docs/assets/build-incremental.png" alt="Incremental build, 0.3 seconds" width="420">
 </p>
 
 [^build-summary]: In Xcode's Build Timing Summary, each line adds up the time of every task of that kind, and tasks run in parallel on several cores. So the 8 `SwiftCompile` tasks add up to 6.6 seconds of work inside a build that took 2.6 seconds on the clock. The total at the bottom is the real time.

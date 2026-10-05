@@ -22,7 +22,7 @@ final class RecipeLibraryViewModel {
     /// Successful results by the query that produced them, so going back to a query
     /// already searched (clearing the text, turning a filter off) is instant. Rudimentary
     /// on purpose: no expiry, no size limit, never invalidated, lost with the view model.
-    /// Failures are never stored. See "Search result cache" in the README.
+    /// Failures are never stored. See "Search result cache" in docs/decisions.md.
     @ObservationIgnored private var cachedPreviews: [RecipeSearchQuery: [RecipePreview]] = [:]
     /// How long typing must pause before a search starts. Tests pass `.zero`.
     @ObservationIgnored private let searchDebounce: Duration
