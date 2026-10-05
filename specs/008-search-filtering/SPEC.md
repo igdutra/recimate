@@ -8,9 +8,9 @@ Updated: 2026-10-04
 The Library shows every recipe but cannot search or filter them, and the brief's
 core feature (a search endpoint with vegetarian, servings, include/exclude
 ingredient and instruction-text filters) does not exist yet. This spec builds that
-endpoint behind the data layer and the minimal UI that drives it, and removes what
-earlier specs built that the brief does not ask for (the quick filter chips and the
-separate list endpoint). Milestone D in [ROADMAP.md](../../product/ROADMAP.md);
+endpoint behind the data layer (as the recipe collection endpoint with optional
+query filters) and the minimal UI that drives it, and removes what earlier specs
+built that the brief does not ask for (the quick filter chips). Milestone D in [ROADMAP.md](../../product/ROADMAP.md);
 closes S1 to S6, the filter side of E3, and the no-results half of E1.
 
 Visual reference: [design.html](design.html) (approved). Decisions and the research
@@ -50,11 +50,16 @@ is built; everything else is in [BACKLOG.md](../../product/BACKLOG.md).
 
 ## Decisions / Architecture
 
-1. **The Library loads through search; `/recipe-list` is retired.** S1 says a search
-   with no filters returns everything, so the list endpoint is redundant. Removed:
-   `RecipeListService` (replaced by `RecipeSearchService`), `RecipeEndpoint.list`,
-   `recipe-list.json`, and the `API/List` folder's names (they become
-   `API/Search`). Rejected: keeping both (two paths to the same data, dead code).
+1. **The search endpoint is the recipe collection with optional query filters:
+   `GET /recipes`.** S1 says a search with no filters returns everything, which is a
+   list with filters. The REST consensus for one resource type is the collection
+   plus query parameters, with a separate `/search` resource only for cross-resource
+   search or a different index (see the naming note in decision 13). The brief's
+   "search endpoint" is read that way and the README says so in one line. The old
+   `/recipe-list` path and `recipe-list.json` go away; the list service, mappers, DTO
+   and folder keep their names and gain the query. Rejected: a second `/recipe-search`
+   endpoint next to the list (two paths to the same data); renaming the list pipeline
+   to "search" (churn, and the code would then disagree with the URL).
 2. **Query type in the domain: `RecipeSearchQuery`.** A value type with
    `instructionText`, `onlyVegetarian`, `servings: Int?`, `includedIngredients` and
    `excludedIngredients` (ordered, no repeats), `static let empty`, a
@@ -63,19 +68,22 @@ is built; everything else is in [BACKLOG.md](../../product/BACKLOG.md).
    the rules: add/remove a term (trim, drop blanks, ignore repeats ignoring case and
    accents, remove it from the opposite list) and `resetFilters()` (keeps the text).
    The sheet's rules live here so they are unit-tested without a view.
-3. **Endpoint contract: `GET /recipe-search`** with optional query items, each
-   omitted when unset: `vegetarian=true`, `servings=<n>`, repeated
-   `include=<term>`, repeated `exclude=<term>`, `instructions=<text>`. Built with
-   `URLComponents` in `RecipeEndpoint.search(query:)`; blank values are dropped
-   there, in one place. Rejected: a comma-separated `include` (ambiguous when a
-   term holds a comma), a POST body (the brief says query filters).
+3. **Endpoint contract: `GET /recipes`** with optional query items, each omitted
+   when unset: `vegetarian=true`, `servings=<n>`, repeated `include=<term>`,
+   repeated `exclude=<term>`, `instructions=<text>`. Built with `URLComponents` in
+   `RecipeEndpoint.list(query:)`; blank values are dropped there, in one place. The
+   details endpoint becomes `GET /recipes/{id}` so the collection and its member
+   share one path (it was `/recipe-details/{id}`). Rejected: a comma-separated
+   `include` (ambiguous when a term holds a comma), a POST body (the brief says query
+   filters), leaving `/recipe-details/{id}` as the odd one out.
 4. **The fake server filters; a new full-record fixture feeds it.** A new bundled
    `recipe-catalog.json` holds all 9 recipes in full (the former list fields plus
    ingredients and cooking instructions) and replaces `recipe-list.json` as the
-   source of the search results. `LocalRecipeAPIClient` routes `recipe-search`
-   requests to a separate type (`LocalRecipeSearchServer`) that parses the query
-   items, filters the catalog and returns list-shaped JSON (the preview fields only,
-   no ingredients or steps). Details files and the intentional E2 failure are
+   source of the results. `LocalRecipeAPIClient` routes requests whose last path
+   component is `recipes` to a separate type (`LocalRecipeSearchServer`) that parses
+   the query items, filters the catalog and returns list-shaped JSON (the preview
+   fields only, no ingredients or steps); any other last component is still a file
+   named after it (a details id). Details files and the intentional E2 failure are
    untouched. `RecipePreviewDTO` and `DietaryAttributesDTO` become `Codable` so the
    server can encode its answer. Rejected: filtering on the device after loading
    everything (the brief wants an endpoint); filtering only the 3 recipes with
@@ -94,10 +102,12 @@ is built; everything else is in [BACKLOG.md](../../product/BACKLOG.md).
    - Servings is an exact match; a value below 1 matches nothing.
    - Vegetarian off is no filter, never "non-vegetarian only".
    - Results keep catalog order.
-6. **Service shape: `RecipeSearchService`** (domain protocol) with
-   `searchRecipes(matching: RecipeSearchQuery) async throws -> [RecipePreview]`;
-   `RemoteRecipeSearchService` implements it with the existing pipeline (client,
-   data mapper to DTO, mapper to domain, failures to `RecipeError`).
+6. **Service shape: `RecipeListService` keeps its name and gains the query:**
+   `loadRecipes(matching: RecipeSearchQuery) async throws -> [RecipePreview]`.
+   `RemoteRecipeListService` implements it with the existing pipeline (client, data
+   mapper to DTO, mapper to domain, failures to `RecipeError`). `RecipeDetailsService`
+   is untouched. Rejected: a separate `RecipeSearchService` (a second service for the
+   same collection).
 7. **Library view model owns the query and runs searches.** It keeps the search text
    and the filters, builds one `RecipeSearchQuery`, and runs a search on load and on
    every change. Each search takes a sequence number and only the latest one may
@@ -138,11 +148,32 @@ is built; everything else is in [BACKLOG.md](../../product/BACKLOG.md).
     the system text is whatever the OS shows; it is checked on the simulator and
     recorded, not replaced. Rejected: the generic initializer with custom text
     (gives up the out-of-the-box rule).
-13. **Names:** `RecipeSearchQuery`, `RecipeSearchService`, `RemoteRecipeSearchService`,
-    `RecipeSearchDataMapper`, `RecipeSearchMapper`, `RecipeSearchResultDTO`,
-    `LocalRecipeSearchServer`, `FiltersViewModel`, `FiltersSheetViewData`,
-    `RecipeSearchServiceSpy`, `PreviewRecipeSearchService`. Variable names are
-    descriptive, no abbreviations (global rule).
+13. **Names, by layer, each named for its role.** Layers may use different words for
+    the same thing as long as each layer is consistent and the chain is documented
+    (one line in the README):
+    - API, the URL: the resource, plural: `/recipes`, `/recipes/{id}` (REST
+      convention: collection and member).
+    - Domain and API code: `RecipeListService.loadRecipes(matching:)` next to
+      `RecipeDetailsService.loadRecipe(id:)`: the collection read (list) and the
+      member read (details), the usual pair, and the existing code's verbs. New:
+      `RecipeSearchQuery` (the filters plus the instruction text; "search" is the
+      brief's word for it), `LocalRecipeSearchServer` (the mock), `FiltersViewModel`,
+      `FiltersSheetViewData`. Unchanged: `RemoteRecipeListService`,
+      `RecipeListMapper`, `RecipeListDataMapper`, `RecipeListDTO`, `RecipePreview`,
+      `RecipeListServiceSpy`, `PreviewRecipeListService`, the `API/List` folder.
+    - Presentation: `RecipeLibraryView`, `RecipeLibraryViewModel`,
+      `RecipeCardViewData`: "Library" is the product's name for the screen (the
+      design and the roadmap use it), and it shows a grid, so "List" would mislead
+      there. The navigation title stays "Recipes".
+    - The chain: `GET /recipes` → `RecipeListService.loadRecipes(matching:)` →
+      `RecipePreview` → `RecipeLibraryViewModel` → `RecipeCardViewData` →
+      `RecipeLibraryView`.
+    - Rejected: renaming the domain protocols to `RecipeRepository` (common in
+      clean-architecture write-ups but not universal, and the project already uses
+      "Service" for both); a method named `recipes(matching:)` (the Swift guideline
+      prefers noun phrases for side-effect-free methods, but the surrounding code
+      uses `load…` and consistency wins). Variable names are descriptive, no
+      abbreviations (global rule).
 14. **Mock-only tests live together and are marked for deletion.** The fake server,
     the catalog fixture and the drift check exist only because the data is mocked.
     Their tests go in one folder, `ReciMateTests/API/Mock/`
@@ -171,16 +202,17 @@ Library view model, the README mention of the chips folder. The commit's hash is
 then written into the backlog entry "Quick filter chips".
 
 **Domain:** add `RecipeSearchQuery` (and its term-normalizing helper, shared with
-the fake server); replace `RecipeListService.swift` with `RecipeSearchService.swift`.
-Update the doc comment on `Ingredient.id` (filters match on names, not ids).
+the fake server); `RecipeListService.loadRecipes()` becomes
+`loadRecipes(matching:)`. Update the doc comment on `Ingredient.id` (filters match
+on names, not ids).
 
-**API:** `RecipeEndpoint` swaps `.list` for `.search(query:)`; `API/List` becomes
-`API/Search` with `RemoteRecipeSearchService`, `RecipeSearchDataMapper`,
-`RecipeSearchMapper`, `RecipeSearchResultDTO` (same shape as before); DTOs become
-`Codable`. `Infrastructure/` gains `LocalRecipeSearchServer.swift` and
-`RecipeSearch/recipe-catalog.json`, and loses `RecipeList/recipe-list.json`.
-`LocalRecipeAPIClient` routes by the last path component as today and sends
-`recipe-search` to the server; its `#Playground` is updated to search.
+**API:** `RecipeEndpoint.list` becomes `.list(query:)` and builds `/recipes` plus the
+query items; `.details(id:)` builds `/recipes/{id}` (the doc comments that name the
+old paths are updated). `API/List` keeps its files; `RemoteRecipeListService` passes
+the query to the endpoint; DTOs become `Codable`. `Infrastructure/` gains
+`LocalRecipeSearchServer.swift` and `RecipeSearch/recipe-catalog.json`, and loses
+`RecipeList/recipe-list.json`. `LocalRecipeAPIClient` routes by the last path
+component as today and sends `recipes` to the server; its `#Playground` is updated.
 
 **Catalog content (authoring constraints):** 9 recipes, ids, titles, servings,
 vegetarian flags and image URLs exactly as in the old list. The three recipes with
@@ -191,25 +223,25 @@ authored ingredients (several each, with plausible names) and 3 to 5 steps. The 
 and a mushroom ingredient, and Creamy Tomato Pasta has "Cooking cream", so
 vegetarian + servings 2 + include "cream" + exclude "mushrooms" leaves only the pasta.
 
-**Presentation:** `RecipeLibraryViewModel` takes a `RecipeSearchService`, owns a
+**Presentation:** `RecipeLibraryViewModel` keeps its `RecipeListService`, owns a
 `FiltersViewModel`, and exposes `RecipeLibraryViewData` (state, cards,
 `activeFilterCount`, with a derived `hasNoResults`: loaded and no cards). It keeps
 `didChangeSearch(_:)`; the `didSubmitSearch()` print stub is removed (typing already
 searches). `FiltersSheetView` is rebuilt as described in decision 10, with a small
 wrapping `Layout` for the term chips. `RootView` passes
-`libraryViewModel.filtersViewModel` and the router to the sheet. `ReciMateApp` builds
-`RemoteRecipeSearchService` in place of the list service. `PreviewRecipeSearchService`
-replaces the preview list service.
+`libraryViewModel.filtersViewModel` and the router to the sheet. `ReciMateApp` and
+the preview list service need no new names; the preview service ignores the query
+(a preview with no matches passes an empty array).
 
 **Tests (all Swift Testing):**
 - `RecipeSearchQueryTests`: term trimming, blanks, repeats ignoring case and accents,
   moving a term between lists, the active count, `resetFilters` keeping text.
-- `RecipeEndpointTests` (updated): the search URL for no filters, each filter, repeated
-  include/exclude, blank values dropped, base URL with a path prefix, encoding of
-  spaces, accents and `&`.
-- `RecipeSearchServiceTests` (replaces the list service tests): requests the search
-  URL for the query, maps in order, empty result, not found, undecodable data, other
-  errors become `unavailable`.
+- `RecipeEndpointTests` (updated): the `/recipes` URL for no filters, each filter,
+  repeated include/exclude, blank values dropped, base URL with a path prefix, encoding
+  of spaces, accents and `&`; the details URL is now `/recipes/{id}`.
+- `RecipeListServiceTests` (updated): requests the `/recipes` URL for the query, maps
+  in order, empty result, not found, undecodable data, other errors become
+  `unavailable`.
 - **Mock-only tests**, all in `ReciMateTests/API/Mock/` (see decision 14):
   - `LocalRecipeSearchServerTests`: query-item round trip (endpoint encodes, server
     parses back the same query), then one parameterized case per matching rule in
@@ -218,15 +250,15 @@ replaces the preview list service.
     well-formed details files (Petit Gâteau and Lemon Herb Chicken). It exists only
     because the same data sits in two mock files; a real backend has one source.
   - `RecipeCatalogFixtureTests`: the bundled catalog decodes and has the 9 ids; and
-    end to end through `LocalRecipeAPIClient` and `RemoteRecipeSearchService`: empty
+    end to end through `LocalRecipeAPIClient` and `RemoteRecipeListService`: empty
     query returns 9, vegetarian only returns the 5 vegetarian ids, "ramekins"
     returns Petit Gâteau, vegetarian + servings 2 returns the pasta and the
     risotto, and the frame-7 query returns only the pasta.
 - **Tests that stay with a real backend** (not mock-only): `RecipeSearchQueryTests`,
-  `RecipeEndpointTests`, `RecipeSearchServiceTests`, `FiltersViewModelTests` and
+  `RecipeEndpointTests`, `RecipeListServiceTests`, `FiltersViewModelTests` and
   `RecipeLibraryViewModelTests`.
-- `RecipeLibraryViewModelTests` (updated, spy renamed `RecipeSearchServiceSpy` and
-  recording each query): the first load searches with the empty query; the existing
+- `RecipeLibraryViewModelTests` (updated; `RecipeListServiceSpy` records each
+  query): the first load searches with the empty query; the existing
   load, error, repeated-load and card-mapping cases still hold; typing and filter
   changes search with the right query; out-of-order replies show the latest; a
   cancelled or outdated failure is not an error; an empty result sets `hasNoResults`;
@@ -263,18 +295,16 @@ iOS 26, and typing and chip entry in the sheet.
    run the Library view model tests. Commit alone ("refactor: remove quick filter
    chips"), so its hash can be recorded.
 2. `RecipeSearchQuery` and its tests.
-3. `RecipeEndpoint.search(query:)` replacing `.list`, with its tests (update
-   `RecipeEndpointTests`).
+3. `RecipeEndpoint.list(query:)` and the `/recipes/{id}` details path, with their
+   tests (update `RecipeEndpointTests`).
 4. Author `recipe-catalog.json`; make the DTOs `Codable`; write
    `LocalRecipeSearchServer`, route it from `LocalRecipeAPIClient`, update the
    playground; the mock-only tests in `ReciMateTests/API/Mock/` (server, drift and
    catalog fixture; the end-to-end ones come after step 5), each file headed with the
    delete-when-real-backend comment.
-5. Replace the list service with `RecipeSearchService` and `RemoteRecipeSearchService`
-   (rename `API/List` to `API/Search`, rename the mappers and DTO alias), delete
-   `recipe-list.json` and the old service tests, add the new service tests, rename
-   the spy and the preview service, and update `ReciMateApp`. Then the end-to-end
-   catalog tests.
+5. `RecipeListService.loadRecipes(matching:)` and `RemoteRecipeListService` pass the
+   query through; update the spy, the preview service, `ReciMateApp` and the service
+   tests; delete `recipe-list.json`. Then the end-to-end catalog tests.
 6. `FiltersViewModel` and its tests.
 7. `RecipeLibraryViewModel` on search: sequence guard, state rules, owned
    `FiltersViewModel`, view data additions; update its tests.
@@ -282,8 +312,8 @@ iOS 26, and typing and chip entry in the sheet.
    no-results overlay), `FiltersSheetView` with chips layout, `RootView` wiring;
    previews for every state listed above.
 9. Simulator pass for the manual checks; record the system no-results wording.
-10. Full test suite; greps for the retired names (`recipe-list`, `RecipeListService`,
-    `QuickFilter`, `FilterChip`, `loadRecipes`).
+10. Full test suite; greps for the retired names (`recipe-list`, `recipe-details`,
+    `QuickFilter`, `FilterChip`, `loadRecipes()` with no argument).
 11. `implementation-notes.md` (assumptions, the E3 table as built, deviations, and
     the list of what to delete when the mock is replaced); ROADMAP
     status for milestone D; add the chip-removal commit hash to the backlog entry
@@ -300,11 +330,14 @@ Task list: yes
   system view says with an empty query, used as is (decision 12); verified on the
   simulator and recorded. If it reads oddly it goes in the README limitations, not
   replaced.
-- **Retire the list endpoint?** → Yes (decision 1); S1 makes it redundant and the
-  catalog supersedes its fixture.
+- **One endpoint or a list plus a search?** → One: `GET /recipes` with optional query
+  filters (decision 1); S1 and the REST consensus make a separate search endpoint
+  redundant, and the catalog supersedes the old list fixture.
+- **What are the layers called?** → The URL names the resource (`/recipes`), the
+  domain and API code say list and details, the screen says Library (decision 13).
 - **Where does the filter state live, and which service shape?** → In a
   `FiltersViewModel` owned by the Library view model with an `onChange` closure
-  (decision 9), and one `RecipeSearchService` (decision 6).
+  (decision 9), and the existing `RecipeListService` with a query (decision 6).
 - **Is an error view part of this spec?** → No; the state exists and is tested, the
   screen has no error view yet (decision 8). Known gap for the README.
 - **Is fast-typing cancellation in scope?** → Yes, the sequence guard plus a
@@ -319,8 +352,10 @@ Task list: yes
   mock-only drift test pins them equal, but a third details file would need the same
   test. The test, the catalog and the fake server are deleted when a real backend
   replaces the mock.
-- Risk: renaming the list pipeline touches many files and tests at once; steps 3 to 5
-  keep the build green between commits.
+- Risk: renaming the details path (`/recipe-details/{id}` to `/recipes/{id}`) touches
+  the endpoint, its tests and a few doc comments, and the local client's route by last
+  path component would mis-route a recipe whose id is `recipes`; ids are trusted and
+  none is called that.
 - Risk: a `+` inside a query value is not percent-encoded by `URLComponents`, so a
   real server could read it as a space; irrelevant to the local server, noted as a
   limitation.
@@ -357,8 +392,9 @@ Task list: yes
 - **AC15** Opening any recipe behaves as before, including the intentional failure.
 - **AC16** The bundled catalog matches the two well-formed details files in
   ingredients and steps.
-- **AC17** The list endpoint, its service, mappers, fixture and tests, and the quick
-  chips and their tests, are gone; nothing references them.
+- **AC17** The old paths (`/recipe-list`, `/recipe-details`), `recipe-list.json`, the
+  no-argument `loadRecipes()`, and the quick chips and their tests are gone; nothing
+  references them.
 - **AC18** Every new Library and sheet state has a preview (Library loaded, filtered,
   no results from text, no results from filters only, large Dynamic Type; sheet
   default, choices on, many long terms, large Dynamic Type).
@@ -385,10 +421,10 @@ Task list: yes
 - **AC4, AC12** `scripts/test.sh ReciMateTests/RecipeLibraryViewModelTests`; AC4 also
   in the simulator walk.
 - **AC13 (URL side)** `scripts/test.sh ReciMateTests/RecipeEndpointTests` and
-  `ReciMateTests/RecipeSearchServiceTests`.
+  `ReciMateTests/RecipeListServiceTests`.
 - **AC15** The existing `RecipeDetailsServiceTests` and `RecipeDetailsViewModelTests`
   stay green; a simulator tap on a recipe with and without details.
-- **AC17** `rg -n "recipe-list|RecipeListService|loadRecipes|QuickFilter|FilterChip" ReciMate ReciMateTests`
+- **AC17** `rg -n "recipe-list|recipe-details|loadRecipes\(\)|QuickFilter|FilterChip" ReciMate ReciMateTests`
   returns nothing (outside `specs/` and `product/`), and the retired files are
   absent from `git ls-files`.
 - **AC19** `scripts/test.sh` (full suite) ends with `PASS`.

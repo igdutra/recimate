@@ -88,7 +88,7 @@
     <h2>What the brief asks for, mapped to this spec</h2>
     <div class="scroll"><table>
       <tr><th>Brief item</th><th>ID</th><th>Built in 008</th></tr>
-      <tr><td>Search endpoint, optional query filters</td><td>S1</td><td><code>search</code> behind the service boundary; no filters returns every recipe</td></tr>
+      <tr><td>Search endpoint, optional query filters</td><td>S1</td><td><code>GET /recipes</code> with optional query filters behind the service boundary; no filters returns every recipe</td></tr>
       <tr><td>Vegetarian filter</td><td>S2</td><td>Toggle in the Filters sheet</td></tr>
       <tr><td>Servings filter</td><td>S3</td><td>Exact serving count in the Filters sheet</td></tr>
       <tr><td>Include ingredients</td><td>S4</td><td>Free-text terms in the Filters sheet</td></tr>
@@ -126,7 +126,7 @@
       <li><strong>Servings is an exact count.</strong> Backlog: "Servings ranges". Assumption to document: the brief says only "servings filter". The control only offers valid values (1 or more) and an "Any" state.</li>
       <li><strong>Include and exclude ingredients are free-text terms</strong> (backlog: "Ingredient picker"). Matching rule to settle in <code>/spec</code>: case- and diacritic-insensitive "contains" on the ingredient name. <code>Ingredient.id</code>'s doc comment in <code>RecipeDetails.swift</code> says the filters match on the id; that comment is updated to whatever <code>/spec</code> decides, since people type names, not ids.</li>
       <li><strong>The search data is a new bundled fixture.</strong> The list JSON has no ingredients or instructions, and only 3 of 9 recipes have a details file (one deliberately malformed for E2). A new fixture holds the full record of all 9 recipes (the list fields plus ingredients and instruction text), read only by the fake server's search. The details contract and E2's failure demo are not touched. Cost: some fixture data is duplicated for the 2 well-formed details files; add a test that the shared fields agree so they cannot drift.</li>
-      <li><strong>The fake server filters.</strong> <code>LocalRecipeAPIClient</code> today serves <code>&lt;last path component&gt;.json</code> and cannot filter. It gains a search handler that reads the query items from the URL (<code>RecipeEndpoint.search</code>, built with <code>URLComponents</code>, as spec 002 anticipated), filters the fixture and returns list-shaped JSON. The services, DTO mapper and domain types then work as they would against a real server (D3).</li>
+      <li><strong>The fake server filters.</strong> <code>LocalRecipeAPIClient</code> today serves <code>&lt;last path component&gt;.json</code> and cannot filter. It gains a search handler that reads the query items from the URL (<code>GET /recipes</code>, built by <code>RecipeEndpoint.list(query:)</code> with <code>URLComponents</code>, as spec 002 anticipated), filters the fixture and returns list-shaped JSON. The services, DTO mapper and domain types then work as they would against a real server (D3).</li>
       <li><strong>E1 scope.</strong> Spec 008 builds the no-results state only, and uses the system <code>ContentUnavailableView.search</code> as is (see Prototype below). The Library's error state is not part of this spec: it stays an E1 item with no spec yet (milestone C). Loading and empty-collection states are backlog ("Loading and empty-collection states"). The Details screen's states stay milestone E.</li>
     </ol>
   </section>
@@ -165,8 +165,8 @@
     <p>The list data has no ingredients or instructions, and only 3 of 9 recipes have a details file. So the fake server needs a fuller dataset to answer S4 to S6 truthfully. A new bundled fixture holds all 9 recipes in full, read only by search. The details contract and the intentional E2 failure stay untouched.</p>
     <div class="flow" role="img" aria-label="Library view model, search service, RecipeEndpoint.search with query items, local fake server reading the full recipe fixture, list-shaped JSON back through the service and DTO-to-domain mapping to the view model">
       <span class="step">Library view model</span><span class="arrow">→</span>
-      <span class="step">Search service</span><span class="arrow">→</span>
-      <span class="step">RecipeEndpoint.search (query items)</span><span class="arrow">→</span>
+      <span class="step">Recipe list service</span><span class="arrow">→</span>
+      <span class="step">GET /recipes (query items)</span><span class="arrow">→</span>
       <span class="step">Local fake server</span><span class="arrow">→</span>
       <span class="step">Full recipe fixture</span><span class="arrow">⇢</span>
       <span class="step">list-shaped JSON → DTO → domain → view model</span>
@@ -194,9 +194,9 @@
   <section>
     <h2>Open questions for <code>/spec</code></h2>
     <div class="cols">
-      <div class="col"><h3>Retire <code>/recipe-list</code>?</h3><p>S1 says search with no filters returns everything, so the Library could load through <code>search</code> with an empty query and the list endpoint and <code>loadRecipes()</code> become redundant. Keeping both means two paths to the same data; retiring means changing spec 002's tests. Recommended: the Library loads through <code>search</code>; decide whether to delete the old path.</p><p><em>Settled in SPEC.md:</em> retired.</p></div>
+      <div class="col"><h3>Retire <code>/recipe-list</code>?</h3><p>S1 says search with no filters returns everything, so the Library could load through <code>search</code> with an empty query and the list endpoint and <code>loadRecipes()</code> become redundant. Keeping both means two paths to the same data; retiring means changing spec 002's tests. Recommended: the Library loads through <code>search</code>; decide whether to delete the old path.</p><p><em>Settled in SPEC.md:</em> one endpoint, <code>GET /recipes</code> with optional query filters (the REST convention for one resource); no separate search endpoint.</p></div>
       <div class="col"><h3>Where the filter state lives</h3><p>The Library view model and the sheet edit one query. Options: the sheet gets a small view model that the Library view model owns, or the Library view model exposes the editable query. Views get the router by initializer and never <code>@Environment</code>, so the sheet's dependencies are wired in <code>RootView</code>.</p><p><em>Settled in SPEC.md:</em> a small <code>FiltersViewModel</code> owned by the Library view model.</p></div>
-      <div class="col"><h3>Service shape</h3><p>Extend <code>RecipeListService</code> with <code>search(query:)</code> or add a separate <code>RecipeSearchService</code>. The query type (<code>RecipeSearchQuery</code>, in the domain) is not in dispute.</p><p><em>Settled in SPEC.md:</em> <code>RecipeSearchService</code> replaces the list service.</p></div>
+      <div class="col"><h3>Service shape</h3><p>Extend <code>RecipeListService</code> with <code>search(query:)</code> or add a separate <code>RecipeSearchService</code>. The query type (<code>RecipeSearchQuery</code>, in the domain) is not in dispute.</p><p><em>Settled in SPEC.md:</em> the existing <code>RecipeListService</code> gains the query: <code>loadRecipes(matching:)</code>.</p></div>
     </div>
   </section>
 
