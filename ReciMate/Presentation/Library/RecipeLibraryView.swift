@@ -31,10 +31,7 @@ struct RecipeLibraryView: View {
             // The search field is attached to the loaded content so it hides with it.
             if viewModel.viewData.state.isLoaded {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        QuickFilterBar(viewModel: viewModel.quickFilterBar)
-                        RecipeGrid(cards: viewModel.viewData.cards, router: router)
-                    }
+                    RecipeGrid(cards: viewModel.viewData.cards, router: router)
                 }
                 .searchable(text: $searchText, prompt: "Search recipes")
                 .onChange(of: searchText) { _, newSearchText in

@@ -3,7 +3,6 @@ import Observation
 @MainActor
 @Observable
 final class RecipeLibraryViewModel {
-    let quickFilterBar: QuickFilterBarViewModel
     private(set) var viewData = RecipeLibraryViewData(state: .loading, cards: [])
 
     @ObservationIgnored private let service: any RecipeListService
@@ -11,9 +10,8 @@ final class RecipeLibraryViewModel {
     /// started yet; this flag does.
     @ObservationIgnored private var isLoadInFlight = false
 
-    init(service: any RecipeListService, quickFilterBar: QuickFilterBarViewModel = QuickFilterBarViewModel()) {
+    init(service: any RecipeListService) {
         self.service = service
-        self.quickFilterBar = quickFilterBar
     }
 
     /// Loads the recipes once. Returns at once if already loaded or a load is in flight.

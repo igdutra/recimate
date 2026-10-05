@@ -13,12 +13,6 @@ struct RecipeLibraryViewModelTests {
         #expect(sut.viewData == RecipeLibraryViewData(state: .loading, cards: []))
     }
 
-    @Test func quickFilterBar_isOwnedByTheViewModel() {
-        let (sut, _) = makeSUT()
-
-        #expect(sut.quickFilterBar.viewData.chips.map(\.id) == [.vegetarian, .servings])
-    }
-
     // MARK: - Happy path
 
     @Test func load_onSuccess_deliversCardsInRecipeOrder() async {
