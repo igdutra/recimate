@@ -18,7 +18,7 @@ Environment for every number below: Apple M1 Pro, Swift 6.3.2, Xcode 26.5,
 | 1 | One formatting function, or one per property? | `formatting-benchmark.swift` | Format each recipe once in one mapper; do not build per-property relabel paths |
 | 2 | Where does `@Observable` go, and should the view data be `Equatable`? | `observable-on-struct.swift`, `observation-tracking.swift`, `observation-equatable.swift`, `viewstate-equatable.swift` | `@Observable` on view models only; make all view data and `ViewState` `Equatable` |
 
-Related backlog item: [Formatting benchmark](../../product/BACKLOG.md#formatting-benchmark-kept-as-a-check)
+Related backlog item: [Re-run the formatting benchmark](../../product/BACKLOG.md#re-run-the-formatting-benchmark) (under item 4)
 (re-run investigation 1 when the servings label moves to a String Catalog).
 
 ---
